@@ -1,0 +1,189 @@
+Widgets
+=======
+
+Existen dos tipos principales de Widgets, los que se denominan FlowWidget que
+son widgets que calculan su altura en funcion del ancho disponible, y los que
+se denominan BoxWidget que calculan su tamaño y contenido en funcion de la
+altura y el ancho disponibles.
+Existen algunos widgets que haceptan solo uno de estos dos tipos como
+argumentos, por ejemplo el widget Frame que es del tipo BoxWidget acepta como
+primer parametro (body) solo un widget del tipo BoxWidget y sus otros dos
+parametros (header, footer) tienen que ser del tipo FlowWidget.
+En general los widget del tipo BoxWidget se pueden usar como top-level
+widgets, esto quiere decir que se pueden utilizar en la llamada a MainLoop
+como primer parametro, serían el widget de más alto nivel o el más externo.
+Muchas veces es dificil recordad que un widget es del tipo FlowWidget o
+BoxWidget, y urwid no nos avisa mucho cuando nos equivocamos de widget pero si
+aparece un error, entonces según el error podemos inferir que tipo de widget
+esta faltando que pasemos como argumento.
+
+si el error nos dice que un determinado objeto no tiene el atributo 'rows' es
+porque ahi hace falta un widget del tipo FlowWidget.
+
+si el error nos dice que son muchos valores para desempaquetar:
+"ValueError: Too many values to unpack", y por ahi vemos la sentencia:
+    (maxcol,) = size
+es porque alomejor aluno de los widget que hemos pasado debe ser del tipo
+BoxWidget.
+
+Para pasar de un tipo de widget a otro podemos utilizar las siguientes
+conversiones:
+
+FlowWidget ----------------------------> BoxWidget
+                      Filler
+
+BoxWidget -----------------------------> FlowWidget
+                    BoxAdapter
+
+
+Colores permitidos para los atributos:
+=====================================
+
+(name, foreground, background, mono=None, foreground_high=None, background_hight=None)
+
+name -- new entry/attribute name
+foreground -- a string containing a comma-separated foreground 
+    color and settings
+
+    Color values:
+    'default' (use the terminal's default foreground),
+    'black', 'dark red', 'dark green', 'brown', 'dark blue',
+    'dark magenta', 'dark cyan', 'light gray', 'dark gray',
+    'light red', 'light green', 'yellow', 'light blue', 
+    'light magenta', 'light cyan', 'white'
+
+    Settings:
+    'bold', 'underline', 'blink', 'standout'
+
+    Some terminals use 'bold' for bright colors.  Most terminals
+    ignore the 'blink' setting.  If the color is not given then
+    'default' will be assumed. 
+
+background -- a string containing the background color
+
+    Background color values:
+    'default' (use the terminal's default background),
+    'black', 'dark red', 'dark green', 'brown', 'dark blue',
+    'dark magenta', 'dark cyan', 'light gray'
+
+mono -- a comma-separated string containing monochrome terminal 
+    settings (see "Settings" above.)
+
+    None = no terminal settings (same as 'default')
+
+foreground_high -- a string containing a comma-separated 
+    foreground color and settings, standard foreground
+    colors (see "Color values" above) or high-colors may 
+    be used
+
+    High-color example values:
+    '#009' (0% red, 0% green, 60% red, like HTML colors)
+    '#fcc' (100% red, 80% green, 80% blue)
+    'g40' (40% gray, decimal), 'g#cc' (80% gray, hex),
+    '#000', 'g0', 'g#00' (black),
+    '#fff', 'g100', 'g#ff' (white)
+    'h8' (color number 8), 'h255' (color number 255)
+
+    None = use foreground parameter value
+
+background_high -- a string containing the background color,
+    standard background colors (see "Background colors" above)
+    or high-colors (see "High-color example values" above)
+    may be used
+
+    None = use background parameter value
+
+
+Jerarquia de Clases:
+===================
+
+
+- Widget
+    - Pile
+    - Columns
+    - BoxWidget
+        - SolidFill
+        - Overlay
+        - Frame
+        - ListBox
+        - GraphBar
+        - GraphVScale
+    - FlowWidget
+        - Divider
+        - Text
+            - Edit
+                - IntEdit
+            - SelectableIcon
+        - GridFlow
+        - ProgressBar
+    - FixedWidget
+        - BigText
+        - PythonLogo
+    - WidgetWrap
+        - CheckBox
+            - RadioButton
+        - Button
+    - WidgetContainer
+    - WidgetDecoration
+        - LineBox (also WidgetWrap)
+        - AttrMap
+            - AttrWrap
+        - BoxAdapter
+        - Padding
+        - Filler
+- ListWalker
+    - SimpleListWalker
+- PolingListWalker
+- CanvasCache
+- Canvas
+    - TextCanvas
+    - BlankCanvas
+    - SolidCanvas
+    - CompositeCanvas
+- TextLayout
+    - StandardTextLayout
+- LayoutSegment
+- CommandMap
+- MainLoop
+- SelectEventLoop
+- GLibEventLoop
+- TwistedEventLoop
+- MonitoredList
+    - MonitoredFocusList
+- FileDescriptor
+    - TwistedInputDescriptor
+- Font
+    - Thin3x3Font
+    - Thin4x3Font
+    - HalfBlock5x4Font
+    - HalfBlock6x5Font
+    - HalfBlockHeavy6x5Font
+    - Thin6x6Font
+    - HalfBlock7x7Font
+- AttrSpec
+- BaseScreen
+    - HtmlGenerator
+- RealTerminal
+    - Screen
+
+- Exception
+    - CanvasError
+    - WidgetError
+        - AttrMapError
+    - OverlayError
+    - PileError
+    - ColumnsError
+    - BoxAdapter
+    - PaddingError
+    - FillerError
+    - AttrSpecError
+    - ScreenError
+    - MoreInputRequired
+    - BarGraphError
+    - HtmlGeneratorSimulationError
+    - ListWalkerError
+    - ExitMainLoop
+    - TagMarkupException
+    - TextError
+    - EditError
+    - WidgetWrapError

@@ -1,0 +1,17 @@
+Documento:
+  tipo 	       # FAA, FAC, VFA, VNC, REM, etc
+  cliente_id   # id
+  descuento    # '##,##'
+  items        # lista de Item
+
+Item:
+  articulo_id  # id(int) or description(string)
+  cantidad     # '##,##'
+  precio       # '##,##' or None
+
+Other information: (at table-level)
+
+  vendedor     # 20, 21, 33, etc.
+  username     # os.getlogin()
+  hostname     # socket.getfqdn()
+  modified     # time

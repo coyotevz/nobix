@@ -1,0 +1,11 @@
+.hg
+.hgignore
+.hgtags
+docs/build
+build
+dist
+Nobix.egg-info
+^.+\.pyc$
+^.+\.swp$
+^.+\.mo$
+^.+\.db$

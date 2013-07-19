@@ -1,0 +1,397 @@
+/*
+ * plumbum.css
+ * ~~~~~~~~~~~~
+ *
+ * Sphinx stylesheet -- plumbum theme.
+ *
+ * Based on nature theme
+ * :copyright: Copyright 2010 by RoccTech Labs
+ * :license: BSD
+ *
+ */
+ 
+@import url("basic.css");
+ 
+/* -- page layout ----------------------------------------------------------- */
+
+html, body {
+  height: 100%;
+}
+
+#page {
+  min-height: 100%;
+  position: relative;
+}
+
+* html #page {
+  height: 100%;
+}
+ 
+body {
+  font-family: Arial, sans-serif;
+  font-size: 100%;
+  background-color: #fff;
+  color: #555;
+  padding: 0;
+  margin: auto;
+  width: 800px;
+}
+
+div.documentwrapper {
+    float: left;
+    width: 100%;
+}
+
+div.bodywrapper {
+  /*margin: 0 230px 0 0;*/
+}
+
+hr {
+    border: 1px solid #B1B4B6;
+}
+ 
+div.document {
+    background-color: #fff;
+}
+
+/* Custom elements */
+
+.clr:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.clr { display: inline-block; }
+/* Hides from IE-mac */
+* html .clr { height: 1%; }
+.clr { display: block; }
+/* End hide from IE-mac */
+
+div#header {
+  padding: 10px;
+  position: relative;
+}
+
+div#header div#logo {
+  float: left;
+  width: 155px;
+  height: 75px;
+  background: url('nobix-logo.png') 0 0 no-repeat;
+}
+
+div#header div#logo span { display: none; }
+
+div#header ul#nav {
+  margin: 0;
+  font-size: 81%;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+div#header ul#nav li {
+  float: left;
+  display: inline;
+  margin: 0;
+  padding: 5px 0 5px 0;
+}
+
+div#header ul#nav li a {
+  float: left;
+  display: inline;
+  padding: 0 13px 0 13px;
+  border-right: 1px solid #cfcfcf;
+  border-left: 1px solid #fff;
+  line-height: 1.2em;
+  text-shadow: 0 1px 0 #ccc;
+  letter-spacing: .2px;
+}
+
+div#header ul#nav li.first a { border-left: none; }
+div#header ul#nav li.last a { border-right: none; padding-right: 5px; }
+
+div#splash_wrapper {
+  background: #d1d9e2 url('splash_ribbon.gif') repeat-x;
+  border: 1px solid #ccd4dd;
+  /*border-top: 1px solid #ccd4dd;
+  border-bottom: 1px solid #bcb4cc;*/
+}
+
+div#splash_wrapper div#splash {
+  padding: 9px 0 9px 15px;
+}
+
+div#splash_wrapper div#splash .title {
+  float: left;
+  display: inline;
+  width: 100%;
+}
+
+div#splash_wrapper div#splash h1 {
+  margin: 4px 0 0 0;
+  line-height: 1.3em;
+  font-size: 145%;
+  color: #333;
+}
+
+div#splash_wrapper div#splash .related {
+  margin: 0;
+  color: #555;
+}
+
+div#splash_wrapper div#splash .related a {
+  font-size: 112%;
+  color: #555;
+}
+
+div#splash_wrapper div#splash .related ul {
+  padding: 0;
+}
+
+div#footer_wrapper {
+  width: 100%;
+  height: 27px;
+  position: relative;
+  overflow: hidden;
+  margin: -28px auto 0;
+  /*
+  border-top: 1px solid #e6e6e6;
+  background-color: #f5f5f5;
+  */
+}
+
+* html div#footer_wrapper {
+  margin-top: -28px;
+}
+
+div#footer {
+  /*width: 80%;*/
+  margin: 0 auto;
+  overflow: hidden;
+  height: 27px;
+  padding: 4px 0 4px 0;
+  font-size: 80%;
+  line-height: 1.2em;
+}
+
+div#footer .privacy {
+  float: left;
+  display: inline;
+}
+
+div#footer .powered {
+  float: right;
+  display: inline;
+}
+
+div#footer span a { text-decoration: underline; }
+
+/* End custom elements */
+
+div.body {
+    background-color: #ffffff;
+    color: #3E4349;
+    padding: 0 15px 15px 15px;
+    font-size: 0.9em;
+}
+
+div.body div.section h1 {
+  display: none;
+}
+
+div.body div.section h1 + * {
+  padding-top: 18px;
+  margin-top: 0;
+}
+ 
+div.footer {
+    color: #555;
+    width: 100%;
+    padding: 13px 0;
+    text-align: center;
+    font-size: 75%;
+}
+ 
+div.footer a {
+    color: #444;
+    text-decoration: underline;
+}
+ 
+div.sphinxsidebar {
+    background: url('fade_right.gif') no-repeat scroll 0 0 transparent;
+    min-height: 460px;
+    float: right;
+    font-size: 0.75em;
+    line-height: 1.5em;
+}
+
+div.sphinxsidebarwrapper{
+    padding: 20px 0;
+}
+ 
+div.sphinxsidebar h3,
+div.sphinxsidebar h4 {
+    font-family: Arial, sans-serif;
+/*    color: #4984CD; */
+    color: #2E68B0;
+    font-size: 1.5em;
+    font-weight: normal;
+    margin: 0;
+    padding: 5px 10px;
+    background: url('separator_right.gif') no-repeat scroll left bottom transparent;
+/*    text-shadow: 0px 1px 0 #ccc; */
+}
+
+div.sphinxsidebar h4{
+    font-size: 1.1em;
+}
+ 
+div.sphinxsidebar h3 a {
+/*    color: #444; */
+    color: #2E68B0;
+}
+ 
+ 
+div.sphinxsidebar p {
+    color: #888;
+    padding: 5px 20px;
+}
+ 
+div.sphinxsidebar p.topless {
+}
+ 
+div.sphinxsidebar ul {
+    margin: 10px 20px;
+    padding: 0;
+    color: #000;
+}
+ 
+div.sphinxsidebar a {
+    color: #444;
+}
+ 
+div.sphinxsidebar input {
+    border: 1px solid #ccc;
+    font-family: sans-serif;
+    font-size: 1em;
+}
+
+div.sphinxsidebar input[type=text]{
+    margin-left: 20px;
+}
+ 
+/* -- body styles ----------------------------------------------------------- */
+ 
+a {
+  font-size: 100%;
+  text-decoration: none;
+}
+
+a:link, a:visited {
+  color: #4984cd;
+}
+ 
+a:hover {
+  color: #333;
+  text-decoration: underline;
+}
+ 
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6 {
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+/*    color: #555; */
+    color: #2E68B0;
+    margin: 30px 0px 10px 0px;
+    padding: 5px 0 5px 0;
+    border-bottom: 1px solid #eee;
+}
+ 
+div.body h1 { border-top: 20px solid white; margin-top: 0; font-size: 200%; }
+div.body h2 { font-size: 150%; }
+div.body h3 { font-size: 120%; }
+div.body h4 { font-size: 110%; font-weight: normal; }
+div.body h5 { font-size: 100%; font-weight: normal; }
+div.body h6 { font-size: 100%; font-weight: normal; }
+ 
+a.headerlink {
+    color: #c60f0f;
+    font-size: 0.8em;
+    padding: 0 4px 0 4px;
+    text-decoration: none;
+}
+ 
+a.headerlink:hover {
+    background-color: #c60f0f;
+    color: white;
+}
+ 
+div.body p, div.body dd, div.body li {
+    line-height: 1.5em;
+}
+
+div.figure p.caption {
+  font-size: 90%;
+  margin-top: 6px;
+}
+ 
+div.admonition p.admonition-title + p {
+    display: inline;
+}
+
+div.highlight{
+    background-color: white;
+}
+
+div.note {
+    background-color: #eee;
+    border: 1px solid #ccc;
+}
+ 
+div.seealso {
+    background-color: #ffc;
+    border: 1px solid #ff6;
+}
+ 
+div.topic {
+    background-color: #eee;
+}
+ 
+div.warning {
+    background-color: #ffe4e4;
+    border: 1px solid #f66;
+}
+ 
+p.admonition-title {
+    display: inline;
+}
+ 
+p.admonition-title:after {
+    content: ":";
+}
+ 
+pre {
+    padding: 10px;
+    background-color: White;
+    color: #222;
+    line-height: 1.2em;
+    border: 1px solid #C6C9CB;
+    font-size: 1.1em;
+    margin: 1.5em 0 1.5em 0;
+    -webkit-box-shadow: 1px 1px 1px #d8d8d8;
+    -moz-box-shadow: 1px 1px 1px #d8d8d8;
+}
+ 
+tt {
+    background-color: #ecf0f3;
+    color: #222;
+    /* padding: 1px 2px; */
+    font-size: 1.1em;
+    font-family: monospace;
+}

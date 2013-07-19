@@ -1,0 +1,42 @@
+Formato de campos:
+==================
+encabezado:
+-----------
+docletter: #uppercase (1)  ej. X
+docname: #uppercase (max 14) ej. PRESUPUESTO
+doccopy: #title (max 16) ej. Original
+docpv: #### (4) ej. 0003 (Punto de Venta)
+docnumber: ######## (8) ej. 00024705
+date: datetime.datetime()
+vendedor: #formatted (max 30) ej. 25 - Jorge Museda
+customer_name: #formatted (max 60)
+customer_address: #formatted (max 60)
+show_logo: bool (default False)
+show_footer_legend: bool (default False)
+
+items: (max 36)
+------
+codigo: #numeric (max 14) left aligned
+descripcion: #formatted (max 57) left aligned
+cantidad: #####,## (5 + , + 2) right aligned
+precio: #####,## (5 + , + 2) right aligned
+total: ######,## (6 + , + 2) right aligned
+
+
+pie:
+----
+document_total: $ ######,## (6 + , + 2) right aligned
+message_lines: max 9
+   message_lines[#] = #formatted (max 63)
+
+
+Dimensiones del documento: (A4)
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+ancho: 744.09px
+alto: 1052.36px
+
+item_base_y = 355.10352
+footer_base_y = 860.58728
+
+altura item: 14px
+altura linea pie: 12px

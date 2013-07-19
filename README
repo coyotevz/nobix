@@ -1,0 +1,5 @@
+Nobix
+=====
+
+Para instalar ejecute:
+    $ python setup.py install

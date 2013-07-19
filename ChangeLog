@@ -1,0 +1,45 @@
+Nobix
+=====
+
+0.0.5 (10/09/2010) Leo
+-----
+
+* Control remoto a travez de XMLRPC (solo se implementa exit())
+* Nueva vista de Movimiento de Artículos
+* Nueva tasa 'PI6' Percepción IB Bs.As. 6%
+* Se arregla bug para cuando el total era 0,00 (ej. AJU)
+* Se agrega opción para incluir articulos inactivos en algunos dialogos.
+* Se porta la declaración de los modelos del dominio a elixir.
+* Se arregla bug que rompia la generacion de templates.
+
+0.0.4 (28/07/2010)
+-----
+
+* Muestra el Subdiario de Ventas en árbol (experimental)
+* Pide confirmación antes de dar de baja un articulo
+* Opción de modificar el código desde el Maestro de Stock
+* Previsualización en el Modificador de Precios
+* Se incorpora sqlalchemy-migrate para el manejo de cambos de esquema.
+* Nuevo icono Nobix
+
+0.0.3 (01/07/2010)
+-----
+
+* Selección multiple en dialogos de busqueda.
+* Generador de informes mensuales/rango-fechas.
+* Nuevo algoritmo de calculo de total de documento seleccionable desde la
+  configuración.
+* Script para generar un indice de agrupaciones.
+* Script para actualizar existencias basandose en el movimiento de stock.
+
+0.0.2 (22/06/2010)
+-----
+
+* Impresión de listado de Artículos por Agrupación
+  :(F10->Listados->Impresión de Artículos por Agrupación)
+* Impresión de listado de Artículos Cargados
+  :(En la elaboración de un documento F8)
+* Busqueda de terceros por número de CUIT (tecla *)
+* Busqueda desde el dialogo de Terceros
+* Respuesta visual de texto seleccionado
+* Información visual sobre procesos largos

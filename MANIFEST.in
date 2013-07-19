@@ -1,0 +1,7 @@
+include TODO ChangeLog
+recursive-include data *.py *.mako README
+recursive-include data/icons *
+recursive-include scripts *
+recursive-include docs *
+recursive-include dbmigrate *
+exclude MANIFEST.in

@@ -1,0 +1,14 @@
+Scripts de Backup automático
+============================
+
+1. Colocar los archivos nobix_backup* en /usr/bin con los permisos correctos:
+   ej:
+        -rwxr-xr-x 1 root root 553 may 20 22:07 /usr/bin/nobix_backup_rotate.sh
+        -rwxr-xr-x 1 root root 307 may 20 22:07 /usr/bin/nobix_backup.sh
+
+2. Editar con crontab -e y agregar las siguientes lineas:
+
+    #    <minute> <hour> <day> <month> <dow> <tags and command>
+    #    <@freq> <tags and command>
+    15,45 */2 * * * REMOTE="t01@t01" /usr/bin/nobix_backup.sh
+    16,46 */2 * * * REMOTE="t01@t01" /usr/bin/nobix_backup_rotate.sh

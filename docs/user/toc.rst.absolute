@@ -1,0 +1,8 @@
+.. toctree::
+   :maxdepth: 2
+
+   user/introduccion.rst
+   user/interfaz.rst
+   user/comenzando.rst
+   user/tareas/index.rst
+   user/faq.rst
