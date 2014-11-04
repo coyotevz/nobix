@@ -5,6 +5,7 @@ docs/build
 build
 dist
 Nobix.egg-info
+*.pyc
 ^.+\.pyc$
 ^.+\.swp$
 ^.+\.mo$
