@@ -1,3 +1,0 @@
-.. _config-intro:
-
-Esta el la guía de configuración, bla bla bla ...
