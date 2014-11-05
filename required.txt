@@ -1,3 +1,4 @@
 SQLAlchemy
 urwid
+Mako
 alembic
