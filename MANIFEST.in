@@ -1,4 +1,3 @@
-recursive-include data *.py *.mako README
+recursive-include data *.py *.mako
 recursive-include data/icons *
-recursive-include scripts *
 exclude MANIFEST.in
