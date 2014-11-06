@@ -29,7 +29,8 @@ class Documento(db.Model):
     fiscal = db.Column(db.UnicodeText(10), default=None)
     periodo_iva = db.Column(db.Date, nullable=True, default=None)
 
-    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), nullable=False)
+    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'),
+                           nullable=False, index=True)
     cliente = db.relationship('Cliente', backref="documentos")
 
     # Info extra documento
@@ -65,10 +66,12 @@ class ItemDocumento(db.Model):
     cantidad = db.Column(db.Numeric(10, 2), nullable=False)
     precio = db.Column(db.Numeric(10, 2), nullable=False)
 
-    articulo_id = db.Column(db.Integer, db.ForeignKey('articulos.id'))
+    articulo_id = db.Column(db.Integer, db.ForeignKey('articulos.id'),
+                            index=True)
     articulo = db.relationship('Articulo', backref="doc_items")
 
-    documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'), nullable=False)
+    documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'),
+                             nullable=False, index=True)
     documento = db.relationship(Documento, backref="items")
 
 
@@ -79,7 +82,8 @@ class Tasa(db.Model):
     nombre = db.Column(db.UnicodeText(3), nullable=False)
     monto = db.Column(db.Numeric(10, 2), nullable=False)
 
-    documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'), nullable=False)
+    documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'),
+                             nullable=False, index=True)
     documento = db.relationship(Documento, backref="tasas")
 
 
@@ -140,7 +144,8 @@ class Cache(db.Model):
     descuento = db.Column(db.Numeric(10, 2), default=Decimal(0))
     total = db.Column(db.Numeric(10, 2), default=Decimal(0))
 
-    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'))
+    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'),
+                           index=True)
     cliente = db.relationship(Cliente)
 
     modified = db.Column(db.DateTime, nullable=False, default=datetime.now,
