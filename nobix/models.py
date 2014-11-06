@@ -4,13 +4,15 @@ from datetime import datetime
 from decimal import Decimal
 
 from nobix.exc import NobixModelError
+from nobix.config import get_current_config
 from nobix.saw import SQLAlchemy
+
 
 db = SQLAlchemy()
 
-
 def time_now():
     return datetime.now().time()
+
 
 class Documento(db.Model):
     __tablename__ = 'documentos'
