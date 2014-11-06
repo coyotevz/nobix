@@ -1,4 +1,6 @@
 SQLAlchemy
 urwid
+python-dateutil
 Mako
 alembic
+Unidecode

@@ -16,7 +16,6 @@ from urwid import Edit, Text, Button, Divider, SolidFill, Overlay, Pile,\
                   connect_signal, command_map
 from urwid.widget import EditError
 from urwid.util import MetaSuper
-from urwid.escape import utf8decode
 
 from nobix.exc import NobixBadDateError
 from nobix.config import get_current_config
@@ -455,15 +454,15 @@ class Border(WidgetDecoration, WidgetWrap):#{{{
                 return AttrMap(w, attr)
             return w
 
-        self.tline = _get_attr(Divider(utf8decode("─")))
-        self.bline = _get_attr(Divider(utf8decode("─")))
-        self.lline = _get_attr(SolidFill(utf8decode("│")))
-        self.rline = _get_attr(SolidFill(utf8decode("│")))
+        self.tline = _get_attr(Divider("─"))
+        self.bline = _get_attr(Divider("─"))
+        self.lline = _get_attr(SolidFill("│"))
+        self.rline = _get_attr(SolidFill("│"))
 
-        self.tlcorner = _get_attr(Text(utf8decode("┌")))
-        self.trcorner = _get_attr(Text(utf8decode("┐")))
-        self.blcorner = _get_attr(Text(utf8decode("└")))
-        self.brcorner = _get_attr(Text(utf8decode("┘")))
+        self.tlcorner = _get_attr(Text("┌"))
+        self.trcorner = _get_attr(Text("┐"))
+        self.blcorner = _get_attr(Text("└"))
+        self.brcorner = _get_attr(Text("┘"))
 
         self._title_text = Text(" %s " % self.title, 'center')
         self._title = AttrMap(self._title_text, self.title_attr)

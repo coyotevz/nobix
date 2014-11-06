@@ -29,7 +29,7 @@ class Documento(db.Model):
     fiscal = db.Column(db.UnicodeText(10), default=None)
     periodo_iva = db.Column(db.Date, nullable=True, default=None)
 
-    cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=False)
+    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), nullable=False)
     cliente = db.relationship('Cliente', backref="documentos")
 
     # Info extra documento
@@ -65,10 +65,10 @@ class ItemDocumento(db.Model):
     cantidad = db.Column(db.Numeric(10, 2), nullable=False)
     precio = db.Column(db.Numeric(10, 2), nullable=False)
 
-    articulo_id = db.Column(db.Integer, db.ForeignKey('articulo.id'))
+    articulo_id = db.Column(db.Integer, db.ForeignKey('articulos.id'))
     articulo = db.relationship('Articulo', backref="doc_items")
 
-    documento_id = db.Column(db.Integer, db.ForeignKey('documento.id'), nullable=False)
+    documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'), nullable=False)
     documento = db.relationship(Documento, backref="items")
 
 
@@ -79,7 +79,7 @@ class Tasa(db.Model):
     nombre = db.Column(db.UnicodeText(3), nullable=False)
     monto = db.Column(db.Numeric(10, 2), nullable=False)
 
-    documento_id = db.Column(db.Integer, db.ForeignKey('documento.id'), nullable=False)
+    documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'), nullable=False)
     documento = db.relationship(Documento, backref="tasas")
 
 
@@ -122,7 +122,7 @@ class Articulo(db.Model):
     agrupacion = db.Column(db.UnicodeText(20))
     vigencia = db.Column(db.DateTime)
     precio = db.Column(db.Numeric(10, 2), nullable=False)
-    existencia = db.Column(Numeric(10, 2), default=Decimal(0))
+    existencia = db.Column(db.Numeric(10, 2), default=Decimal(0))
     es_activo = db.Column(db.Boolean, default=True)
 
     # doc_items field added by ItemDocumento model
@@ -130,7 +130,7 @@ class Articulo(db.Model):
 
 class Cache(db.Model):
     __tablename__ = 'cache'
-    __table_args__ = (UniqueConstraint('vendedor', 'username', 'hostname'),)
+    __table_args__ = (db.UniqueConstraint('vendedor', 'username', 'hostname'),)
 
     id = db.Column(db.Integer, primary_key=True)
     vendedor = db.Column(db.Unicode(3), nullable=False)
