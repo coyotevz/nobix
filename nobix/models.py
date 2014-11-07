@@ -119,6 +119,34 @@ class Cliente(db.Model):
 class Articulo(db.Model):
     __tablename__ = 'articulos'
 
+    #: the product is available and can be used on a |purchase|/|sale|
+    STATUS_AVAILABLE = u'STATUS_AVAILABLE'
+
+    #: the product is closed, that is, it sill eixsts for references, but it
+    #: should not be possible to create |purchase|/|sale| with it
+    STATUS_CLOSED = u'STATUS_CLOSED'
+
+    #: the product is suspended, that is, it sill exists for future references
+    #: but it should not be possible to create a |purchase|/|sale| with it
+    #: until back to available status.
+    STATUS_SUSPENDED = u'STATUS_SUSPENDED'
+
+    _statuses = {
+        STATUS_AVAILABLE: u'Disponible',
+        STATUS_CLOSED: u'Cerrado',
+        STATUS_SUSPENDED: u'Suspendido',
+    }
+
+    TYPE_PERMANENT = u'TYPE_PERMANENT'
+    TYPE_ON_REQUEST = u'TYPE_ON_REQUEST'
+    TYPE_CONSIGMENT = u'TYPE_CONSIGMENT'
+
+    _product_types = {
+        TYPE_PERMANENT: u'Permanente',
+        TYPE_ON_REQUEST: u'Bajo Pedido',
+        TYPE_CONSIGMENT: u'Consignación',
+    }
+
     id = db.Column(db.Integer, primary_key=True)
     codigo = db.Column(db.Unicode(14), nullable=False, unique=True)
     descripcion = db.Column(db.UnicodeText(40), nullable=False)
@@ -126,10 +154,33 @@ class Articulo(db.Model):
     agrupacion = db.Column(db.UnicodeText(20))
     vigencia = db.Column(db.DateTime)
     precio = db.Column(db.Numeric(10, 2), nullable=False)
+
+    tax_code = db.Column(db.UnicodeText(3), nullable=False)
+    status = db.Column(db.UnicodeText(20), nullable=False)
+    product_type = db.Column(db.UnicodeText(20), nullable=False)
+
     existencia = db.Column(db.Numeric(10, 2), default=Decimal(0))
     es_activo = db.Column(db.Boolean, default=True)
 
     # doc_items field added by ItemDocumento model
+
+    @db.validates('status')
+    def validate_status(self, key, status):
+        assert status in self._statuses.keys()
+        return status
+
+    @db.validates('product_type')
+    def validate_product_type(self, key, product_type):
+        assert product_type in self._product_types.keys()
+        return product_type
+
+    @property
+    def status_str(self):
+        return self._statuses.get(self.status)
+
+    @property
+    def product_type_str(self):
+        return self._product_types.get(self.product_type)
 
 
 class Cache(db.Model):
