@@ -4,3 +4,4 @@ python-dateutil
 Mako
 alembic
 Unidecode
+psycopg2
