@@ -23,10 +23,10 @@ class Documento(db.Model):
     fecha = db.Column(db.Date, nullable=False)
     hora = db.Column(db.Time, default=time_now)
     numero = db.Column(db.Integer)
-    vendedor = db.Column(db.UnicodeText(3))
+    vendedor = db.Column(db.UnicodeText)
     descuento = db.Column(db.Numeric(10, 2), default=Decimal(0))
     neto = db.Column(db.Numeric(10, 2), nullable=False)
-    fiscal = db.Column(db.UnicodeText(10), default=None)
+    fiscal = db.Column(db.UnicodeText, default=None)
     periodo_iva = db.Column(db.Date, nullable=True, default=None)
 
     cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'),
@@ -34,9 +34,9 @@ class Documento(db.Model):
     cliente = db.relationship('Cliente', backref="documentos")
 
     # Info extra documento
-    cliente_nombre = db.Column(db.UnicodeText(35))
-    cliente_direccion = db.Column(db.UnicodeText(60))
-    cliente_cuit = db.Column(db.UnicodeText(13), nullable=True)
+    cliente_nombre = db.Column(db.UnicodeText)
+    cliente_direccion = db.Column(db.UnicodeText)
+    cliente_cuit = db.Column(db.UnicodeText, nullable=True)
 
     # tasas field added by Tasa model
     # items field added by ItemDocumento model
@@ -61,8 +61,8 @@ class ItemDocumento(db.Model):
     __tablename__ = 'items_documento'
 
     id = db.Column(db.Integer, primary_key=True)
-    codigo = db.Column(db.UnicodeText(14))
-    descripcion = db.Column(db.UnicodeText(40), nullable=False)
+    codigo = db.Column(db.UnicodeText)
+    descripcion = db.Column(db.UnicodeText, nullable=False)
     cantidad = db.Column(db.Numeric(10, 2), nullable=False)
     precio = db.Column(db.Numeric(10, 2), nullable=False)
 
@@ -79,7 +79,7 @@ class Tasa(db.Model):
     __tablename__ = 'tasas'
 
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.UnicodeText(3), nullable=False)
+    nombre = db.Column(db.UnicodeText, nullable=False)
     monto = db.Column(db.Numeric(10, 2), nullable=False)
 
     documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'),
@@ -93,13 +93,13 @@ class Cliente(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     codigo = db.Column(db.Integer)
-    nombre = db.Column(db.UnicodeText(35), nullable=False)
-    domicilio = db.Column(db.UnicodeText(35))
-    localidad = db.Column(db.UnicodeText(20))
-    codigo_postal = db.Column(db.UnicodeText(8))
+    nombre = db.Column(db.UnicodeText, nullable=False)
+    domicilio = db.Column(db.UnicodeText)
+    localidad = db.Column(db.UnicodeText)
+    codigo_postal = db.Column(db.UnicodeText)
     responsabilidad_iva = db.Column(db.Enum(u'C', u'I', u'R', u'M', u'E', name='respiva_enum'),
                                     default=u'C')
-    cuit = db.Column(db.UnicodeText(13))
+    cuit = db.Column(db.UnicodeText)
     relacion = db.Column(db.Enum(u'C', u'P', name="rel_enum"), default=u'C')
 
     # documentos field added by Documento model
@@ -149,15 +149,15 @@ class Articulo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     codigo = db.Column(db.Unicode(14), nullable=False, unique=True)
-    descripcion = db.Column(db.UnicodeText(40), nullable=False)
-    proveedor = db.Column(db.UnicodeText(20))
-    agrupacion = db.Column(db.UnicodeText(20))
+    descripcion = db.Column(db.UnicodeText, nullable=False)
+    proveedor = db.Column(db.UnicodeText)
+    agrupacion = db.Column(db.UnicodeText)
     vigencia = db.Column(db.DateTime)
     precio = db.Column(db.Numeric(10, 2), nullable=False)
 
-    tax_code = db.Column(db.UnicodeText(3), nullable=False)
-    status = db.Column(db.UnicodeText(20), nullable=False)
-    product_type = db.Column(db.UnicodeText(20), nullable=False)
+    tax_code = db.Column(db.Unicode(3), nullable=False)
+    status = db.Column(db.UnicodeText, nullable=False)
+    product_type = db.Column(db.UnicodeText, nullable=False)
 
     existencia = db.Column(db.Numeric(10, 2), default=Decimal(0))
     es_activo = db.Column(db.Boolean, default=True)
@@ -191,7 +191,7 @@ class Cache(db.Model):
     vendedor = db.Column(db.Unicode(3), nullable=False)
     username = db.Column(db.Unicode(64), nullable=False)
     hostname = db.Column(db.Unicode(64), nullable=False)
-    doctype = db.Column(db.UnicodeText(3))
+    doctype = db.Column(db.UnicodeText)
     descuento = db.Column(db.Numeric(10, 2), default=Decimal(0))
     total = db.Column(db.Numeric(10, 2), default=Decimal(0))
 
