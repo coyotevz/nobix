@@ -22,9 +22,9 @@ articulohelper = sa.Table(
     'articulos',
     sa.MetaData(),
     sa.Column('id', sa.Integer, primary_key=True),
-    sa.Column('tax_code', sa.UnicodeText(length=3)),
-    sa.Column('status', sa.UnicodeText(length=20)),
-    sa.Column('product_type', sa.UnicodeText(length=20)),
+    sa.Column('tax_code', sa.Unicode(length=3)),
+    sa.Column('status', sa.UnicodeText),
+    sa.Column('product_type', sa.UnicodeText),
     sa.Column('es_activo', sa.Boolean),
 )
 
@@ -36,11 +36,11 @@ statuses = {
 def upgrade():
     # add new columns
     op.add_column('articulos',
-        sa.Column('tax_code', sa.UnicodeText(length=3), nullable=False))
+        sa.Column('tax_code', sa.Unicode(length=3)))
     op.add_column('articulos',
-        sa.Column('status', sa.UnicodeText(length=20), nullable=False))
+        sa.Column('status', sa.UnicodeText))
     op.add_column('articulos',
-        sa.Column('product_type', sa.UnicodeText(length=20), nullable=False))
+        sa.Column('product_type', sa.UnicodeText))
 
     # migrate data
     for articulo in connection.execute(articulohelper.select()):
@@ -54,6 +54,11 @@ def upgrade():
                 product_type=u'TYPE_PERMANENT',
             )
         )
+
+    # make columns NOT NULL
+    op.alter_column('articulos', 'tax_code', nullable=False)
+    op.alter_column('articulos', 'status', nullable=False)
+    op.alter_column('articulos', 'product_type', nullable=False)
 
 
 def downgrade():
