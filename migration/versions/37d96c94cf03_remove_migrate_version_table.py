@@ -20,11 +20,11 @@ def upgrade():
 
 def downgrade():
     op.create_table('migrate_version',
-        sa.Column('repository_id', sa.VARCHAR(length=250),
+        sa.Column('repository_id', sa.Unicode(length=250),
                   autoincrement=False, nullable=False),
-        sa.Column('repository_path', sa.TEXT(), autoincrement=False,
+        sa.Column('repository_path', sa.UnicodeText, autoincrement=False,
                   nullable=True),
-        sa.Column('version', sa.INTEGER(), autoincrement=False,
+        sa.Column('version', sa.Integer, autoincrement=False,
                   nullable=True),
         sa.PrimaryKeyConstraint('repository_id',
                                 name=u'migrate_version_pkey'),

@@ -1,4 +1,4 @@
-"""Add new columns to articulos table.
+"""Add status column to articulos table.
 
 Revision ID: 1841d29ae725
 Revises: 37d96c94cf03
@@ -14,42 +14,26 @@ from alembic import op
 import sqlalchemy as sa
 
 
-# we build a quick link for the current connection of alembic
-connection = op.get_bind()
-
 # helper table
 articulohelper = sa.Table(
     'articulos',
     sa.MetaData(),
     sa.Column('id', sa.Integer, primary_key=True),
-    sa.Column('tax_code', sa.Unicode(length=3)),
     sa.Column('status', sa.UnicodeText),
-    sa.Column('product_type', sa.UnicodeText),
     sa.Column('es_activo', sa.Boolean),
 )
 
-statuses = {
-    True: u'STATUS_AVAILABLE',
-    False: u'STATUS_CLOSED'
-}
+T_statuses = [u'STATUS_AVAILABLE']
+F_statuses = [u'STATUS_CLOSED', u'STATUS_SUSPENDED']
 
 def upgrade():
     # add new columns
     op.add_column('articulos',
-        sa.Column('tax_code', sa.Unicode(length=3)))
-    op.add_column('articulos',
         sa.Column('status', sa.UnicodeText))
-    op.add_column('articulos',
-        sa.Column('product_type', sa.UnicodeText))
+
+    connection = op.get_bind()
 
     # migrate data
-    connection.execute(
-        articulohelper.update().values(
-            tax_code=u'V21',
-            product_type=u'TYPE_PERMANENT',
-        )
-    )
-
     connection.execute(
         articulohelper.update().where(
             articulohelper.c.es_activo==True
@@ -67,12 +51,31 @@ def upgrade():
     )
 
     # make columns NOT NULL
-    op.alter_column('articulos', 'tax_code', nullable=False)
     op.alter_column('articulos', 'status', nullable=False)
-    op.alter_column('articulos', 'product_type', nullable=False)
+    op.drop_column('articulos', 'es_activo')
 
 
 def downgrade():
-    op.drop_column('articulos', 'product_type')
+    op.add_column('articulos',
+        sa.Column('es_activo', sa.Boolean, default=True))
+
+    connection = op.get_bind()
+
+    # migrate data
+    connection.execute(
+        articulohelper.update().where(
+            articulohelper.c.status.in_(T_statuses)
+        ).values(
+            es_activo=True
+        )
+    )
+
+    connection.execute(
+        articulohelper.update().where(
+            articulohelper.c.status.in_(F_statuses)
+        ).values(
+            es_activo=True
+        )
+    )
+
     op.drop_column('articulos', 'status')
-    op.drop_column('articulos', 'tax_code')
