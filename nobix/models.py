@@ -182,6 +182,10 @@ class Articulo(db.Model):
         return self._product_types.get(self.product_type)
 
 
+    def __repr__(self):
+        return "<Articulo (%s|%s) codigo=%s '%s' $ %s>" % (self.status, self.product_type, self.codigo, self.descripcion, str(self.precio).replace('.', ','))
+
+
 class Cache(db.Model):
     __tablename__ = 'cache'
     __table_args__ = (db.UniqueConstraint('vendedor', 'username', 'hostname'),)
@@ -201,3 +205,29 @@ class Cache(db.Model):
     modified = db.Column(db.DateTime, nullable=False, default=datetime.now,
                          onupdate=datetime.now)
     items = db.Column(db.PickleType, default=None)
+
+
+# New tables for version 0.10
+
+class ProductPriceHistory(db.Model):
+    __tablename__ = 'product_price_history'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('articulos.id'))
+    product = db.relationship(Articulo, backref="price_history")
+
+    date = db.Column(db.DateTime, default=datetime.now)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
+
+    def __repr__(self):
+        return "<ProductPriceHistory d=%s p=%s>" % (self.date, self.price)
+
+#: listener for price change
+def _product_price_set(target, value, oldvalue, initiator):
+    """Creates an entry in product price history table."""
+    if oldvalue == value:
+        return
+    hist = ProductPriceHistory(product=target, price=value)
+    db.add(hist)
+
+db.event.listen(Articulo.precio, 'set', _product_price_set)
