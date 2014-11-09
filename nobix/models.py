@@ -160,7 +160,6 @@ class Articulo(db.Model):
     product_type = db.Column(db.UnicodeText, nullable=False)
 
     existencia = db.Column(db.Numeric(10, 2), default=Decimal(0))
-    es_activo = db.Column(db.Boolean, default=True)
 
     # doc_items field added by ItemDocumento model
 
