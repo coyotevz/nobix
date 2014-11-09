@@ -65,6 +65,7 @@ class ItemDocumento(db.Model):
     descripcion = db.Column(db.UnicodeText, nullable=False)
     cantidad = db.Column(db.Numeric(10, 2), nullable=False)
     precio = db.Column(db.Numeric(10, 2), nullable=False)
+    tax_amount = db.Column(db.Numeric(10, 2))
 
     articulo_id = db.Column(db.Integer, db.ForeignKey('articulos.id'),
                             index=True)
