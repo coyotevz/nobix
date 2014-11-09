@@ -14,6 +14,13 @@ def time_now():
     return datetime.now().time()
 
 
+class TimestampMixin(object):
+
+    created = db.Column(db.DateTime, default=datetime.now)
+    modified = db.Column(db.DateTime, default=datetime.now,
+                         onupdate=datetime.now)
+
+
 class Documento(db.Model):
     __tablename__ = 'documentos'
     __table_args__ = (db.UniqueConstraint('tipo', 'fecha', 'numero'),)
@@ -210,6 +217,15 @@ class Cache(db.Model):
 
 # New tables for version 0.10
 
+class Branch(db.Model):
+    __tablename__ = 'branch'
+
+    id = db.Column(db.Integer, primary_key=True)
+    fiscal_pos = db.Column(db.Integer, nullable=False, unique=True)
+    name = db.Column(db.UnicodeText, nullable=False)
+    address = db.Column(db.UnicodeText)
+
+
 class ProductPriceHistory(db.Model):
     __tablename__ = 'product_price_history'
 
@@ -232,3 +248,107 @@ def _product_price_set(target, value, oldvalue, initiator):
     db.add(hist)
 
 db.event.listen(Articulo.precio, 'set', _product_price_set)
+
+
+class ProductStock(db.Model, TimestampMixin):
+    __tablename__ = 'product_stock'
+
+    #: Product that this tock belong
+    product_id = db.Column(db.Integer, db.ForeignKey('articulos.id'),
+                           primary_key=True)
+    product = db.relationship(Articulo, backref=db.backref('stock_query',
+                                                           lazy='dynamic'))
+
+    #: branch which the stock is stored
+    branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'),
+                             primary_key=True)
+    branch = db.relationship(Branch, backref='stocks')
+
+    #: current fisical quantity for this stock item
+    quantity = db.Column(db.Numeric(10, 2), nullable=False)
+
+    #: logic quantity for this stock item
+    logic_quantity = db.Column(db.Numeric(10, 2))
+
+    #: 'transactions' field added by StockTransaction model
+
+
+class StockTransaction(db.Model):
+    """This class stores information about all transactions made in the stock
+
+    Everytime a roduct has stock increased or decreased, an object of this
+    class will be created, registering the quantity, cost, responsible and
+    reason for the transaction.
+    """
+    __tablename__ = 'stock_transaction'
+
+    #: the transaction is an initial stock adjustment. Note that with this
+    #: transaction, there is no related object.
+    TYPE_INITIAL = u'TYPE_INITIAL'
+
+    #: the transaction is a sale
+    TYPE_SALE = u'TYPE_SALE'
+
+    #: the transaction is a return of a sale
+    TYPE_RETURNDED_SALE = u'TYPE_RETURNED_SALE'
+
+    #: the transaction is the cancellation of a sale
+    TYPE_CANCELED_SALE = u'TYPE_CANCELED_SALE'
+
+    #: the transaction is the receival of a purchase
+    TYPE_RECEIVED_PURCHASE = u'TYPE_RECEIVED_PURCHASE'
+
+    #: the transaction is a return of a purchase
+    TYPE_RETURNED_PURCHASE = u'TYPE_RETURNED_PURCHASE'
+
+    #: the transaction is a return of a loan
+    TYPE_RETURNED_LOAN = u'TYPE_RETURNED_LOAN'
+
+    #: the transaction is a loan
+    TYPE_LOAN = u'TYPE_LOAN'
+
+    #: the transaction is a stock decrease
+    TYPE_STOCK_DECREASE = u'TYPE_STOCK_DECREASE'
+
+    #: the transaction is a transfer from a branch
+    TYPE_TRANSFER_FROM = u'TYPE_TRANSFER_FROM'
+
+    #: the transaction is a trasfer to a branch
+    TYPE_TRANSFER_TO = u'TYPE_TRANSFER_TO'
+
+    #: the transaction is the adjustment of an inventory
+    TYPE_INVENTORY_ADJUST = u'TYPE_INVENTORY_ADJUST'
+
+    #: the transaction is a stock decrease by product failure
+    TYPE_FAILURE_DECREASE = u'TYPE_FAILURE_DECREASE'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    #: the date and time the transaction was made
+    date = db.Column(db.DateTime, default=datetime.now)
+
+    #: the product stock used in this transaction
+    product_id = db.Column(db.Integer,
+                           db.ForeignKey('product_stock.product_id'))
+    branch_id = db.Column(db.Integer,
+                             db.ForeignKey('product_stock.branch_id'))
+    product_stock = db.relationship(
+        ProductStock, backref=db.backref('transactions', lazy="dynamic"),
+        primaryjoin="and_("
+            "StockTransaction.product_id==ProductStock.product_id,"
+            "StockTransaction.branch_id==ProductStock.branch_id)"
+    )
+
+    #: the stock cost of the transaction on the time it was made
+    stock_cost = db.Column(db.Numeric(10, 2))
+
+    #: The quantity that was removed or added to the stock.
+    #: Positive value if the stock was increased, negative if decreased.
+    quantity = db.Column(db.Numeric(10, 2), nullable=False)
+
+    #: the type of transaction
+    type = db.Column(db.Unicode, nullable=False)
+
+    @db.validates('type')
+    def validate_type(self, key, type):
+        return type
