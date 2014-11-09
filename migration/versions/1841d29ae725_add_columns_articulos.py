@@ -43,17 +43,28 @@ def upgrade():
         sa.Column('product_type', sa.UnicodeText))
 
     # migrate data
-    for articulo in connection.execute(articulohelper.select()):
-        active = articulo.es_activo
-        connection.execute(
-            articulohelper.update().where(
-                articulohelper.c.id==articulo.id
-            ).values(
-                tax_code=u'V21',
-                status=statuses[active],
-                product_type=u'TYPE_PERMANENT',
-            )
+    connection.execute(
+        articulohelper.update().values(
+            tax_code=u'V21',
+            product_type=u'TYPE_PERMANENT',
         )
+    )
+
+    connection.execute(
+        articulohelper.update().where(
+            articulohelper.c.es_activo==True
+        ).values(
+            status=u'STATUS_AVAILABLE',
+        )
+    )
+
+    connection.execute(
+        articulohelper.update().where(
+            articulohelper.c.es_activo==False
+        ).values(
+            status=u'STATUS_CLOSED',
+        )
+    )
 
     # make columns NOT NULL
     op.alter_column('articulos', 'tax_code', nullable=False)
