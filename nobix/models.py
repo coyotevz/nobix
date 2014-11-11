@@ -322,6 +322,22 @@ class StockTransaction(db.Model):
     #: the transaction is a stock decrease by product failure
     TYPE_FAILURE_DECREASE = u'TYPE_FAILURE_DECREASE'
 
+    types = {
+        TYPE_INITIAL: u'Stock inicial',
+        TYPE_SALE: u'Venta',
+        TYPE_RETURNED_SALE : u'Devolución de Venta',
+        TYPE_CANCELED_SALE : u'Devolución por cancelación de Venta',
+        TYPE_RECEIVED_PURCHASE : u'Recepción de Compra',
+        TYPE_RETURNED_PURCHASE : u'Devolución de Compra',
+        TYPE_RETURNED_LOAN : u'Devolución de prestamo',
+        TYPE_LOANED: u'Prestamo',
+        TYPE_STOCK_DECREASE: u'Disminución de stock',
+        TYPE_TRANSFER_FROM: u'Transferencia recibida',
+        TYPE_TRANSFER_TO: u'Transferencia enviada',
+        TYPE_INVENTORY_ADJUST: u'Ajuste por inventario',
+        TYPE_FAILURE_DECREASE: u'Disminución por Producto fallado',
+    }
+
     id = db.Column(db.Integer, primary_key=True)
 
     #: the date and time the transaction was made
@@ -351,4 +367,8 @@ class StockTransaction(db.Model):
 
     @db.validates('type')
     def validate_type(self, key, type):
+        assert type in self.types.keys()
         return type
+
+    def get_description(self):
+        return self.types[self.type]
