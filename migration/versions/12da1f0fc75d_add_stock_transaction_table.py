@@ -18,13 +18,13 @@ def upgrade():
     op.create_table('stock_transaction',
         sa.Column('id', sa.Integer, nullable=False),
         sa.Column('date', sa.DateTime, nullable=True),
-        sa.Column('product_id', sa.Integer, nullable=True),
-        sa.Column('branch_id', sa.Integer, nullable=True),
+        sa.Column('product_id', sa.Integer, nullable=False),
+        sa.Column('branch_id', sa.Integer, nullable=False),
         sa.Column('stock_cost', sa.Numeric(10, 2), nullable=True),
         sa.Column('quantity', sa.Numeric(10, 2), nullable=False),
         sa.Column('type', sa.UnicodeText, nullable=False),
-        sa.ForeignKeyConstraint(['branch_id'], ['product_stock.branch_id']),
-        sa.ForeignKeyConstraint(['product_id'], ['product_stock.product_id']),
+        sa.ForeignKeyConstraint(['product_id', 'branch_id'],
+            ['product_stock.product_id', 'product_stock.branch_id']),
         sa.PrimaryKeyConstraint('id')
     )
 

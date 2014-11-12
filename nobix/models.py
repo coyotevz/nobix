@@ -222,7 +222,7 @@ class Branch(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.UnicodeText, nullable=False)
-    address = db.Column(db.UnicodeText)
+    address = db.Column(db.UnicodeText, nullable=False)
 
 
 class ProductPriceHistory(db.Model):
@@ -251,6 +251,7 @@ db.event.listen(Articulo.precio, 'set', _product_price_set)
 
 class ProductStock(db.Model, TimestampMixin):
     __tablename__ = 'product_stock'
+    #__table_args__ = (db.UniqueConstraint('product_id', 'branch_id'),)
 
     #: Product that this tock belong
     product_id = db.Column(db.Integer, db.ForeignKey('articulos.id'),
@@ -280,6 +281,8 @@ class StockTransaction(db.Model):
     reason for the transaction.
     """
     __tablename__ = 'stock_transaction'
+    __table_args__ = (db.ForeignKeyConstraint(['product_id', 'branch_id'],
+        ['product_stock.product_id', 'product_stock.branch_id']),)
 
     #: the transaction is an initial stock adjustment. Note that with this
     #: transaction, there is no related object.
@@ -343,10 +346,9 @@ class StockTransaction(db.Model):
     date = db.Column(db.DateTime, default=datetime.now)
 
     #: the product stock used in this transaction
-    product_id = db.Column(db.Integer,
-                           db.ForeignKey('product_stock.product_id'))
-    branch_id = db.Column(db.Integer,
-                             db.ForeignKey('product_stock.branch_id'))
+    product_id = db.Column(db.Integer, nullable=False) # composite fk
+    branch_id = db.Column(db.Integer, nullable=False)  # composite fk
+
     product_stock = db.relationship(
         ProductStock, backref=db.backref('transactions', lazy="dynamic"),
         primaryjoin="and_("

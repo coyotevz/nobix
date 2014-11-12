@@ -24,7 +24,7 @@ def upgrade():
         sa.Column('logic_quantity', sa.Numeric(10, 2), nullable=True),
         sa.ForeignKeyConstraint(['branch_id'], ['branch.id']),
         sa.ForeignKeyConstraint(['product_id'], ['articulos.id']),
-        sa.PrimaryKeyConstraint('product_id', 'branch_id')
+        sa.PrimaryKeyConstraint('product_id', 'branch_id'),
     )
 
 
