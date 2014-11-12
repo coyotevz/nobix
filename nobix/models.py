@@ -221,7 +221,6 @@ class Branch(db.Model):
     __tablename__ = 'branch'
 
     id = db.Column(db.Integer, primary_key=True)
-    fiscal_pos = db.Column(db.Integer, nullable=False, unique=True)
     name = db.Column(db.UnicodeText, nullable=False)
     address = db.Column(db.UnicodeText)
 
@@ -363,7 +362,7 @@ class StockTransaction(db.Model):
     quantity = db.Column(db.Numeric(10, 2), nullable=False)
 
     #: the type of transaction
-    type = db.Column(db.Unicode, nullable=False)
+    type = db.Column(db.UnicodeText, nullable=False)
 
     @db.validates('type')
     def validate_type(self, key, type):
