@@ -224,6 +224,9 @@ class Branch(db.Model):
     name = db.Column(db.UnicodeText, nullable=False)
     address = db.Column(db.UnicodeText, nullable=False)
 
+    def __repr__(self):
+        return "<Branch(%s, %s)" % (self.name, self.address)
+
 
 class ProductPriceHistory(db.Model):
     __tablename__ = 'product_price_history'
@@ -285,6 +288,10 @@ class ProductStock(db.Model, TimestampMixin):
         self.quantity -= quantity
         st = StockTransaction(product_stock=self, quantity=quantity, type=type)
         db.session.add(st)
+
+    def __repr__(self):
+        return "<ProductStock(%s, %s, %s)>" %\
+                (self.product.codigo, self.branch.name, self.quantity)
 
 
 class StockTransaction(db.Model):
@@ -387,3 +394,8 @@ class StockTransaction(db.Model):
 
     def get_description(self):
         return self.types[self.type]
+
+    def __repr__(self):
+        return "<StockTransaction(%s, %s, %s, %s)>" %\
+            (self.get_description(), self.quantity,
+             self.product_stock.product.codigo, self.product_stock.branch.name)
