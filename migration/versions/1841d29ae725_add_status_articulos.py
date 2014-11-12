@@ -74,7 +74,7 @@ def downgrade():
         articulohelper.update().where(
             articulohelper.c.status.in_(F_statuses)
         ).values(
-            es_activo=True
+            es_activo=False
         )
     )
 
