@@ -290,7 +290,7 @@ class StockTransaction(db.Model):
     TYPE_SALE = u'TYPE_SALE'
 
     #: the transaction is a return of a sale
-    TYPE_RETURNDED_SALE = u'TYPE_RETURNED_SALE'
+    TYPE_RETURNED_SALE = u'TYPE_RETURNED_SALE'
 
     #: the transaction is the cancellation of a sale
     TYPE_CANCELED_SALE = u'TYPE_CANCELED_SALE'
@@ -330,7 +330,7 @@ class StockTransaction(db.Model):
         TYPE_RECEIVED_PURCHASE : u'Recepción de Compra',
         TYPE_RETURNED_PURCHASE : u'Devolución de Compra',
         TYPE_RETURNED_LOAN : u'Devolución de prestamo',
-        TYPE_LOANED: u'Prestamo',
+        TYPE_LOAN: u'Prestamo',
         TYPE_STOCK_DECREASE: u'Disminución de stock',
         TYPE_TRANSFER_FROM: u'Transferencia recibida',
         TYPE_TRANSFER_TO: u'Transferencia enviada',
