@@ -191,7 +191,7 @@ class Articulo(db.Model):
 
 
     def __repr__(self):
-        return "<Articulo (%s|%s) codigo=%s '%s' $ %s>" % (self.status, self.product_type, self.codigo, self.descripcion, str(self.precio).replace('.', ','))
+        return u"<Articulo (%s|%s) codigo=%s '%s' $ %s>" % (self.status, self.product_type, self.codigo, self.descripcion, str(self.precio).replace('.', ','))
 
 
 class Cache(db.Model):
@@ -251,13 +251,13 @@ db.event.listen(Articulo.precio, 'set', _product_price_set)
 
 class ProductStock(db.Model, TimestampMixin):
     __tablename__ = 'product_stock'
-    #__table_args__ = (db.UniqueConstraint('product_id', 'branch_id'),)
 
     #: Product that this tock belong
     product_id = db.Column(db.Integer, db.ForeignKey('articulos.id'),
                            primary_key=True)
-    product = db.relationship(Articulo, backref=db.backref('stock_query',
-                                                           lazy='dynamic'))
+    product = db.relationship(Articulo, backref='stock')
+    product_query = db.relationship(Articulo, backref=db.backref('stock_query',
+                                                                 lazy='dynamic'))
 
     #: branch which the stock is stored
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'),
@@ -271,6 +271,20 @@ class ProductStock(db.Model, TimestampMixin):
     logic_quantity = db.Column(db.Numeric(10, 2))
 
     #: 'transactions' field added by StockTransaction model
+
+    def increase(self, quantity, warehouse, type):
+        assert (type in StockTransaction.types)
+
+        self.quantity += quantity
+        st = StockTransaction(product_stock=self, quantity=quantity, type=type)
+        db.session.add(st)
+
+    def decrease(self, quantity, warehouse, type):
+        assert (type in StockTransaction.types)
+
+        self.quantity -= quantity
+        st = StockTransaction(product_stock=self, quantity=quantity, type=type)
+        db.session.add(st)
 
 
 class StockTransaction(db.Model):

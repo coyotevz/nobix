@@ -118,6 +118,8 @@ class SQLAlchemy(object):
 
         self.Model = declarative_base(cls=Model, name='Model')
         self.Model.db = self
+
+        # TODO: Fix query member on Model
         self.Model.query = self.session.query
 
         _include_sqlalchemy(self)
