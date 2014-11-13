@@ -26,7 +26,7 @@ class Documento(db.Model):
     __table_args__ = (db.UniqueConstraint('tipo', 'fecha', 'numero'),)
 
     id = db.Column(db.Integer, primary_key=True)
-    _tipo = db.Column('tipo', db.Unicode(3), nullable=False)
+    tipo = db.Column(db.Unicode(3), nullable=False)
     fecha = db.Column(db.Date, nullable=False)
     hora = db.Column(db.Time, default=time_now)
     numero = db.Column(db.Integer)
@@ -49,22 +49,18 @@ class Documento(db.Model):
     # items field added by ItemDocumento model
     # payment field added by DocumentPayment model
 
-    @property
-    def tipo(self):
-        return self._tipo
-
-    @tipo.setter
-    def tipo(self, value):
+    @db.validates('tipo')
+    def validate_tipo(self, key, value):
         if value not in get_current_config().documentos.keys():
             raise NobixModelError(u"'%s' no es un tipo de documento válido" % value)
-        self._tipo = value
+        return value
 
     @property
     def total(self):
         return Decimal(self.neto if self.neto is not None else 0) +\
                Decimal(sum(t.monto for t in self.tasas))
 
-    def add_payment(self, amount, pyment_code, extra=None):
+    def add_payment(self, pyment_code, amount, extra=None):
         pmethod = db.query(PaymentMethod)\
                     .filter(PaymentMethod.code==pyment_code).first()
         if pmethod is None:
@@ -76,8 +72,13 @@ class Documento(db.Model):
 
         transaction = PaymentTransaction(doc_payment=payment,
                                          method=pmethod,
-                                         code=pyment_code,
+                                         amount=amount,
                                          extra_info=extra)
+
+    def __repr__(self):
+        return "<Documento %s %s %s '%s' %d items, $ %s>" %\
+            (self.tipo, self.fecha.isoformat(), self.numero,
+             self.cliente_nombre, len(self.items), self.total)
 
 
 class ItemDocumento(db.Model):
@@ -98,6 +99,11 @@ class ItemDocumento(db.Model):
                              nullable=False, index=True)
     documento = db.relationship(Documento, backref="items")
 
+    def __repr__(self):
+        return "<ItemDocumento '%s-%s' $ %s x %s>" %\
+            (self.articulo.codigo, self.articulo.descripcion, self.precio,
+             self.cantidad)
+
 
 class Tasa(db.Model):
     __tablename__ = 'tasas'
@@ -109,6 +115,9 @@ class Tasa(db.Model):
     documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'),
                              nullable=False, index=True)
     documento = db.relationship(Documento, backref="tasas")
+
+    def __repr__(self):
+        return "<Tasa '%s' $ %s>" % (self.nombre, self.monto)
 
 
 class Cliente(db.Model):
@@ -443,6 +452,11 @@ class DocumentPayment(db.Model):
     def balance(self):
         return self.document.total - sum([p.amount for p in self.transactions])
 
+    def __repr__(self):
+        return "<DocumentPayment %s %s = $ %s/%s>" %\
+            (self.document.tipo, self.document.numero,
+             sum([p.amount for p in self.transactions]), self.document.total)
+
 
 class PaymentMethod(db.Model):
     __tablename__ = 'payment_method'
@@ -475,15 +489,22 @@ class PaymentMethod(db.Model):
         assert method_type in self._method_types
         return method_type
 
+    def __repr__(self):
+        return "<PaymentMethod '%s' %s>" % (self.code, self.name)
+
 
 class PaymentTransaction(db.Model, TimestampMixin):
     __tablename__ = 'payment_transaction'
     id = db.Column(db.Integer, primary_key=True)
     doc_payment_id = db.Column(db.Integer, db.ForeignKey('document_payment.id'),
                                nullable=False)
-    doc_payment = db.relationship(DocumentPayment, backref="transaction")
+    doc_payment = db.relationship(DocumentPayment, backref='transactions')
     amount = db.Column(db.Numeric(10, 2), nullable=False)
     method_id = db.Column(db.Integer, db.ForeignKey('payment_method.id'),
                           nullable=False)
     method = db.relationship(PaymentMethod, backref='transactions')
     extra_info = db.Column(db.UnicodeText)
+
+    def __repr__(self):
+        return "<PaymentTransaction %s, $ %s (%s)>" %\
+            (self.method.name, self.amount, self.created.isoformat())
