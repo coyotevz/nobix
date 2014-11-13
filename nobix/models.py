@@ -64,6 +64,21 @@ class Documento(db.Model):
         return Decimal(self.neto if self.neto is not None else 0) +\
                Decimal(sum(t.monto for t in self.tasas))
 
+    def add_payment(self, amount, pyment_code, extra=None):
+        pmethod = db.query(PaymentMethod)\
+                    .filter(PaymentMethod.code==pyment_code).first()
+        if pmethod is None:
+            raise Exception("Payment method not allowed '%s'" % pyment_code)
+
+        payment = self.payment
+        if payment is None:
+            payment = DocumentPayment(document=self)
+
+        transaction = PaymentTransaction(doc_payment=payment,
+                                         method=pmethod,
+                                         code=pyment_code,
+                                         extra_info=extra)
+
 
 class ItemDocumento(db.Model):
     __tablename__ = 'items_documento'
