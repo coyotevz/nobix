@@ -47,6 +47,7 @@ class Documento(db.Model):
 
     # tasas field added by Tasa model
     # items field added by ItemDocumento model
+    # payment field added by DocumentPayment model
 
     @property
     def tipo(self):
@@ -173,12 +174,12 @@ class Articulo(db.Model):
 
     @db.validates('status')
     def validate_status(self, key, status):
-        assert status in self._statuses.keys()
+        assert status in self._statuses
         return status
 
     @db.validates('product_type')
     def validate_product_type(self, key, product_type):
-        assert product_type in self._product_types.keys()
+        assert product_type in self._product_types
         return product_type
 
     @property
@@ -407,3 +408,64 @@ class StockTransaction(db.Model):
         return "<StockTransaction(%s, %s, %s, %s)>" %\
             (self.get_description(), self.quantity,
              self.product_stock.product.codigo, self.product_stock.branch.name)
+
+
+class DocumentPayment(db.Model):
+    __tablename__ = 'document_payment'
+    id = db.Column(db.Integer, primary_key=True)
+    document_id = db.Column(db.Integer, db.ForeignKey('documentos.id'),
+                            nullable=False)
+    document = db.relationship(Documento,
+                               backref=db.backref("payment", uselist=False))
+    expiration = db.Column(db.DateTime)
+
+    # transactions field added by PaymentItems model
+
+    @property
+    def balance(self):
+        return self.document.total - sum([p.amount for p in self.transactions])
+
+
+class PaymentMethod(db.Model):
+    __tablename__ = 'payment_method'
+
+    CREDIT_CARD = u'CREDIT_CARD'
+    DEBIT_CARD = u'DEBIT_CARD'
+    CASH = u'CASH'
+    BANK_TRANSFER = u'BANK_TRANSFER'
+    CHECK = u'CHECK'
+    INTERNAL_CREDIT = u'INTERNAL_CREDIT'
+
+    _method_types = {
+        CREDIT_CARD: u'Tarjeta de Crédito',
+        DEBIT_CARD: u'Tarjeta de Débito',
+        CASH: u'Efectivo',
+        BANK_TRANSFER: u'Transferencia Bancaria',
+        CHECK = u'Cheque',
+        INTERNAL_CREDIT = u'Crédito Interno',
+    }
+
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.UnicodeText, unique=True)
+    name = db.Column(db.UnicodeText)
+    method_type = db.Column(db.UnicodeText, nullable=False)
+
+    # transactions field added by PaymentTransaction model
+
+    @db.validates('method_type')
+    def validates_method_type(self, key, method_type):
+        assert method_type in self._method_types
+        return method_type
+
+
+class PaymentTransaction(db.Model, TimestampMixin):
+    __tablename__ = 'payment_transaction'
+    id = db.Column(db.Integer, primary_key=True)
+    doc_payment_id = db.Column(db.Integer, db.ForeignKey('document_payment.id'),
+                               nullable=False)
+    doc_payment = db.relationship(DocumentPayment, backref="transaction")
+    amount = db.Column(db.Numeric(10, 2), nullable=False)
+    method_id = db.Column(db.Integer, db.ForeignKey('payment_method.id'),
+                          nullable=False)
+    method = db.relationship(PaymentMethod, backref='transactions')
+    extra_info = db.Column(db.UnicodeText)
