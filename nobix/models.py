@@ -441,8 +441,8 @@ class PaymentMethod(db.Model):
         DEBIT_CARD: u'Tarjeta de Débito',
         CASH: u'Efectivo',
         BANK_TRANSFER: u'Transferencia Bancaria',
-        CHECK = u'Cheque',
-        INTERNAL_CREDIT = u'Crédito Interno',
+        CHECK: u'Cheque',
+        INTERNAL_CREDIT: u'Crédito Interno',
     }
 
     id = db.Column(db.Integer, primary_key=True)
