@@ -194,7 +194,7 @@ class Articulo(db.Model):
         product_stock.increase(quantity, type)
 
     def decrease_stock(self, branch, quantity, type):
-        product_stock = self.stock_query.filter_by(branch_id=branch.id).one()
+        product_stock = self.stock_query.filter_by(branch=branch).one()
         product_stock.decrease(quantity, type)
 
 
@@ -230,7 +230,7 @@ class Branch(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.UnicodeText, nullable=False)
-    address = db.Column(db.UnicodeText, nullable=False)
+    address = db.Column(db.UnicodeText)
 
     def __repr__(self):
         return "<Branch(%s, %s)" % (self.name, self.address)

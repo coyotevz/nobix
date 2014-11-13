@@ -18,7 +18,7 @@ def upgrade():
     op.create_table('branch',
         sa.Column('id', sa.Integer, nullable=False),
         sa.Column('name', sa.UnicodeText, nullable=False),
-        sa.Column('address', sa.UnicodeText, nullable=False),
+        sa.Column('address', sa.UnicodeText, nullable=True),
         sa.PrimaryKeyConstraint('id'),
     )
 
