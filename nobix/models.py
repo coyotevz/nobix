@@ -411,6 +411,9 @@ class StockTransaction(db.Model):
 
 
 class DocumentPayment(db.Model):
+    """Defines payments in separate model to integrate with old documents that
+    don't know about payments.
+    """
     __tablename__ = 'document_payment'
     id = db.Column(db.Integer, primary_key=True)
     document_id = db.Column(db.Integer, db.ForeignKey('documentos.id'),
