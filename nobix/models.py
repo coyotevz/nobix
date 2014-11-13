@@ -189,6 +189,14 @@ class Articulo(db.Model):
     def product_type_str(self):
         return self._product_types.get(self.product_type)
 
+    def increase_stock(self, branch, quantity, type):
+        product_stock = self.stock_query.filter_by(branch=branch).one()
+        product_stock.increase(quantity, type)
+
+    def decrease_stock(self, branch, quantity, type):
+        product_stock = self.stock_query.filter_by(branch_id=branch.id).one()
+        product_stock.decrease(quantity, type)
+
 
     def __repr__(self):
         return u"<Articulo (%s|%s) codigo=%s '%s' $ %s>" % (self.status, self.product_type, self.codigo, self.descripcion, str(self.precio).replace('.', ','))
@@ -275,14 +283,14 @@ class ProductStock(db.Model, TimestampMixin):
 
     #: 'transactions' field added by StockTransaction model
 
-    def increase(self, quantity, warehouse, type):
+    def increase(self, quantity, type):
         assert (type in StockTransaction.types)
 
         self.quantity += quantity
         st = StockTransaction(product_stock=self, quantity=quantity, type=type)
         db.session.add(st)
 
-    def decrease(self, quantity, warehouse, type):
+    def decrease(self, quantity, type):
         assert (type in StockTransaction.types)
 
         self.quantity -= quantity
