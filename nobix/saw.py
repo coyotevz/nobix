@@ -11,8 +11,9 @@ import sqlalchemy
 from sqlalchemy.engine.url import make_url
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import MetaData
-from sqlalchemy.orm.query import Query
+from sqlalchemy import orm
 from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm.exc import UnmappedClassError
 
 def _create_scoped_session(db, query_cls):
     session = sessionmaker(autoflush=True, autocommit=False,
@@ -36,7 +37,7 @@ def _include_sqlalchemy(db):
     db.event = sqlalchemy.event
 
 
-class BaseQuery(Query):
+class BaseQuery(orm.Query):
 
     def get_or_error(self, uid, error):
         """Like :meth:`get` but raises an error if not found instead of
@@ -67,6 +68,20 @@ class BaseQuery(Query):
         return Paginator(seelf, **kwargs)
 
 
+class _QueryProperty(object):
+
+    def __init__(self, db):
+        self.db = db
+
+    def __get__(self, obj, type):
+        try:
+            mapper = orm.class_mapper(type)
+            if mapper:
+                return type.query_class(mapper, session=self.db.session)
+        except UnmappedClassError:
+            return None
+
+
 class EngineConnector(object):
 
     def __init__(self, sa_obj):
@@ -92,6 +107,14 @@ class Model(object):
     """Baseclass for custom user models.
     """
 
+    #: the query class used.  The :attr:`query` attribute is an instance of
+    #: this class. By default a :class:`BaseQuery` is used.
+    query_class = BaseQuery
+
+    #: an instance of :attr:`query_class`.  Can be used to query the database
+    #: for instance of this model.
+    query = None
+
     def __iter__(self):
         """Returns an iterable that supports .next() so we can
         do dict(sa_instance).
@@ -116,13 +139,16 @@ class SQLAlchemy(object):
         self._engine_lock = threading.Lock()
         self.session = _create_scoped_session(self, query_cls=query_cls)
 
-        self.Model = declarative_base(cls=Model, name='Model')
-        self.Model.db = self
-
-        # TODO: Fix query member on Model
-        self.Model.query = self.session.query
+        self.Model = self.make_declarative_base()
 
         _include_sqlalchemy(self)
+
+    def make_declarative_base(self):
+        """Creates the declatative base."""
+        base = declarative_base(cls=Model, name='Model')
+        base.db = self
+        base.query = _QueryProperty(self)
+        return base
 
     def _cleanup_options(self, **kwargs):
         options = dict([
