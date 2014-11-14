@@ -12,13 +12,12 @@ from sqlalchemy.engine.url import make_url
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import MetaData
 from sqlalchemy import orm
-from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.orm.exc import UnmappedClassError
 
 def _create_scoped_session(db, query_cls):
-    session = sessionmaker(autoflush=True, autocommit=False,
-                           query_cls=query_cls)
-    return scoped_session(session)
+    session = orm.sessionmaker(autoflush=True, autocommit=False,
+                               query_cls=query_cls)
+    return orm.scoped_session(session)
 
 def _tablemaker(db):
     def make_sa_table(*args, **kwargs):
@@ -65,7 +64,7 @@ class BaseQuery(orm.Query):
         """Paginate this results.
         Returns a :class:`Pagination` object.
         """
-        return Paginator(seelf, **kwargs)
+        return Pagination(self, **kwargs)
 
 
 class _QueryProperty(object):
@@ -77,7 +76,7 @@ class _QueryProperty(object):
         try:
             mapper = orm.class_mapper(type)
             if mapper:
-                return type.query_class(mapper, session=self.db.session)
+                return type.query_class(mapper, session=self.db.session())
         except UnmappedClassError:
             return None
 
