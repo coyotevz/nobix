@@ -45,7 +45,7 @@ class Documento(db.Model):
     cliente_direccion = db.Column(db.UnicodeText)
     cliente_cuit = db.Column(db.UnicodeText, nullable=True)
 
-    # tasas field added by Tasa model
+    # taxes field added by Tax model
     # items field added by ItemDocumento model
     # payment field added by DocumentPayment model
 
@@ -105,19 +105,20 @@ class ItemDocumento(db.Model):
              self.cantidad)
 
 
-class Tasa(db.Model):
-    __tablename__ = 'tasas'
+class Tax(db.Model):
+    __tablename__ = 'tax'
 
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.UnicodeText, nullable=False)
-    monto = db.Column(db.Numeric(10, 2), nullable=False)
+    tax_code = db.Column(db.Unicode(3), nullable=False)
+    taxable = db.Column(db.Numeric(10, 2), nullable=False)
+    amount = db.Column(db.Numeric(10, 2), nullable=False)
 
-    documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'),
+    document_id = db.Column(db.Integer, db.ForeignKey('documentos.id'),
                              nullable=False, index=True)
-    documento = db.relationship(Documento, backref="tasas")
+    document = db.relationship(Documento, backref="taxes")
 
     def __repr__(self):
-        return "<Tasa '%s' $ %s>" % (self.nombre, self.monto)
+        return "<Tax '%s' $ %s>" % (self.tax_code, self.amount)
 
 
 class Cliente(db.Model):
