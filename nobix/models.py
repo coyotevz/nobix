@@ -3,10 +3,12 @@
 from datetime import datetime
 from decimal import Decimal
 
+from sqlalchemy.ext.hybrid import hybrid_property
+
 from nobix.exc import NobixModelError
 from nobix.config import get_current_config
-from nobix.saw import SQLAlchemy, BaseQuery
-from sqlalchemy.ext.hybrid import hybrid_property
+from nobix.lib.saw import SQLAlchemy, BaseQuery
+from nobix.lib.security import generate_password_hash, check_password_hash
 
 
 db = SQLAlchemy()
