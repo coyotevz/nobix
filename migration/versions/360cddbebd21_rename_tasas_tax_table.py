@@ -45,9 +45,11 @@ def upgrade():
     op.create_index(op.f('ix_tax_document_id'), 'tax', ['document_id'],
                     unique=False)
     op.drop_index('ix_tasas_documento_id', table_name='tax')
+    op.execute(sa.text("ALTER SEQUENCE tasas_id_seq RENAME TO tax_id_seq"))
 
 
 def downgrade():
+    op.execute(sa.text("ALTER SEQUENCE tax_id_seq RENAME TO tasas_id_seq"))
     op.create_index('ix_tasas_documento_id', 'tax', ['document_id'],
                     unique=False)
     op.drop_index(op.f('ix_tax_document_id'), table_name='tax')

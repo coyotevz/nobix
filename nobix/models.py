@@ -61,7 +61,7 @@ class Documento(db.Model):
     @property
     def total(self):
         return Decimal(self.neto if self.neto is not None else 0) +\
-               Decimal(sum(t.monto for t in self.tasas))
+               Decimal(sum(t.monto for t in self.taxes))
 
     def add_payment(self, pyment_code, amount, extra=None):
         pmethod = db.query(PaymentMethod)\
