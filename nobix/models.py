@@ -5,7 +5,8 @@ from decimal import Decimal
 
 from nobix.exc import NobixModelError
 from nobix.config import get_current_config
-from nobix.saw import SQLAlchemy
+from nobix.saw import SQLAlchemy, BaseQuery
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 db = SQLAlchemy()
@@ -509,3 +510,43 @@ class PaymentTransaction(db.Model, TimestampMixin):
     def __repr__(self):
         return "<PaymentTransaction %s, $ %s (%s)>" %\
             (self.method.name, self.amount, self.created.isoformat())
+
+
+class UserQuery(BaseQuery):
+
+    def authenticate(self, login, password):
+        if not (password and login):
+            return None, False
+        user = self.filter(User.username==login).first()
+        return user, (user.check_password(password) if user else False)
+
+
+class User(db.Model, TimestampMixin):
+    __tablename__ = 'user'
+    query_class = UserQuery
+
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.UnicodeText, nullable=False)
+    last_name = db.Column(db.UnicodeText)
+    username = db.Column(db.Unicode(60), unique=True, nullable=False)
+    _pw_hash = db.Column('pw_hash', db.Unicode(80))
+
+    # TODO: relates with roles & permissions
+    #
+
+    @hybrid_property
+    def password(self):
+        return self._pw_hash
+
+    @password.setter
+    def password(self, password):
+        self._pw_hash = unicode(generate_password_hash(password))
+
+    def check_password(self, password):
+        if self.password is None:
+            return False
+        return check_password_hash(self.password, password)
+
+    def __repr__(self):
+        return "<User %s '%s, %s'>" % (self.username, self.last_name,
+                                       self.first_name)
