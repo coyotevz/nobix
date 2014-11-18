@@ -31,10 +31,8 @@ def upgrade():
     op.add_column('articulos',
         sa.Column('status', sa.UnicodeText))
 
-    connection = op.get_bind()
-
     # migrate data
-    connection.execute(
+    op.execute(
         articulohelper.update().where(
             articulohelper.c.es_activo==True
         ).values(
@@ -42,7 +40,7 @@ def upgrade():
         )
     )
 
-    connection.execute(
+    op.execute(
         articulohelper.update().where(
             articulohelper.c.es_activo==False
         ).values(
@@ -59,10 +57,8 @@ def downgrade():
     op.add_column('articulos',
         sa.Column('es_activo', sa.Boolean, default=True))
 
-    connection = op.get_bind()
-
     # migrate data
-    connection.execute(
+    op.execute(
         articulohelper.update().where(
             articulohelper.c.status.in_(T_statuses)
         ).values(
@@ -70,7 +66,7 @@ def downgrade():
         )
     )
 
-    connection.execute(
+    op.execute(
         articulohelper.update().where(
             articulohelper.c.status.in_(F_statuses)
         ).values(

@@ -28,10 +28,8 @@ def upgrade():
     op.add_column('articulos',
         sa.Column('product_type', sa.UnicodeText))
 
-    connection = op.get_bind()
-
     # populate with data
-    connection.execute(
+    op.execute(
         articulohelper.update().values(
             tax_code=u'V21',
             product_type=u'TYPE_PERMANENT',
