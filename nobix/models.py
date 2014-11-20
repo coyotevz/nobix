@@ -4,10 +4,12 @@ from datetime import datetime
 from decimal import Decimal
 
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from nobix.exc import NobixModelError
 from nobix.config import get_current_config
 from nobix.lib.saw import SQLAlchemy, BaseQuery
+from nobix.lib.sa_mutable import MutableList, MutableSet
 from nobix.lib.security import generate_password_hash, check_password_hash
 
 
@@ -533,8 +535,8 @@ class User(db.Model, TimestampMixin):
     username = db.Column(db.Unicode(60), unique=True, nullable=False)
     _pw_hash = db.Column('pw_hash', db.Unicode(80))
 
-    # TODO: relates with roles & permissions
-    #
+    perms = db.Column(MutableSet.as_mutable(ARRAY(db.UnicodeText)))
+    allowed_docs = db.Column(MutableSet.as_mutable(ARRAY(db.UnicodeText)))
 
     @hybrid_property
     def password(self):

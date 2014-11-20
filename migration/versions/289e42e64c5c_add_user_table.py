@@ -12,6 +12,7 @@ down_revision = '360cddbebd21'
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql as pg
 
 
 def upgrade():
@@ -23,6 +24,8 @@ def upgrade():
         sa.Column('last_name', sa.UnicodeText, nullable=True),
         sa.Column('username', sa.Unicode(60), nullable=False),
         sa.Column('pw_hash', sa.Unicode(80), nullable=True),
+        sa.Column('perms', pg.ARRAY(sa.UnicodeText),  nullable=True),
+        sa.Column('allowed_docs', pg.ARRAY(sa.UnicodeText), nullable=True),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('username'),
     )

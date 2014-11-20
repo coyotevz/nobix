@@ -7,11 +7,11 @@
     Implements some mutable-scalar types for SQLAlchemy+PostgreSQL(psycopg2)
 """
 
-from collections import MutableSequence
+import collections
 from sqlalchemy.ext.mutable import Mutable
 
 
-class MutableList(Mutable, MutableSequence):
+class MutableList(Mutable, collections.MutableSequence):
     "Use as MutableList.as_mutable(ARRAY(<type>))"
 
     @classmethod
@@ -50,4 +50,44 @@ class MutableList(Mutable, MutableSequence):
     def insert(self, index, value):
         "Detect list insert events and emit change events."
         list.insert(self._data, index, value)
+        self.changed()
+
+
+class MutableSet(Mutable, collections.MutableSet):
+    "Use as MutableSet.as_mutable(ARRAY(<type>))"
+
+    @classmethod
+    def coerce(cls, key, value):
+        "Convert plain sets to MutableSet."
+        if not isinstance(value, MutableSet):
+            if isinstance(value, (set, list, tuple)):
+                return MutableSet(value)
+
+            # this call will raise ValueError
+            return Mutable.coerce(key, value)
+        else:
+            return value
+
+    def __init__(self, iterable=None):
+        self._set = set()
+        if iterable is not None:
+            self._set = set(iterable)
+
+    def __contains__(self, item):
+        return set.__contains__(self._set, item)
+
+    def __iter__(self):
+        return set.__iter__(self._set)
+
+    def __len__(self):
+        return set.__len__(self._set)
+
+    def add(self, item):
+        "Detect set addition events and emit change events."
+        set.add(self._set, item)
+        self.changed()
+
+    def discard(self, item):
+        "Detect set discard events and emit change events."
+        set.discard(self._set, item)
         self.changed()
