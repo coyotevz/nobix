@@ -84,10 +84,15 @@ class MutableSet(Mutable, collections.MutableSet):
 
     def add(self, item):
         "Detect set addition events and emit change events."
-        set.add(self._set, item)
-        self.changed()
+        if item not in self._set:
+            set.add(self._set, item)
+            self.changed()
 
     def discard(self, item):
         "Detect set discard events and emit change events."
-        set.discard(self._set, item)
-        self.changed()
+        if item in self._set:
+            set.discard(self._set, item)
+            self.changed()
+
+    def __repr__(self):
+        return set.__repr__(self._set)
