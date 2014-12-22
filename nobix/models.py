@@ -197,6 +197,7 @@ class Articulo(db.Model):
     tax_code = db.Column(db.Unicode(3), nullable=False)
     status = db.Column(db.UnicodeText, nullable=False)
     product_type = db.Column(db.UnicodeText, nullable=False)
+    allow_frac = db.Column(db.Boolean, default=False, nullable=False)
 
     existencia = db.Column(db.Numeric(10, 2), default=Decimal(0))
 
