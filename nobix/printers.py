@@ -171,7 +171,7 @@ def build_out_filename(doc_data, data, options):#{{{
         out_filename = u'Nobix_%(username)s@%(hostname)s-%(docnumber)s-%(date)s%(time)s' % filename_data
 
     if not os.path.exists(out_dir):
-        os.makedirs(out_dir, mode=0775)
+        os.makedirs(out_dir, mode=775)
     return os.path.join(out_dir, out_filename)
 #}}}
 
@@ -503,7 +503,7 @@ class FilePrinter(Printer):#{{{
         out_dir = data['store']
         out_filename = u'%(docname)s_%(date)s_%(time)s_%(username)s_%(doc_count)s' % (filename_data)
         if not os.path.exists(out_dir):
-            os.makedirs(out_dir, mode=0775)
+            os.makedirs(out_dir, mode=775)
         data['out_filename'] = self._check_extension(os.path.join(out_dir, out_filename))
 
         return self.run_print(data)

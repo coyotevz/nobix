@@ -67,14 +67,14 @@ class InputBox(Edit):#{{{
         result_pos += len(text)
         return (result_text, result_pos)
 #}}}
-    def render(self, (maxcol,), focus=False):#{{{
+    def render(self, maxcol, focus=False):#{{{
         if self.has_focus and not focus:
             self._emit('focus-out')
         elif focus and not self.has_focus:
             self._emit('focus-in')
         self.has_focus = focus
 
-        return self.__super.render((maxcol,), focus=focus)
+        return self.__super.render(maxcol, focus=focus)
 #}}}
     def keypress(self, size, key):#{{{
 

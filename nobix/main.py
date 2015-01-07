@@ -8,7 +8,6 @@ from hashlib import md5
 from getpass import getpass
 import traceback
 from datetime import datetime
-import xmlrpclib
 import socket
 
 import urwid
@@ -58,7 +57,8 @@ def run_nobix(database_uri=None):
         exc_info = sys.exc_info()
         print >> sout, unicode(datetime.now())
         print >> sout, "".join(traceback.format_exception(*exc_info))
-        raise exc_info[0], exc_info[1], exc_info[2]
+        #raise exc_info[0], exc_info[1], exc_info[2]
+        raise e
     finally:
         _try_save_current_document()
         loop.screen.tty_signal_keys(*old)
@@ -81,7 +81,7 @@ def create_password(code=None, password=None):
         sys.exit(u"ERROR: La contraseña debe contener almenos un digito")
     password2 = getpass('Repetir contraseña: ')
     if password == password2:
-        print "md5:", md5(code+'|'+password).hexdigest()
+        print("md5:", md5(code+'|'+password).hexdigest())
         sys.exit(0)
     sys.exit("ERROR: Las contraseñas no coinciden")
 
@@ -118,7 +118,7 @@ def run_shell(database_uri=None):
     session.commit()
 
 def usage():
-    print """
+    print("""
     Uso: nobix [comando]
 
     Si [comando] no se especifica se lanza en programa normalmente.
@@ -130,13 +130,13 @@ def usage():
     usage,-h,--help   -- Muestra este mensaje de ayuda.
 
     --database-uri    -- URI de la base de datos como la recibe SQLAlchemy
-    """
+    """)
 
 def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
-    os.umask(0002)
+    os.umask(2)
 
     if '--database-uri' in args:
         idx = args.index('--database-uri')
@@ -154,7 +154,7 @@ def main(args=None):
     elif args[0] in ("usage", "-h", "--help"):
         usage()
     else:
-        print "ERROR: Argumentos incorrectos"
+        print("ERROR: Argumentos incorrectos")
         usage()
 
 if __name__ == '__main__':
