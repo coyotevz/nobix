@@ -119,7 +119,6 @@ def run_shell(database_uri=None):
         return
     from code import interact
     interact(banner, local=namespace)
-    session.commit()
 
 def usage():
     print("""
