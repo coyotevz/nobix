@@ -106,6 +106,10 @@ def run_shell(database_uri=None):
     except ImportError:
         pass
     else:
+        if IPython.version_info >= (2, 3):
+            from IPython import embed
+            embed(banner1=banner, user_ns=namespace)
+            return
         if IPython.__version__ >= '0.11':
             from IPython.frontend.terminal.embed import InteractiveShellEmbed
             sh = InteractiveShellEmbed(banner1=banner)
