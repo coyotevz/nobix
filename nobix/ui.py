@@ -27,8 +27,8 @@ from nobix.utils import show_error, show_warning, check_password, get_next_clinu
 from nobix.utils import smart_unicode, validar_cuit, get_username, get_hostname, moneyfmt, message_waiter
 from nobix.utils import CachedItem, DocumentData, ItemData
 from nobix import printers, __version__ as VERSION
-from nobix.db import Session
-from nobix.models import Documento, Tasa, ItemDocumento, Cliente, Articulo, Cache
+from nobix.models import db
+from nobix.models import Documento, Tax, ItemDocumento, Cliente, Articulo, Cache
 from nobix.config import get_current_config
 #}}}
 
@@ -47,7 +47,7 @@ _commands = ['right', 'left', 'end', 'home', 'up', 'down',
 _finish_key = object()
 _date_pattern = "%d/%m/%Y"
 
-session = Session()
+session = db
 
 def highlight_focus_in(widget):
     widget.highlight = 0, len(widget._edit_text)
@@ -655,7 +655,7 @@ class DocumentHeader(WidgetWrap):#{{{
         if doc_tasa:
             alicuota = Decimal(doc_tasa['alicuota']) / 100
             neto = doc_data.total / (1+alicuota)
-            tasas = [Tasa(nombre=doc_tasa['codigo'], monto=(doc_data.total - neto))]
+            tasas = [Tax(tax_code=doc_tasa['codigo'], amount=(doc_data.total - neto))]
             session.add_all(tasas)
             descuento = doc_data.descuento / (1+alicuota)
         else:
@@ -2639,7 +2639,7 @@ class EditorDocumentosEspeciales(Dialog):#{{{
             show_error("No hay impuestos validos para este tipo de documento")
             return
 
-        taxes = [Tasa(nombre=t.tax_code.get_edit_text(), monto=t.monto) for t in filtered_taxes]
+        taxes = [Tax(tax_code=t.tax_code.get_edit_text(), amount=t.monto) for t in filtered_taxes]
 
         if documento is None:
             documento = Documento(tipo=doctype['tipo'], numero=self.docnumber.get_value(), fecha=fecha)

@@ -89,7 +89,7 @@ def _make_ns(database_uri=None):
     from nobix.config import load_config
     from nobix.models import db
     from nobix.models import Cliente, Articulo, ItemDocumento, Documento,\
-                             Cache, Tasa
+                             Cache, Tax
 
     config = load_config()
     if database_uri:
