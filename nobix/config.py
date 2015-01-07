@@ -96,7 +96,7 @@ def parse_date(value):
         try:
             return date.fromordinal(datetime.strptime(value, "%Y-%m-%d").toordinal())
         except ValueError as e:
-            print e
+            print(e)
     return None
 
 class Configuration(object):
