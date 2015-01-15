@@ -3,23 +3,18 @@
     ~~~~~~~~~~~~~~~~~~
 """
 
-import string
-import crypt
+import uuid
+import hashlib
 from hmac import compare_digest
-from random import SystemRandom
 
-
-SALT_CHARS = string.ascii_letters + string.digits + './'
-_sr = SystemRandom()
-
-
-def mksalt():
-    return ''.join(_sr.choice(SALT_CHARS) for char in range(16))
 
 def generate_password_hash(password, salt=None):
     if salt is None:
-        salt = mksalt()
-    return crypt.crypt(password, salt)
+        salt = uuid.uuid4().hex
+    return salt + '$' + hashlib.sha512(password + salt).hexdigest()
 
 def check_password_hash(pwhash, password):
-    return compare_digest(pwhash, crypt.crypt(password, pwhash))
+    if pwhash.count('$') < 1:
+        return False
+    s, _, h = pwhash.partition('$')
+    return compare_digest(str(h), hashlib.sha512(password + s).hexdigest())

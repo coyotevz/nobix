@@ -534,7 +534,7 @@ class User(db.Model, TimestampMixin):
     first_name = db.Column(db.UnicodeText, nullable=False)
     last_name = db.Column(db.UnicodeText)
     username = db.Column(db.Unicode(60), unique=True, nullable=False)
-    _pw_hash = db.Column('pw_hash', db.Unicode(80))
+    _pw_hash = db.Column('pw_hash', db.UnicodeText)
 
     perms = db.Column(MutableSet.as_mutable(ARRAY(db.UnicodeText)))
     allowed_docs = db.Column(MutableSet.as_mutable(ARRAY(db.UnicodeText)))
@@ -553,5 +553,6 @@ class User(db.Model, TimestampMixin):
         return check_password_hash(self.password, password)
 
     def __repr__(self):
-        return "<User %s '%s, %s'>" % (self.username, self.last_name,
-                                       self.first_name)
+        return u"<User {} '{}, {}'>".format(self.username,
+                                            self.last_name,
+                                            self.first_name).encode('utf8')

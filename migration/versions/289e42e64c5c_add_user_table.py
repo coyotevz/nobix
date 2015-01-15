@@ -23,7 +23,7 @@ def upgrade():
         sa.Column('first_name', sa.UnicodeText, nullable=False),
         sa.Column('last_name', sa.UnicodeText, nullable=True),
         sa.Column('username', sa.Unicode(60), nullable=False),
-        sa.Column('pw_hash', sa.Unicode(80), nullable=True),
+        sa.Column('pw_hash', sa.UnicodeText, nullable=True),
         sa.Column('perms', pg.ARRAY(sa.UnicodeText),  nullable=True),
         sa.Column('allowed_docs', pg.ARRAY(sa.UnicodeText), nullable=True),
         sa.PrimaryKeyConstraint('id'),
