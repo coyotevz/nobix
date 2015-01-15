@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
+from datetime import datetime, date
 from decimal import Decimal
 
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -15,8 +15,14 @@ from nobix.lib.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
+def date_now():
+    return datetime.now()
+
 def time_now():
     return datetime.now().time()
+
+def today():
+    return date.today()
 
 
 class TimestampMixin(object):
@@ -490,6 +496,7 @@ class PaymentMethod(db.Model):
     method_type = db.Column(db.UnicodeText, nullable=False)
 
     # transactions field added by PaymentTransaction model
+    # rules field added by PaymentRule
 
     @db.validates('method_type')
     def validates_method_type(self, key, method_type):
@@ -498,6 +505,17 @@ class PaymentMethod(db.Model):
 
     def __repr__(self):
         return "<PaymentMethod '%s' %s>" % (self.code, self.name)
+
+
+class PaymentRule(db.Model):
+    __tablename__ = 'payment_rule'
+
+    id = db.Column(db.Integer, primary_key=True)
+    method_id = db.Column(db.Integer, db.ForeignKey('payment_method.id'),
+                          nullable=False)
+    method = db.relationship(PaymentMethod, backref='rules')
+    start_time = db.Column(db.DateTime, nullable=False, default=date_now)
+    end_time = db.Column(db.DateTime, nullable=True)
 
 
 class PaymentTransaction(db.Model, TimestampMixin):
