@@ -172,11 +172,11 @@ setup(
     ]),
 
     install_requires = [
-        'distribute>=0.6.10',
+        #'distribute>=0.6.10',
         'python-dateutil>=1.4.1',
         'SQLAlchemy>=0.7.0',
         'Elixir>=0.7.0',
-        'sqlalchemy-migrate>=0.7',
+        #'sqlalchemy-migrate>=0.7',
         'urwid==0.9.9.1',
         'Mako>=0.3.2',
         'Unidecode>=0.04.1',
