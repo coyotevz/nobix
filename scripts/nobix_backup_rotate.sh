@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Poner como job de cron ej:
+#03 * * * * REMOTE="t01@t01" /usr/bin/nobix_backup_rotate.sh
+
 PGDATABASE='nobix'
 DEFAULT_COUNT=5
 
