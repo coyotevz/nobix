@@ -473,9 +473,9 @@ class FilePrinter(Printer):#{{{
         tmpl = get_template(data['template'])
         result = tmpl.render(**data)
 
-        fname = os.path.basename(data['template'].rpartition('.')[0])
-        with file("/home/augusto/"+fname, "w") as out:
-            out.write(result)
+        #fname = os.path.basename(data['template'].rpartition('.')[0])
+        #with file("/home/augusto/"+fname, "w") as out:
+        #    out.write(result)
 
         handler = rsvg.Handle(data=result)
         surface = self.surface_cls(data['out_filename'], handler.props.width, handler.props.height)
