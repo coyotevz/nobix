@@ -177,6 +177,31 @@ class Labeler(object):
 
         ep.write(self.render().encode('cp850', 'ignore'))
 
+
+class RemoteLabeler(Labeler):
+
+    def __init__(self, addrport, **kwargs):
+        super(RemoteLabeler, self).__init__(**kwargs)
+        self._addr, self._port = addrport.split(':')
+
+    def printout(self):
+        import socket
+        import json
+
+        data = json.dumps({
+            'idVendor': self._idVendor,
+            'idProduct': self._idProduct,
+            'message': self.render(),
+        })
+
+        with socket.create_connection((self._addr, self._port)) as connection:
+            connection.sendall(data)
+            response = json.loads(connection.recv(1024))
+
+        if response['status'] == 'error':
+            raise LabelerError(":".join([response['type'], response['message']]))
+
+
 if __name__ == '__main__':
     import sys
     text = sys.argv[1]

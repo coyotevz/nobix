@@ -222,7 +222,7 @@ documentos = {
     u'E1': {
         'nombre': u"Etiqueta 38x20x2",
         'allowed_custom_items': True,
-        'printer': ('Tag Printer',),
+        'printer': ('Tag Printer', 'Remote Tag Printer'),
         'print_size': {'width': 38, 'height': 20, 'gap': 2, 'paper': 'E1'},
         'allowed_users': [u'18', u'19'],
     },
@@ -471,6 +471,15 @@ impresoras = {
         'tag_idVendor': 0x1664,
         'tag_idProduct': 0x013b,
     },
+
+    u'Remote Tag Printer': {
+        'type': u"remote-tag",
+        'remote-tag_idVendor': 0x1664,
+        'remote-tag_idProduct': 0x013b,
+        'remote-tag_addr': 'd01',
+        'remote-tag_port': 9999,
+
+    }
 }
 
 # Valid SQLite URL forms are:

@@ -580,6 +580,37 @@ class TagPrinter(Printer):
         return retval, data
 
 
+class RemoteTagPrinter(Printer):
+    _type = "remote-tag"
+
+    def run_print(self, data):
+        message_waiter("Procesando información ... ")
+
+        lsize = data['size']['paper']
+        idVendor = data['idVendor']
+        idProduct = data['idProduct']
+        addrport = (data['addr'], data['port'])
+
+        labeler = RemoteLabeler(addrport, label_size=lsize, idVendor=idVendor, idProduct=idProduct)
+
+        for item in data['items']:
+            labeler.add_label(Label1(code=item.codigo, desc=item.descripcion[:40], qty=item.cantidad))
+
+#        import pprint
+#        with open('/home/augusto/labels.log', "w") as out:
+#            out.write(labeler.render().encode('utf-8', 'ignore'))
+#            out.write('\n'*3)
+#            out.write(pprint.pformat(data))
+
+        try:
+            labeler.printout()
+            retval = True
+        except LabelerError as error:
+            data['errors'] = [error.args[0]]
+            retval = False
+
+        return retval, data
+
 
 
 # vim:foldenable:foldmethod=marker
