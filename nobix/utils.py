@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 from socket import gethostname, getfqdn
 from datetime import datetime
 from decimal import Decimal
@@ -13,7 +12,8 @@ from nobix.widget import Dialog, ErrorDialog, WarningDialog, SingleMessageDialog
                          WaitFiscalAnswer, SingleMessageWaiter
 
 def get_username():
-    return unicode(os.getlogin())
+    import getpass
+    return unicode(getpass.getuser())
 
 def get_hostname():
     return unicode(getfqdn())

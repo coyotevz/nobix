@@ -8,8 +8,11 @@ from collections import namedtuple
 from functools import partial
 
 import cairo
-import rsvg
 import cups
+
+import gi
+gi.require_version('Rsvg', '2.0')
+from gi.repository import Rsvg as rsvg
 
 from mako.template import Template
 from unidecode import unidecode
@@ -20,7 +23,7 @@ from nobix.exc import NobixPrinterError, NobixBadCuitError
 from nobix.utils import get_hostname, get_username, moneyfmt, validar_cuit
 from nobix.utils import get_next_docnumber as u_get_next_docnumber
 from nobix.utils import wait_fiscal_answer, message_waiter
-from nobix.labeler import Labeler, Label1, LabelerError
+from nobix.labeler import Labeler, Label1, LabelerError, RemoteLabeler
 
 PrinterItemData = namedtuple('PrinterItemData', 'codigo descripcion cantidad precio total')
 FiscalItemData = namedtuple('FiscalItemData', 'descripcion cantidad precio iva signo impint base')

@@ -182,7 +182,7 @@ class RemoteLabeler(Labeler):
 
     def __init__(self, addrport, **kwargs):
         super(RemoteLabeler, self).__init__(**kwargs)
-        self._addr, self._port = addrport.split(':')
+        self._addr, self._port = addrport
 
     def printout(self):
         import socket
@@ -194,12 +194,17 @@ class RemoteLabeler(Labeler):
             'message': self.render(),
         })
 
-        with socket.create_connection((self._addr, self._port)) as connection:
-            connection.sendall(data)
-            response = json.loads(connection.recv(1024))
+        connection = socket.create_connection((self._addr, self._port))
+        connection.sendall(data)
+        response = json.loads(connection.recv(1024))
+        connection.close()
+
+        #with socket.create_connection((self._addr, self._port)) as connection:
+        #    connection.sendall(data)
+        #    response = json.loads(connection.recv(1024))
 
         if response['status'] == 'error':
-            raise LabelerError(":".join([response['type'], response['message']]))
+            raise LabelerError(":".join(map(str, [response['type'], response['message']])))
 
 
 if __name__ == '__main__':
