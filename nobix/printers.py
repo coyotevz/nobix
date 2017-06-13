@@ -10,9 +10,15 @@ from functools import partial
 import cairo
 import cups
 
-import gi
-gi.require_version('Rsvg', '2.0')
-from gi.repository import Rsvg as rsvg
+try:
+    import rsvg
+except ImportError:
+    try:
+        import gi
+        gi.require_version('Rsvg', '2.0')
+        from gi.repository import Rsvg as rsvg
+    except ImportError:
+        raise ImportError('rsvg or gi.Rsvg not found')
 
 from mako.template import Template
 from unidecode import unidecode

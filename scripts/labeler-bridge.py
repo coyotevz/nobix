@@ -21,17 +21,6 @@ def send_to_labeler(idVendor, idProduct, message):
     if dev is None:
         raise LabelerBridgeError('No se encontrol el dispositivo')
 
-    #try:
-    #    dev.attach_kernel_driver(0)
-    #except usb.core.USBError as error:
-    #    pass
-    ## detach current kernel driver
-    #try:
-    #    dev.detach_kernel_driver(0)
-    #except usb.core.USBError as error:
-    #    if error.args[0] != 'Entity not found':
-    #        raise LabelerBridgeError("Ocurrio un error desconocido en detach_kernel_driver()")
-
     reattach = False
     if dev.is_kernel_driver_active(0):
         reattach = True
@@ -44,8 +33,6 @@ def send_to_labeler(idVendor, idProduct, message):
     # get an endpint instance
     cfg = dev.get_active_configuration()
     interface = cfg[(0, 0)]
-
-    #interface = list(dev[0])[0]
 
     # get an endpoint instance
     ep = usb.util.find_descriptor(interface, custom_match=_custom_match)
@@ -64,8 +51,6 @@ def send_to_labeler(idVendor, idProduct, message):
 
     if reattach:
         dev.attach_kernel_driver(0)
-
-
 
 
 class JSONLabelerHandler(socketserver.BaseRequestHandler):

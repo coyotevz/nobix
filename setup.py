@@ -7,7 +7,7 @@ from glob import glob
 from setuptools import setup, find_packages
 
 NAME = "Nobix"
-VERSION = "0.0.9"
+VERSION = "0.0.10"
 DB_REPO = "dbmigrate"
 
 def check_noegg_dependencies():
@@ -172,7 +172,7 @@ setup(
     ]),
 
     install_requires = [
-        'distribute>=0.6.10',
+        #'distribute>=0.6.10',
         'python-dateutil>=1.4.1',
         'SQLAlchemy>=0.7.0',
         'Elixir>=0.7.0',
