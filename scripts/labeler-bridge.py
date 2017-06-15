@@ -56,12 +56,18 @@ def send_to_labeler(idVendor, idProduct, message):
 class JSONLabelerHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
+        SIZE = 16384
         e = None
         response = {}
-        json_data = self.request.recv(1024)
+        json_data = self.request.recv(SIZE)
 
         try:
             data = json.loads(json_data)
+        except:
+            json_data += self.request.recv(SIZE)
+            data = json.loads(json_data)
+
+        try:
             send_to_labeler(**data)
             response['status'] = 'ok'
         except Exception as err:
@@ -70,6 +76,13 @@ class JSONLabelerHandler(socketserver.BaseRequestHandler):
             if err.args[0]:
                 response['message'] = err.args[0]
             e = err
+
+            #with open('/home/augusto/error.log', 'w') as out:
+            #    out.write("Error:\n")
+            #    out.write("len(json_data): {}\n".format(len(json_data)))
+            #    out.write("json_data:\n")
+            #    out.write(str(json_data) + "\n")
+
 
         response_data = json.dumps(response)
         self.request.send(bytes(response_data, 'utf-8'))
