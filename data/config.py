@@ -106,14 +106,14 @@ documentos = {
     },
 
     u'ENV': {
-        'nombre': u"Envío a GC",
+        'nombre': u"Envio a GC",
         'allowed_custom_items': True,
         'printer': 'HP LaserJet 1020',
         'print_template': basic_template,
         'print_show_logo': True,
         'print_show_footer_legend': True,
         'print_copies': 2, # Solo cuando se imprime
-        'print_docname': u"Envío",
+        'print_docname': u"Envio",
         'print_vendedor_fmt': u'%(codigo)s - %(nombre)s',
         'print_max_rows': pdf_max_rows,
     },
