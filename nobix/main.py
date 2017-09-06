@@ -158,3 +158,6 @@ def main(args=None):
     else:
         print "ERROR: Argumentos incorrectos"
         usage()
+
+if __name__ == '__main__':
+    main()

@@ -7,7 +7,7 @@ from glob import glob
 from setuptools import setup, find_packages
 
 NAME = "Nobix"
-VERSION = "0.0.9"
+VERSION = "0.0.10"
 DB_REPO = "dbmigrate"
 
 def check_noegg_dependencies():

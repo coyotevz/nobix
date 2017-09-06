@@ -8,8 +8,17 @@ from collections import namedtuple
 from functools import partial
 
 import cairo
-import rsvg
 import cups
+
+try:
+    import rsvg
+except ImportError:
+    try:
+        import gi
+        gi.require_version('Rsvg', '2.0')
+        from gi.repository import Rsvg as rsvg
+    except ImportError:
+        raise ImportError('rsvg or gi.Rsvg not found')
 
 from mako.template import Template
 from unidecode import unidecode
@@ -20,7 +29,7 @@ from nobix.exc import NobixPrinterError, NobixBadCuitError
 from nobix.utils import get_hostname, get_username, moneyfmt, validar_cuit
 from nobix.utils import get_next_docnumber as u_get_next_docnumber
 from nobix.utils import wait_fiscal_answer, message_waiter
-from nobix.labeler import Labeler, Label1, LabelerError
+from nobix.labeler import Labeler, Label1, LabelerError, RemoteLabeler
 
 PrinterItemData = namedtuple('PrinterItemData', 'codigo descripcion cantidad precio total')
 FiscalItemData = namedtuple('FiscalItemData', 'descripcion cantidad precio iva signo impint base')
@@ -473,9 +482,9 @@ class FilePrinter(Printer):#{{{
         tmpl = get_template(data['template'])
         result = tmpl.render(**data)
 
-#        fname = os.path.basename(data['template'].rpartition('.')[0])
-#        with file("/home/augusto/"+fname, "w") as out:
-#            out.write(result)
+        #fname = os.path.basename(data['template'].rpartition('.')[0])
+        #with file("/home/augusto/"+fname, "w") as out:
+        #    out.write(result)
 
         handler = rsvg.Handle(data=result)
         surface = self.surface_cls(data['out_filename'], handler.props.width, handler.props.height)
@@ -579,6 +588,37 @@ class TagPrinter(Printer):
 
         return retval, data
 
+
+class RemoteTagPrinter(Printer):
+    _type = "remote-tag"
+
+    def run_print(self, data):
+        message_waiter("Procesando información ... ")
+
+        lsize = data['size']['paper']
+        idVendor = data['idVendor']
+        idProduct = data['idProduct']
+        addrport = (data['addr'], data['port'])
+
+        labeler = RemoteLabeler(addrport, label_size=lsize, idVendor=idVendor, idProduct=idProduct)
+
+        for item in data['items']:
+            labeler.add_label(Label1(code=item.codigo, desc=item.descripcion[:40], qty=item.cantidad))
+
+#        import pprint
+#        with open('/home/augusto/labels.log', "w") as out:
+#            out.write(labeler.render().encode('utf-8', 'ignore'))
+#            out.write('\n'*3)
+#            out.write(pprint.pformat(data))
+
+        try:
+            labeler.printout()
+            retval = True
+        except LabelerError as error:
+            data['errors'] = [error.args[0]]
+            retval = False
+
+        return retval, data
 
 
 

@@ -106,14 +106,14 @@ documentos = {
     },
 
     u'ENV': {
-        'nombre': u"Envío a GC",
+        'nombre': u"Envio a GC",
         'allowed_custom_items': True,
         'printer': 'HP LaserJet 1020',
         'print_template': basic_template,
         'print_show_logo': True,
         'print_show_footer_legend': True,
         'print_copies': 2, # Solo cuando se imprime
-        'print_docname': u"Envío",
+        'print_docname': u"Envio",
         'print_vendedor_fmt': u'%(codigo)s - %(nombre)s',
         'print_max_rows': pdf_max_rows,
     },
@@ -222,7 +222,7 @@ documentos = {
     u'E1': {
         'nombre': u"Etiqueta 38x20x2",
         'allowed_custom_items': True,
-        'printer': ('Tag Printer',),
+        'printer': ('Tag Printer', 'Remote Tag Printer'),
         'print_size': {'width': 38, 'height': 20, 'gap': 2, 'paper': 'E1'},
         'allowed_users': [u'18', u'19'],
     },
@@ -471,6 +471,15 @@ impresoras = {
         'tag_idVendor': 0x1664,
         'tag_idProduct': 0x013b,
     },
+
+    u'Remote Tag Printer': {
+        'type': u"remote-tag",
+        'remote-tag_idVendor': 0x1664,
+        'remote-tag_idProduct': 0x013b,
+        'remote-tag_addr': 'd01',
+        'remote-tag_port': 9999,
+
+    }
 }
 
 # Valid SQLite URL forms are:
