@@ -44,7 +44,7 @@ def word_wrap(text, width, sep=' '):
     if len(text) <= width:
         return [text]
     else:
-        if isinstance(sep, basestring):
+        if isinstance(sep, str):
             sep = [sep]
         i = -1
         for s in sep:
@@ -213,5 +213,5 @@ if __name__ == '__main__':
 
     l = Labeler()
     l.add_label(Label1(code=sys.argv[1], desc=sys.argv[2].decode('utf-8')))
-    print l.render()
+    print(l.render())
     l.printout()
