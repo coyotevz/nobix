@@ -1,6 +1,7 @@
 urwid
 SQLAlchemy
 alembic
+Unidecode
 
 # postgresql connector
 psycopg2-binary
