@@ -1,2 +1,6 @@
 urwid
 SQLAlchemy
+alembic
+
+# postgresql connector
+psycopg2-binary

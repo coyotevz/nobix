@@ -15,7 +15,8 @@ import urwid
 from sqlalchemy.exc import SQLAlchemyError
 
 from nobix.config import load_config
-from nobix.db import setup_db, Session
+from nobix.models import db
+#from nobix.db import setup_db, Session
 from nobix.ui import MainFrame
 from nobix.mainloop import NobixMainLoop
 from nobix.utils import get_hostname, get_username
@@ -27,7 +28,8 @@ def run_nobix(database_uri=None):
     if database_uri:
         config.database_uri = database_uri
 
-    setup_db(config.database_uri)
+    #setup_db(config.database_uri)
+    db.configure(config.database_uri)
     sout = open(os.path.expanduser("~/.nobix.log"), "a")
 
     top = MainFrame()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-class NobixError(StandardError):
+class NobixError(Exception):
     pass
 
 class NobixPrinterError(NobixError):
