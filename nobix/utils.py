@@ -8,8 +8,6 @@ from decimal import Decimal
 from urwid import Text, Filler
 
 from nobix.mainloop import get_main_loop
-from nobix.widget import Dialog, ErrorDialog, WarningDialog, SingleMessageDialog, PasswordDialog, \
-                         WaitFiscalAnswer, SingleMessageWaiter
 
 def get_username():
     import getpass
@@ -38,6 +36,78 @@ def get_elapsed_time(start, microseconds=False):
 
 def clear_screen():
     get_main_loop().screen.clear()
+
+
+# OrderedSet implementation from
+# http://code.activestate.com/recipes/576694/
+# Requires python 2.6
+import collections
+
+class OrderedSet(collections.MutableSet):
+    _KEY, _PREV, _NEXT = range(3)
+
+    def __init__(self, iterable=None):
+        self.end = end = []
+        end += [None, end, end]     # sentinel node for doubly linked list
+        self.map = {}               # key --> [key, prev, next]
+        if iterable is not None:
+            self |= iterable
+
+    def __len__(self):
+        return len(self.map)
+
+    def __contains__(self, key):
+        return key in self.map
+
+    def add(self, key):
+        if key not in self.map:
+            end = self.end
+            curr = end[self._PREV]
+            curr[self._NEXT] = end[self._PREV] = self.map[key] = [key, curr, end]
+
+    def discard(self, key):
+        if key in self.map:
+            key, prev, next = self.map.pop(key)
+            prev[self._NEXT] = next
+            next[self._PREV] = prev
+
+    def __iter__(self):
+        end = self.end
+        curr = end[self._NEXT]
+        while curr is not end:
+            yield curr[self._KEY]
+            curr = curr[self._NEXT]
+
+    def __reversed__(self):
+        end = self.end
+        curr = end[self._PREV]
+        while curr is not end:
+            yield curr[self._KEY]
+            curr = curr[self._PREV]
+
+    def pop(self, last=True):
+        if not self:
+            raise KeyError('set is empty')
+        key = next(reversed(self)) if last else next(iter(self))
+        self.discard(key)
+        return key
+
+    def __repr__(self):
+        if not self:
+            return '%s()' % (self.__class__.__name__,)
+        return '%s(%r)' % (self.__class__.__name__, list(self))
+
+    def __eq__(self, other):
+        if isinstance(other, OrderedSet):
+            return len(self) == len(other) and list(self) == list(other)
+        return not self.isdisjoint(other)
+
+    def __del__(self):
+        self.clear()
+
+
+from nobix.widget import Dialog, ErrorDialog, WarningDialog, SingleMessageDialog, PasswordDialog, \
+                         WaitFiscalAnswer, SingleMessageWaiter
 
 def show_error(message):
     e = ErrorDialog(message)
@@ -189,70 +259,3 @@ def get_next_clinumber(clitype):
     if result is None:
         return u'1'
     return unicode(result.codigo + 1)
-
-# OrderedSet implementation from
-# http://code.activestate.com/recipes/576694/
-# Requires python 2.6
-import collections
-
-class OrderedSet(collections.MutableSet):
-    _KEY, _PREV, _NEXT = range(3)
-
-    def __init__(self, iterable=None):
-        self.end = end = []
-        end += [None, end, end]     # sentinel node for doubly linked list
-        self.map = {}               # key --> [key, prev, next]
-        if iterable is not None:
-            self |= iterable
-
-    def __len__(self):
-        return len(self.map)
-
-    def __contains__(self, key):
-        return key in self.map
-
-    def add(self, key):
-        if key not in self.map:
-            end = self.end
-            curr = end[self._PREV]
-            curr[self._NEXT] = end[self._PREV] = self.map[key] = [key, curr, end]
-
-    def discard(self, key):
-        if key in self.map:
-            key, prev, next = self.map.pop(key)
-            prev[self._NEXT] = next
-            next[self._PREV] = prev
-
-    def __iter__(self):
-        end = self.end
-        curr = end[self._NEXT]
-        while curr is not end:
-            yield curr[self._KEY]
-            curr = curr[self._NEXT]
-
-    def __reversed__(self):
-        end = self.end
-        curr = end[self._PREV]
-        while curr is not end:
-            yield curr[self._KEY]
-            curr = curr[self._PREV]
-
-    def pop(self, last=True):
-        if not self:
-            raise KeyError('set is empty')
-        key = next(reversed(self)) if last else next(iter(self))
-        self.discard(key)
-        return key
-
-    def __repr__(self):
-        if not self:
-            return '%s()' % (self.__class__.__name__,)
-        return '%s(%r)' % (self.__class__.__name__, list(self))
-
-    def __eq__(self, other):
-        if isinstance(other, OrderedSet):
-            return len(self) == len(other) and list(self) == list(other)
-        return not self.isdisjoint(other)
-
-    def __del__(self):
-        self.clear()
