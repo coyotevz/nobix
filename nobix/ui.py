@@ -27,7 +27,8 @@ from nobix.utils import show_error, show_warning, check_password, get_next_clinu
 from nobix.utils import smart_unicode, validar_cuit, get_username, get_hostname, moneyfmt, message_waiter
 from nobix.utils import CachedItem, DocumentData, ItemData
 from nobix import printers, __version__ as VERSION
-from nobix.db import Session
+#from nobix.db import Session
+from nobix.models import db
 from nobix.models import Documento, Tasa, ItemDocumento, Cliente, Articulo, Cache
 from nobix.config import get_current_config
 #}}}
@@ -47,7 +48,8 @@ _commands = ['right', 'left', 'end', 'home', 'up', 'down',
 _finish_key = object()
 _date_pattern = "%d/%m/%Y"
 
-session = Session()
+#session = Session()
+session = db.session
 
 def highlight_focus_in(widget):
     widget.highlight = 0, len(widget._edit_text)
