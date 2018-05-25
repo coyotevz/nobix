@@ -50,20 +50,20 @@ _commands_to_log = [
 
 # Hasar Fiscal Status Error Map
 _hasar_fs = [
-    (1<<0, u"Error en chequeo de memoria fiscal", False),
-    (1<<1, u"Error en chequo de la memoria de trabajo", False),
-    (1<<2, u"Carga de batería baja", True),
-    (1<<3, u"Comando desconocido", False),
-    (1<<4, u"Datos no válidos en un campo", False),
-    (1<<5, u"Comando no válido para el estado fiscal actual", False),
-    (1<<6, u"Desborde del Total", False),
-    (1<<7, u"Memoria fiscal llena, bloqueada o dada de baja", False),
-    (1<<8, u"Memoria fiscal a punto de llenarse", True),
-    (1<<9, u"Terminal fiscal certificada", '<required>'),
-    (1<<10, u"Terminal fiscal fiscalizada", '<required>'),
-    (1<<11, u"Error en ingreso de fecha", False),
-    (1<<12, u"Documento fiscal abierto", '<optional>'),
-    (1<<13, u"Documento abierto", '<optional>'),
+    (1<<0, "Error en chequeo de memoria fiscal", False),
+    (1<<1, "Error en chequo de la memoria de trabajo", False),
+    (1<<2, "Carga de batería baja", True),
+    (1<<3, "Comando desconocido", False),
+    (1<<4, "Datos no válidos en un campo", False),
+    (1<<5, "Comando no válido para el estado fiscal actual", False),
+    (1<<6, "Desborde del Total", False),
+    (1<<7, "Memoria fiscal llena, bloqueada o dada de baja", False),
+    (1<<8, "Memoria fiscal a punto de llenarse", True),
+    (1<<9, "Terminal fiscal certificada", '<required>'),
+    (1<<10, "Terminal fiscal fiscalizada", '<required>'),
+    (1<<11, "Error en ingreso de fecha", False),
+    (1<<12, "Documento fiscal abierto", '<optional>'),
+    (1<<13, "Documento abierto", '<optional>'),
     #(1<<14, u"Reserved", '<optional>'),
     #(1<<15, u"Reserved", '<optional>'),
 ]
@@ -72,19 +72,19 @@ _hasar_fs = [
 _hasar_ps = [
     #(1<<0, u"Reserved", '<optional>'),
     #(1<<1, u"Reserved", '<optional>'),
-    (1<<2, u"Error de Impresora", False),
-    (1<<3, u"Impresora offline", False),
-    (1<<4, u"Falta papel del diario", False),
-    (1<<5, u"Falta papel de tickets", False),
-    (1<<6, u"Buffer de impresora lleno", False),
-    (1<<7, u"Buffer de impresora vacio", '<optional>'),
-    (1<<8, u"Tapa de impresora abierta", True),
+    (1<<2, "Error de Impresora", False),
+    (1<<3, "Impresora offline", False),
+    (1<<4, "Falta papel del diario", False),
+    (1<<5, "Falta papel de tickets", False),
+    (1<<6, "Buffer de impresora lleno", False),
+    (1<<7, "Buffer de impresora vacio", '<optional>'),
+    (1<<8, "Tapa de impresora abierta", True),
     #(1<<9, u"Reserved", '<optional>'),
     #(1<<10, u"Reserved", '<optional>'),
     #(1<<11, u"Reserved", '<optional>'),
     #(1<<12, u"Reserved", '<optional>'),
     #(1<<13, u"Reserved", '<optional>'),
-    (1<<14, u"Cajon de dinero cerrado o ausente", '<optional>'),
+    (1<<14, "Cajon de dinero cerrado o ausente", '<optional>'),
     #(1<<15, u"Reserved", '<optional>'),
 ]
 
@@ -103,9 +103,9 @@ def get_printers(printers):#{{{
         create_printers()
 
     if printers == '*':
-        return tuple(_created_printers.itervalues())
+        return tuple(_created_printers.values())
 
-    if isinstance(printers, basestring) or printers is None:
+    if isinstance(printers, str) or printers is None:
         printers = (printers,)
 
     try:
@@ -120,10 +120,10 @@ def create_printers():#{{{
     # Special printer
     _created_printers[None] = NullPrinter("No imprimir")
 
-    for name, options in get_current_config().impresoras.iteritems():
+    for name, options in get_current_config().impresoras.items():
         _type = options.get('type')
         cls = _printers_by_type[_type]
-        options = dict((key.replace(_type+'_', ''), value) for key, value in options.iteritems()
+        options = dict((key.replace(_type+'_', ''), value) for key, value in options.items()
                         if key.startswith(_type+'_'))
         _created_printers[name] = cls(name, options)
 #}}}
@@ -147,40 +147,40 @@ def prepare_items(items):#{{{
             precio = item.precio if item.precio is not None else item.articulo.precio
             retval.append(PrinterItemData(item.articulo.codigo, item.articulo.descripcion, item.cantidad,
                           precio, item.cantidad * precio))
-        elif isinstance(item.articulo, basestring):
+        elif isinstance(item.articulo, str):
             retval.append(PrinterItemData("", item.articulo, item.cantidad, item.precio,
                                           item.precio * item.cantidad))
         else:
-            raise RuntimeError(u"Unknown item type '%s'" % type(item.articulo).__name)
+            raise RuntimeError("Unknown item type '%s'" % type(item.articulo).__name)
     return retval
 #}}}
 def build_out_filename(doc_data, data, options):#{{{
     doc_conf = get_current_config().documentos[doc_data.doctype]
     docdate = data['docdate']
     filename_data = {
-        'date': unicode(docdate.strftime('%Y-%m-%d')), 'time': unicode(docdate.strftime('%H%M%S')),
-        'date_year': unicode(docdate.strftime('%Y')), 'date_month': unicode(docdate.strftime('%m')),
-        'date_day': unicode(docdate.strftime('%d')), 'time_hour': unicode(docdate.strftime('%H')),
+        'date': str(docdate.strftime('%Y-%m-%d')), 'time': str(docdate.strftime('%H%M%S')),
+        'date_year': str(docdate.strftime('%Y')), 'date_month': str(docdate.strftime('%m')),
+        'date_day': str(docdate.strftime('%d')), 'time_hour': str(docdate.strftime('%H')),
         'username': get_username(), 'hostname': get_hostname(), 'docname': options.docname,
-        'docnumber': data.get('docnumber', u''), 'docpv': options.docpv, 'doc_count': options['doc_count'],
+        'docnumber': data.get('docnumber', ''), 'docpv': options.docpv, 'doc_count': options['doc_count'],
         'customer_name': options.customer_name, 'codigo': doc_data.vendedor['codigo'],
     }
 
     if options.printer_type in ('cups', 'file'):
         out_dir = options.store % filename_data
-        base_filename = options.filename if options.filename is not None else u'%(date)s-%(time)s-%(username)s-%(codigo)s-%(docnumber)s'
+        base_filename = options.filename if options.filename is not None else '%(date)s-%(time)s-%(username)s-%(codigo)s-%(docnumber)s'
         out_filename = base_filename % filename_data
     elif options.printer_type == 'fiscal':
         out_dir = options.input % filename_data
         base_filename = options.filename if options.filename is not None\
-                else u'%(username)s_%(hostname)s_%(date)s_%(time)s_%(doc_count)s.dat'
+                else '%(username)s_%(hostname)s_%(date)s_%(time)s_%(doc_count)s.dat'
         out_filename = base_filename % filename_data
     else:
         out_dir = "/tmp"
-        out_filename = u'Nobix_%(username)s@%(hostname)s-%(docnumber)s-%(date)s%(time)s' % filename_data
+        out_filename = 'Nobix_%(username)s@%(hostname)s-%(docnumber)s-%(date)s%(time)s' % filename_data
 
     if not os.path.exists(out_dir):
-        os.makedirs(out_dir, mode=0775)
+        os.makedirs(out_dir, mode=0o775)
     return os.path.join(out_dir, out_filename)
 #}}}
 
@@ -220,9 +220,7 @@ class PrinterMeta(type):#{{{
             t = getattr(cls, '_type')
             _printers_by_type[t] = cls
 #}}}
-class Printer(object):#{{{
-    __metaclass__ = PrinterMeta
-    # _type attribute required for subclasses to be registered
+class Printer(object, metaclass=PrinterMeta):#{{{
     _ext = "_nobix"
 
     def __init__(self, name, options={}):#{{{
@@ -296,26 +294,26 @@ class FiscalPrinter(Printer):#{{{
 
         response_filename = os.path.splitext(data['out_filename'])[0]+'.ans'
 
-        title = u"Imprimiendo en %s" % self.name
+        title = "Imprimiendo en %s" % self.name
         if data['doc_total_count'] > 1:
-            title += u"\n%d de %d documentos" % (data['doc_count'], data['doc_total_count'])
+            title += "\n%d de %d documentos" % (data['doc_count'], data['doc_total_count'])
 
         if not wait_fiscal_answer(response_filename, title=title, timeout=data['timeout']):
             if os.path.exists(data['out_filename']):
-                data['errors'] = [u"El programa encargado de imprimir puede estar apagado o muy sobrecargado"]
+                data['errors'] = ["El programa encargado de imprimir puede estar apagado o muy sobrecargado"]
                 os.unlink(data['out_filename'])
             else:
-                data['errors'] = [u"No se encontró el archivo de respuesta"]
+                data['errors'] = ["No se encontró el archivo de respuesta"]
             return False, data
 
         return self._read_response(response_filename, data)
 #}}}
-    def fiscal_close(self, type_=u'X'):#{{{
+    def fiscal_close(self, type_='X'):#{{{
         outfilename = os.path.join(self.opts['input'],
                 'cierre%s_%s.dat' % (type_, datetime.now().strftime("%y%m%d-%H%M")))
 
         response_filename = os.path.splitext(outfilename)[0]+'.ans'
-        title = u"Imprimiento Cierre %s en %s" % (type_, self.name)
+        title = "Imprimiento Cierre %s en %s" % (type_, self.name)
 
         with open(outfilename, "w") as out:
             for lineno in ('08', '09', '10', '11', '12', '13', '14'):
@@ -324,10 +322,10 @@ class FiscalPrinter(Printer):#{{{
 
         if not wait_fiscal_answer(response_filename, title=title, timeout=self.opts['timeout']):
             if os.path.exists(outfilename):
-                errors = [u"El programa encargado de imprimir puede estar apagado o muy sobrecargado"]
+                errors = ["El programa encargado de imprimir puede estar apagado o muy sobrecargado"]
                 os.unlink(outfilename)
             else:
-                errors = [u"No se encontró el archivo de respuesta"]
+                errors = ["No se encontró el archivo de respuesta"]
             return False, {'errors': errors}
 
         return self._read_response(response_filename, {})
@@ -345,7 +343,7 @@ class FiscalPrinter(Printer):#{{{
                 log = open(self.opts['logfile'], "a")
             except IOError:
                 log = None
-                data['warnings'] = [u"No se puede escribir log en '%s'" % self.opts['logfile']]
+                data['warnings'] = ["No se puede escribir log en '%s'" % self.opts['logfile']]
 
         for line in resp:
             elements = line.strip().split("|")
@@ -355,11 +353,11 @@ class FiscalPrinter(Printer):#{{{
             ferr = _parse_fiscal_status(fs)
 
             if all(c for m, c in perr+ferr):
-                if cmd == u"\x45": # CloseFiscalReceipt
+                if cmd == "\x45": # CloseFiscalReceipt
                     try:
-                        data['docnumber'] = unicode(elements[3])
+                        data['docnumber'] = str(elements[3])
                     except IndexError:
-                        data['errors'].append(u"Respuesta mal formada:\n(%r)" % line.strip())
+                        data['errors'].append("Respuesta mal formada:\n(%r)" % line.strip())
 
             if log:
                 d, l = datetime.now().strftime("%Y%m%d %H:%M:%S"), line.strip()
@@ -381,41 +379,41 @@ class FiscalPrinter(Printer):#{{{
 
         os.unlink(filename)
 
-        data['last_fiscal_status'] = unicode(fs)
-        data['last_printer_status'] = unicode(ps)
+        data['last_fiscal_status'] = str(fs)
+        data['last_printer_status'] = str(ps)
         return success, data
 #}}}
     def _complete_data(self, data):#{{{
         resp_map = get_current_config().iva_resp_map
-        data['moneyfmt'] = partial(moneyfmt, sep=u'')
+        data['moneyfmt'] = partial(moneyfmt, sep='')
 
         needs_cuit = resp_map[data['customer_resp']]['needs_cuit']
 
         if needs_cuit:
             if not validar_cuit(data['customer_cuit']):
-                raise NobixBadCuitError(u"El CUIT no es válido, no se debería llegar a este "
-                                        u"punto con un CUIT inválido")
+                raise NobixBadCuitError("El CUIT no es válido, no se debería llegar a este "
+                                        "punto con un CUIT inválido")
             data['customer_cuit'] = data['customer_cuit'].replace("-", "")
         else:
-            data['customer_cuit'] = data['customer_cuit'] or u"00000000000"
+            data['customer_cuit'] = data['customer_cuit'] or "00000000000"
 
         data['fitems'] = self._format_items(data)
         l = [data['customer_domicilio'], data['customer_localidad']]
 
         if data['descuento']:
             if data['descuento'] > Decimal(0):
-                label = u'Descuento'
+                label = 'Descuento'
                 monto = data['descuento']
                 signo = 'm'
             else:
-                label = u'Recargo'
+                label = 'Recargo'
                 monto = abs(data['descuento'])
                 signo = 'M'
             data['desc'] = DescuentoData(label[:20], monto, signo, 'T')
 
         data['headers'] = []
 
-        domicilio = (u'%s' % " - ".join(l) if all(l) else "".join(l))[:40]
+        domicilio = ('%s' % " - ".join(l) if all(l) else "".join(l))[:40]
         if domicilio and data['customer_cp']:
             domicilio += " (%s)" % (data['customer_cp'],)
 
@@ -425,11 +423,11 @@ class FiscalPrinter(Printer):#{{{
             # Borramos el contenido anterior
             data['headers'].append(('09', '\x7f'))
 
-        data['headers'].append(('10', (u'Vendedor: %s' % data['vendedor'])[:40]))
+        data['headers'].append(('10', ('Vendedor: %s' % data['vendedor'])[:40]))
 
         data['footers'] = [
-            ('13', u'Defensa al Consumidor Mza. 0800-222-6678'),
-            ('14', u'Gracias por su preferencia'.center(40)),
+            ('13', 'Defensa al Consumidor Mza. 0800-222-6678'),
+            ('14', 'Gracias por su preferencia'.center(40)),
         ]
 
         return data
@@ -476,7 +474,7 @@ class FilePrinter(Printer):#{{{
 
     def run_print(self, data):#{{{
 
-        message_waiter(u" Procesando información ... ")
+        message_waiter(" Procesando información ... ")
         data['moneyfmt'] = partial(moneyfmt, sep='.', dp=',')
 
         tmpl = get_template(data['template'])
@@ -506,13 +504,13 @@ class FilePrinter(Printer):#{{{
 
         filename_data = {
             'username': get_username(), 'hostname': get_hostname(), 'docname': data.docname,
-            'date': unicode(docdate.strftime('%Y-%m-%d')), 'time': unicode(docdate.strftime('%H%M%S')),
+            'date': str(docdate.strftime('%Y-%m-%d')), 'time': str(docdate.strftime('%H%M%S')),
             'doc_count': data['doc_count'],
         }
         out_dir = data['store']
-        out_filename = u'%(docname)s_%(date)s_%(time)s_%(username)s_%(doc_count)s' % (filename_data)
+        out_filename = '%(docname)s_%(date)s_%(time)s_%(username)s_%(doc_count)s' % (filename_data)
         if not os.path.exists(out_dir):
-            os.makedirs(out_dir, mode=0775)
+            os.makedirs(out_dir, mode=0o775)
         data['out_filename'] = self._check_extension(os.path.join(out_dir, out_filename))
 
         return self.run_print(data)
