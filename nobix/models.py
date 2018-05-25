@@ -31,9 +31,7 @@ SCHEMA_VERSION = '3'
 def time_now():
     return datetime.now().time()
 
-class Model(EntityBase):
-    __metaclass__ = EntityMeta
-
+class Model(EntityBase, metaclass=EntityMeta):
     def __repr__(self):
         return "<%s %s>" % (type(self).__name__, ', '.join('%s=%s' %\
                 (k.name, repr(getattr(self, k.name))) for k in self.table.columns))
@@ -69,8 +67,8 @@ class Documento(Model):
     def _get_tipo(self):
         return self._tipo
     def _set_tipo(self, val):
-        if val not in get_current_config().documentos.keys():
-            raise NobixModelError(u"'%s' no es un tipo de documento valido" % val)
+        if val not in list(get_current_config().documentos.keys()):
+            raise NobixModelError("'%s' no es un tipo de documento valido" % val)
         self._tipo = val
     tipo = property(_get_tipo, _set_tipo)
 
@@ -108,9 +106,9 @@ class Cliente(Model):
     domicilio = Field(UnicodeText(35))
     localidad = Field(UnicodeText(20))
     codigo_postal = Field(UnicodeText(8))
-    responsabilidad_iva = Field(Enum(u'C', u'I', u'R', u'M', u'E', name="respiva_enum"), default=u"C")
+    responsabilidad_iva = Field(Enum('C', 'I', 'R', 'M', 'E', name="respiva_enum"), default="C")
     cuit = Field(UnicodeText(13))
-    relacion = Field(Enum(u'C', u'P', name="rel_enum"), default=u"C")
+    relacion = Field(Enum('C', 'P', name="rel_enum"), default="C")
 
     documentos = OneToMany('Documento')
 
@@ -144,8 +142,8 @@ class Articulo(Model):
 
     @property
     def existencia_new(self):
-        sal = [k for k, v in get_current_config().documentos.iteritems() if v['stock'] == u'salida']
-        ent = [k for k, v in get_current_config().documentos.iteritems() if v['stock'] in (u'entrada', u'ajuste')]
+        sal = [k for k, v in get_current_config().documentos.items() if v['stock'] == 'salida']
+        ent = [k for k, v in get_current_config().documentos.items() if v['stock'] in ('entrada', 'ajuste')]
         sess = object_session(self)
         q = sess.query(func.sum(ItemDocumento.cantidad)).filter(ItemDocumento.articulo==self)
         s = q.filter(ItemDocumento.documento.has(Documento.tipo.in_(sal))).scalar() or Decimal()
