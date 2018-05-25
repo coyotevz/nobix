@@ -8,7 +8,7 @@ from hashlib import md5
 from getpass import getpass
 import traceback
 from datetime import datetime
-import xmlrpclib
+import xmlrpc.client
 import socket
 
 import urwid
@@ -36,7 +36,7 @@ def run_nobix(database_uri=None):
         top,
         handle_mouse=None,
         unhandled_input=quit_on_f10,
-        palette=[(k,) + v for k, v in config.color_palette.iteritems()],
+        palette=[(k,) + v for k, v in config.color_palette.items()],
     )
     loop.set_alarm_in(1, top.doc_footer.update_date)
 
@@ -44,10 +44,10 @@ def run_nobix(database_uri=None):
         try:
             top.doc_header.save_current_document()
         except SQLAlchemyError as db_error:
-            print >> sout, unicode(datetime.now())
-            print >> sout, "Error in save_current_document()"
-            print >> sout, "".join(traceback.format_exc())
-            print >> sout, "\n\nOriginal Exception was:"
+            print(str(datetime.now()), file=sout)
+            print("Error in save_current_document()", file=sout)
+            print("".join(traceback.format_exc()), file=sout)
+            print("\n\nOriginal Exception was:", file=sout)
 
     try:
         old = loop.screen.tty_signal_keys('undefined', 'undefined',
@@ -56,9 +56,9 @@ def run_nobix(database_uri=None):
         loop.run()
     except Exception as e:
         exc_info = sys.exc_info()
-        print >> sout, unicode(datetime.now())
-        print >> sout, "".join(traceback.format_exception(*exc_info))
-        raise exc_info[0], exc_info[1], exc_info[2]
+        print(str(datetime.now()), file=sout)
+        print("".join(traceback.format_exception(*exc_info)), file=sout)
+        raise exc_info[0](exc_info[1]).with_traceback(exc_info[2])
     finally:
         _try_save_current_document()
         loop.screen.tty_signal_keys(*old)
@@ -74,14 +74,14 @@ def quit():
 def create_password(code=None, password=None):
     """Create md5sum for a salesman-code/password key."""
     if not code:
-        code = raw_input('Código Vendedor: ')
+        code = input('Código Vendedor: ')
     if not password:
         password = getpass('Contraseña: ')
     if password == '':
-        sys.exit(u"ERROR: La contraseña debe contener almenos un digito")
+        sys.exit("ERROR: La contraseña debe contener almenos un digito")
     password2 = getpass('Repetir contraseña: ')
     if password == password2:
-        print "md5:", md5(code+'|'+password).hexdigest()
+        print("md5:", md5(code+'|'+password).hexdigest())
         sys.exit(0)
     sys.exit("ERROR: Las contraseñas no coinciden")
 
@@ -120,7 +120,7 @@ def run_shell(database_uri=None):
     session.commit()
 
 def usage():
-    print """
+    print("""
     Uso: nobix [comando]
 
     Si [comando] no se especifica se lanza en programa normalmente.
@@ -132,13 +132,13 @@ def usage():
     usage,-h,--help   -- Muestra este mensaje de ayuda.
 
     --database-uri    -- URI de la base de datos como la recibe SQLAlchemy
-    """
+    """)
 
 def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
-    os.umask(0002)
+    os.umask(0o002)
 
     if '--database-uri' in args:
         idx = args.index('--database-uri')
@@ -156,7 +156,7 @@ def main(args=None):
     elif args[0] in ("usage", "-h", "--help"):
         usage()
     else:
-        print "ERROR: Argumentos incorrectos"
+        print("ERROR: Argumentos incorrectos")
         usage()
 
 if __name__ == '__main__':
