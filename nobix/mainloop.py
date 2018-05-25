@@ -17,7 +17,7 @@ class NobixSelectEventLoop(urwid.SelectEventLoop):
             while self._keep_running:
                 try:
                     self._loop()
-                except select.error, e:
+                except select.error as e:
                     if e.args[0] != 4:
                         raise
         except urwid.ExitMainLoop:
