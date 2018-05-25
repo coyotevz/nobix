@@ -21,18 +21,18 @@ _default_documentos = {
     'max_amount': None,
     'min_amount': None,
     'allowed_custom_items': False,
-    'docnumber_generation': u'<from_db>',
+    'docnumber_generation': '<from_db>',
     'print_copies': 1,
     'print_show_logo': False,
     'print_show_footer_legend': False,
-    'print_docletter': u'X',
+    'print_docletter': 'X',
     'print_max_rows': None,
-    'tercero': u'C', # Cliente.relacion
+    'tercero': 'C', # Cliente.relacion
 }
 
 def parse_documentos(raw_dict):
     doc = {}
-    for k, v in raw_dict.iteritems():
+    for k, v in raw_dict.items():
         d = _default_documentos.copy()
         d['tipo'] = k
         d.update(v)
@@ -50,7 +50,7 @@ class VendedoresConfig(dict):
         item = super(VendedoresConfig, self).get(attr)
         if isinstance(item, dict):
             return item
-        elif isinstance(item, basestring):
+        elif isinstance(item, str):
             return self[item]
         else:
             raise KeyError(attr)
@@ -62,7 +62,7 @@ class VendedoresConfig(dict):
 
 def parse_vendedores(raw_dict):
     vend = VendedoresConfig()
-    for k, v in raw_dict.iteritems():
+    for k, v in raw_dict.items():
         if isinstance(v, dict):
             d = _default_vendedores.copy()
             d.update(v)
@@ -74,7 +74,7 @@ def parse_vendedores(raw_dict):
 def parse_impuestos(raw_dict):
     "Check and parse impuestos in configuration file."
     i = {}
-    for k, v in raw_dict.iteritems():
+    for k, v in raw_dict.items():
         try:
             i[k] = v.copy()
             i[k].update({
@@ -82,8 +82,8 @@ def parse_impuestos(raw_dict):
                 'alicuota': Decimal(v['alicuota'])
             })
         except (KeyError, InvalidOperation) as e:
-            raise ValueError(u"Impuestos inválidos: revise el impuesto %s,"
-                             u" el error original fue %r" % (k, e))
+            raise ValueError("Impuestos inválidos: revise el impuesto %s,"
+                             " el error original fue %r" % (k, e))
     return i
 
 def parse_color_palette(cp):
@@ -92,11 +92,11 @@ def parse_color_palette(cp):
 def parse_date(value):
     if isinstance(value, date):
         return value
-    elif isinstance(value, basestring):
+    elif isinstance(value, str):
         try:
             return date.fromordinal(datetime.strptime(value, "%Y-%m-%d").toordinal())
         except ValueError as e:
-            print e
+            print(e)
     return None
 
 class Configuration(object):
@@ -105,7 +105,7 @@ class Configuration(object):
         if not isinstance(other, Configuration):
             return
 
-        for attr in other.__dict__.keys():
+        for attr in list(other.__dict__.keys()):
             sattr = getattr(self, attr)
             oattr = getattr(other, attr)
 
@@ -128,7 +128,7 @@ def read_config(config_path):
     config_path = path.abspath(config_path)
 
     if not path.isfile(config_path):
-        raise ValueError(u"'%s' no es un archivo" % config_path)
+        raise ValueError("'%s' no es un archivo" % config_path)
 
     config_filename = path.basename(config_path)
     config_file = open(config_path, "r")
@@ -146,9 +146,9 @@ def read_config(config_path):
     config.database_uri = getattr(config_mod, 'database_uri', None)
     config.color_palette = parse_color_palette(getattr(config_mod, 'color_palette', None))
 
-    config.default_doctype = getattr(config_mod, 'default_doctype', u'FAC')
-    config.default_vendedor = getattr(config_mod, 'default_vendedor', u'001')
-    config.default_cliente = getattr(config_mod, 'default_cliente', u'1')
+    config.default_doctype = getattr(config_mod, 'default_doctype', 'FAC')
+    config.default_vendedor = getattr(config_mod, 'default_vendedor', '001')
+    config.default_cliente = getattr(config_mod, 'default_cliente', '1')
     config.finish_key = getattr(config_mod, 'finish_key', 'end')
     config.clientes_especiales = getattr(config_mod, 'clientes_especiales', {})
     config.clock_update_interval = getattr(config_mod, 'clock_update_interval', 60)
@@ -175,7 +175,7 @@ def load_config():
     user_config_path = path.expanduser('~/.nobix.config.py')
 
     if not path.isfile(default_config_path):
-        print(u"ERROR: Falta archivo de configuración: %s" % default_config_path)
+        print(("ERROR: Falta archivo de configuración: %s" % default_config_path))
         raise SystemExit()
     default_config = read_config(default_config_path)
 
