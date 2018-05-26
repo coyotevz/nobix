@@ -89,17 +89,20 @@ def create_password(code=None, password=None):
 
 def _make_ns(database_uri=None):
     from nobix.config import load_config
-    from nobix.db import setup_db, Session
+    from nobix.models import db
+    #from nobix.db import setup_db, Session
     from nobix.models import Cliente, Articulo, ItemDocumento, Documento,\
                              Cache, Tasa
 
     config = load_config()
     if database_uri:
         config.database_uri = database_uri
-    setup_db(config.database_uri)
-    session = Session()
+    #setup_db(config.database_uri)
+    db.configure(config.database_uri)
+    #session = Session()
+    session = db.session
 
-    del load_config, setup_db, Session
+    del load_config #, setup_db, Session
     return locals()
 
 def run_shell(database_uri=None):
@@ -115,7 +118,8 @@ def run_shell(database_uri=None):
             sh = InteractiveShellEmbed(banner1=banner)
         else:
             sh = IPython.Shell.IPShellEmbed(banner=banner, argv=[])
-        sh(global_ns={}, local_ns=namespace)
+        #sh(global_ns={}, local_ns=namespace)
+        sh(local_ns=namespace)
         return
     from code import interact
     interact(banner, local=namespace)
