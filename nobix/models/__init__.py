@@ -9,3 +9,11 @@ db = SQLAlchemy()
 
 def time_now():
     return datetime.now().time()
+
+
+from .document import Documento
+from .item import ItemDocumento
+from .tax import Tasa
+from .product import Articulo
+from .customer import Cliente
+from .cache import Cache
