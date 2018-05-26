@@ -4,7 +4,7 @@
 # patch
 import nobix._pickle_methods
 
-from Queue import Empty as QueueEmpty
+from queue import Empty as QueueEmpty
 from multiprocessing import Process, Queue, Event
 
 from urwid import ListWalker
@@ -29,7 +29,7 @@ class SQLWorker(Process):
         query = iter(self.query.yield_per(100))
         while not self.stop.is_set():
             try:
-                item = query.next()
+                item = next(query)
                 self.qoutput.put(item)
                 self.qaccum.put(item)
             except StopIteration:
