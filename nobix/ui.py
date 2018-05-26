@@ -76,7 +76,7 @@ def _get_cached_for_vendedor_or_none(vendedor_code):#{{{
 
     try:
         return session.query(Cache).filter(and_(
-            Cache.vendedor==unicode(vendedor_code),
+            Cache.vendedor==str(vendedor_code),
             Cache.username==get_username(),
             Cache.hostname==get_hostname(),
         )).one()
@@ -213,13 +213,13 @@ class TipoDocumentoBox(InputBox):#{{{
 class InfoArticulo(WidgetWrap):#{{{
 
     def __init__(self):#{{{
-        self.codigo = Text(u"", wrap='clip')
-        self.descripcion = Text(u"", wrap='clip')
+        self.codigo = Text("", wrap='clip')
+        self.descripcion = Text("", wrap='clip')
         self.precio = NumericText(align="left")
         self.existencia = NumericText()
-        self.vigencia = Text(u"", wrap='clip')
-        self.proveedor = Text(u"", wrap='clip')
-        self.agrupacion = Text(u"", wrap='clip')
+        self.vigencia = Text("", wrap='clip')
+        self.proveedor = Text("", wrap='clip')
+        self.agrupacion = Text("", wrap='clip')
 
         row1 = Columns([
             ('fixed', 15, AttrMap(self.codigo, 'document.info.codigo')),
@@ -239,7 +239,7 @@ class InfoArticulo(WidgetWrap):#{{{
             ('fixed', 12, AttrMap(Text("Existencia: "), 'document.info.existencia.label')),
             ('fixed', 10, AttrMap(self.existencia, 'document.info.existencia.value')),
             ('fixed', 3, Divider()),
-            ('fixed', 12, AttrMap(Text(u"Agrupación: "), 'document.info.agrupacion.label')),
+            ('fixed', 12, AttrMap(Text("Agrupación: "), 'document.info.agrupacion.label')),
             ('fixed', 20, AttrMap(self.agrupacion, 'document.info.agrupacion.value')),
         ])
 
@@ -269,17 +269,17 @@ class InfoArticulo(WidgetWrap):#{{{
             self.proveedor.set_text(obj.proveedor)
             self.agrupacion.set_text(obj.agrupacion)
         else:
-            if isinstance(obj, basestring):
+            if isinstance(obj, str):
                 self.codigo.set_text(obj[:15])
                 self.descripcion.set_text(obj[15:])
             else:
-                self.codigo.set_text(u"")
-                self.descripcion.set_text(u"")
-            self.precio.set_text(u"")
-            self.existencia.set_text(u"")
-            self.vigencia.set_text(u"")
-            self.proveedor.set_text(u"")
-            self.agrupacion.set_text(u"")
+                self.codigo.set_text("")
+                self.descripcion.set_text("")
+            self.precio.set_text("")
+            self.existencia.set_text("")
+            self.vigencia.set_text("")
+            self.proveedor.set_text("")
+            self.agrupacion.set_text("")
 #}}}
     def reset(self):#{{{
         self.update(None)
@@ -305,9 +305,9 @@ class DocumentHeader(WidgetWrap):#{{{
         connect_signal(self.cliente_box, 'search-client', self.on_cliente_search)
         connect_signal(self.cliente_box, 'edit-cliente', self.on_cliente_edit_record)
         connect_signal(self.cliente_box, 'edit-cancel', lambda *w: self._emit("cliente-set"))
-        self.cliente_name = Text(u"", wrap='clip')
-        self.cliente_cuit = Text(u"", wrap='clip')
-        self.cliente_resp = Text(u"", wrap='clip')
+        self.cliente_name = Text("", wrap='clip')
+        self.cliente_cuit = Text("", wrap='clip')
+        self.cliente_resp = Text("", wrap='clip')
 
         cliente_row_1 = Columns([
             ('fixed', 4, AttrMap(Text("Cl: "), 'header.cliente.label')),
@@ -317,7 +317,7 @@ class DocumentHeader(WidgetWrap):#{{{
         ])
 
         cliente_row_2 = Columns([
-            ('fixed', 11, Text(u"")),
+            ('fixed', 11, Text("")),
             AttrMap(self.cliente_resp, 'header.cliente.resp'),
             ('fixed', 13, AttrMap(self.cliente_cuit, 'header.cliente.cuit')),
         ])
@@ -332,7 +332,7 @@ class DocumentHeader(WidgetWrap):#{{{
         connect_signal(self.vendedor_box, 'focus-in', self.on_vendedor_focus_in)
         connect_signal(self.vendedor_box, 'edit-done', self.on_vendedor_edit_done)
         connect_signal(self.vendedor_box, 'edit-cancel', self.on_vendedor_edit_done)
-        self.vendedor_name = Text(u"", wrap='clip')
+        self.vendedor_name = Text("", wrap='clip')
 
         self.vendedor_row = Columns([
             ('fixed', 6, AttrMap(Text("Vend:"), 'header.vendedor.label')),
@@ -345,7 +345,7 @@ class DocumentHeader(WidgetWrap):#{{{
         connect_signal(self.tipo_documento_box, 'focus-in', highlight_focus_in)
         connect_signal(self.tipo_documento_box, 'edit-done', self.on_tipo_documento_edit_done)
         connect_signal(self.tipo_documento_box, 'edit-cancel', self.on_tipo_documento_edit_done)
-        self.tipo_documento_name = Text(u"", wrap='clip')
+        self.tipo_documento_name = Text("", wrap='clip')
 
         self.tipo_documento_row = Columns([
             ('fixed', 6, AttrMap(Text("Docu:"), 'header.tipo_documento.label')),
@@ -371,7 +371,7 @@ class DocumentHeader(WidgetWrap):#{{{
         if resp in iva_resp_map:
             doctypes = iva_resp_map[resp]['doctypes']
             current_type = self.tipo_documento_box.get_edit_text()
-            if (current_type == u"") or (current_type not in doctypes):
+            if (current_type == "") or (current_type not in doctypes):
                 self.rellenar_tipo_documento(doctypes[0])
 #}}}
     def save_current_document(self):#{{{
@@ -414,7 +414,7 @@ class DocumentHeader(WidgetWrap):#{{{
             doctype = get_current_config().default_doctype
 
         if doctype is None:
-            doctype = u""
+            doctype = ""
 
         self.tipo_documento_box.set_edit_text(doctype)
         self._doc_body.set_tipo_documento(doctype)
@@ -428,7 +428,7 @@ class DocumentHeader(WidgetWrap):#{{{
             vendedor = get_current_config().default_vendedor
 
         if vendedor is None:
-            vendedor = u""
+            vendedor = ""
 
         self.vendedor_box.set_edit_text(vendedor)
         vnombre = get_current_config().vendedores.get(vendedor, {}).get('nombre', '')
@@ -441,7 +441,7 @@ class DocumentHeader(WidgetWrap):#{{{
             cliente = get_current_config().default_cliente
 
         q = None
-        if isinstance(cliente, basestring): # codigo cliente
+        if isinstance(cliente, str): # codigo cliente
             q = session.query(Cliente).filter(Cliente.codigo==int(cliente))
         elif isinstance(cliente, int): # cliente id
             q = session.query(Cliente).filter(Cliente.id==cliente)
@@ -451,10 +451,10 @@ class DocumentHeader(WidgetWrap):#{{{
             except NoResultFound:
                 cliente = None
 
-        codigo = u""
-        nombre = u""
-        resp_label = u""
-        cuit = u""
+        codigo = ""
+        nombre = ""
+        resp_label = ""
+        cuit = ""
 
         if isinstance(cliente, Cliente): # Cliente object
             cliente_id = cliente.id
@@ -534,31 +534,31 @@ class DocumentHeader(WidgetWrap):#{{{
             return isinstance(item.articulo, Articulo)
 
         if not doc_conf['allowed_custom_items']:
-            allowed_items = filter(_items_with_article, raw_items)
+            allowed_items = list(filter(_items_with_article, raw_items))
             if len(raw_items) > len(allowed_items):
-                show_error(u"En este tipo de documento no está permitida la venta de artículos"
-                           u" sin código.\n\nElimine los artículos sin código.")
+                show_error("En este tipo de documento no está permitida la venta de artículos"
+                           " sin código.\n\nElimine los artículos sin código.")
                 return
 
         if doc_conf['stock'] not in ('ajuste', 'inventario'):
-            positive_items = filter(_positive_valid_item, raw_items)
+            positive_items = list(filter(_positive_valid_item, raw_items))
             if len(raw_items) > len(positive_items):
-                show_error([u"Hay elementos inválidos: las ", ('dialog.warning.important', u"cantidades"),
-                    u" no pueden ser ", ('dialog.warning.important', u"negativas"), u" por favor corrija ",
-                    u"los items correspondientes."])
+                show_error(["Hay elementos inválidos: las ", ('dialog.warning.important', "cantidades"),
+                    " no pueden ser ", ('dialog.warning.important', "negativas"), " por favor corrija ",
+                    "los items correspondientes."])
                 return
 
-        items_data = filter(_valid_item, raw_items)
+        items_data = list(filter(_valid_item, raw_items))
         if len(raw_items) > len(items_data) and doc_conf['stock'] not in ('ajuste', 'inventario'):
-            cont = show_warning([u"Hay elementos inválidos cuyo ", ('dialog.warning.important', u"precio"),
-                u" y/o ", ('dialog.warning.important', u"cantidad"), u" son igual a cero.",
-                u"\n\n", u"Estos elementos serán ", ('dialog.warning.important', u"eliminados"),
-                u" automáticamente del documento.", u"\n"
-                ], [(u"Continuar", True), (u"Volver", False)], focus_button=1)
+            cont = show_warning(["Hay elementos inválidos cuyo ", ('dialog.warning.important', "precio"),
+                " y/o ", ('dialog.warning.important', "cantidad"), " son igual a cero.",
+                "\n\n", "Estos elementos serán ", ('dialog.warning.important', "eliminados"),
+                " automáticamente del documento.", "\n"
+                ], [("Continuar", True), ("Volver", False)], focus_button=1)
             if cont is not True:
                 return
             if len(items_data) < 1: # Recheck validity
-                show_error(u"El documento no contiene items válidos.")
+                show_error("El documento no contiene items válidos.")
                 return
         else:
             # Incluimos los items con cantidad 0 y precio 0
@@ -566,29 +566,29 @@ class DocumentHeader(WidgetWrap):#{{{
 
         if doc_conf['max_amount'] is not None and body.calcular_total() > Decimal(doc_conf['max_amount']):
             show_error(
-                [u"El monto excede el máximo permitido (",
+                ["El monto excede el máximo permitido (",
                  ('dialog.error.important', moneyfmt(Decimal(doc_conf['max_amount']), sep='.', dp=',')),
-                 u")\n\n", ('dialog.error.important', u"Solución"),
-                 u"\n* Reparta los items en distintos documentos manteniendose por debajo del máximo permitido.",
-                 u"\n* Utilice fomularios manuales si lo anterior no es posible."])
+                 ")\n\n", ('dialog.error.important', "Solución"),
+                 "\n* Reparta los items en distintos documentos manteniendose por debajo del máximo permitido.",
+                 "\n* Utilice fomularios manuales si lo anterior no es posible."])
             return
 
         if doc_conf['min_amount'] is not None and body.calcular_total() < Decimal(doc_conf['min_amount']):
             show_error(
-                [u"El monto es inferior al permitido (",
+                ["El monto es inferior al permitido (",
                  ('dialog.error.important', moneyfmt(Decimal(doc_conf['min_amount']), sep='.', dp=',')),
-                 u")\n\n", ('dialog.error.important', u"Solución"),
-                 u"\n* Utilice otro tipo de documento para esta operación."])
+                 ")\n\n", ('dialog.error.important', "Solución"),
+                 "\n* Utilice otro tipo de documento para esta operación."])
             return
 
         if doc_conf['print_max_rows'] is not None and len(items_data) > doc_conf['print_max_rows']:
             citems, cmax = len(items_data), int(doc_conf['print_max_rows'])
             doc_qty = int(citems / cmax) + int(bool(citems % cmax))
-            cont = show_warning([u"La cantidad de items excede la cantidad permitida para este documento.\n\n",
-                u"El sistema repartirá automaticamente los items en la cantidad de documentos",
-                u" que sean necesarios.\n\n", u"Total Documentos: ",
-                ('dialog.warning.important', u"%d" % doc_qty), "\n"],
-                [(u"Continuar", True), (u"Volver", False)], focus_button=0)
+            cont = show_warning(["La cantidad de items excede la cantidad permitida para este documento.\n\n",
+                "El sistema repartirá automaticamente los items en la cantidad de documentos",
+                " que sean necesarios.\n\n", "Total Documentos: ",
+                ('dialog.warning.important', "%d" % doc_qty), "\n"],
+                [("Continuar", True), ("Volver", False)], focus_button=0)
             if cont is not True:
                 return
 
@@ -600,7 +600,7 @@ class DocumentHeader(WidgetWrap):#{{{
         total = body.calcular_total()
         doc_data = DocumentData(vendedor, doctype, cliente, descuento, total, items_data)
 
-        if doctype == u'FAC' and cliente.responsabilidad_iva == u'C' and total > Decimal('999.99'):
+        if doctype == 'FAC' and cliente.responsabilidad_iva == 'C' and total > Decimal('999.99'):
             pw = SpecialPrintWizard(doc_data, self)
         else:
             pw = PrintWizard(doc_data, self)
@@ -609,7 +609,7 @@ class DocumentHeader(WidgetWrap):#{{{
     def print_temp_list(self, body):#{{{
         items = body.get_items()
         if len(items) == 0:
-            show_error(u"No puedo imprimir una lista vacía.")
+            show_error("No puedo imprimir una lista vacía.")
             return None
         return temporary_list_printer(self.vendedor_name.get_text()[0], items)
 #}}}
@@ -632,7 +632,7 @@ class DocumentHeader(WidgetWrap):#{{{
                 descripcion = item.articulo.descripcion
                 precio = item.precio if item.precio is not None else item.articulo.precio
                 articulo = item.articulo
-            elif isinstance(item.articulo, basestring):
+            elif isinstance(item.articulo, str):
                 codigo = None
                 descripcion = item.articulo
                 precio = item.precio
@@ -644,11 +644,11 @@ class DocumentHeader(WidgetWrap):#{{{
 
             doc_items.append(i)
 
-        dir_data = map(printed_data.get, ['customer_domicilio', 'customer_localidad'])
+        dir_data = list(map(printed_data.get, ['customer_domicilio', 'customer_localidad']))
         if all(dir_data):
             direccion = " - ".join(dir_data)
         else:
-            direccion = u"".join(dir_data)
+            direccion = "".join(dir_data)
         if printed_data['customer_cp']:
             direccion += " (%s)" % printed_data['customer_cp']
 
@@ -734,7 +734,7 @@ class DocumentHeader(WidgetWrap):#{{{
     def on_cliente_edit_done(self, widget, cod_cliente):#{{{
         try:
             c = session.query(Cliente).filter(Cliente.codigo==int(cod_cliente))\
-                                      .filter(Cliente.relacion==u"C").one()
+                                      .filter(Cliente.relacion=="C").one()
         except (NoResultFound, ValueError):
             return
         self.rellenar_cliente(c)
@@ -754,11 +754,11 @@ class DocumentHeader(WidgetWrap):#{{{
 #}}}
     def on_cliente_edit_record(self, widget, cod_cliente):#{{{
         try:
-            cod_cliente = unicode(int(cod_cliente))
+            cod_cliente = str(int(cod_cliente))
         except ValueError:
             cod_cliente = "new"
 
-        if cod_cliente in get_current_config().clientes_especiales.keys():
+        if cod_cliente in list(get_current_config().clientes_especiales.keys()):
             cod_cliente = "new"
 
         cliente = maestro_terceros(filled_with=cod_cliente, once=True)
@@ -770,7 +770,7 @@ class DocumentHeader(WidgetWrap):#{{{
 #}}}
     def on_vendedor_focus_in(self, widget):#{{{
         vendedor_code = widget.get_edit_text()
-        if vendedor_code != u"" and vendedor_code in get_current_config().vendedores:
+        if vendedor_code != "" and vendedor_code in get_current_config().vendedores:
             self.save_current_document()
         # limpiar todos los campos
         self.clear_document()
@@ -826,7 +826,7 @@ class DocumentItem(WidgetWrap):#{{{
         #connect_signal(self.code_box, "search-item", self.on_search_item)
         connect_signal(self.code_box, "check-can-move", self.on_check_can_move)
 
-        self.descripcion = Text(u"", wrap='clip')
+        self.descripcion = Text("", wrap='clip')
 
         self.cantidad = NumericInputBox(min_value=-9999.99, max_value=9999.99, default=1)
         self.cantidad.keypress = self._cantidad_keypress
@@ -904,7 +904,7 @@ class DocumentItem(WidgetWrap):#{{{
         return wid.__class__.keypress(wid, size, key)
 #}}}
     def keypress(self, size, key):#{{{
-        if key == "ctrl d" and self.descripcion.get_text()[0] != u"":
+        if key == "ctrl d" and self.descripcion.get_text()[0] != "":
             self._emit("delete-item")
         if key == "ctrl p" and self._obj is not None:
             self._emit("move-up")
@@ -935,7 +935,7 @@ class DocumentItem(WidgetWrap):#{{{
 #        return None
 #}}}
     def on_check_can_move(self, widget):#{{{
-        if widget.get_edit_text() == u"" and not self._obj:
+        if widget.get_edit_text() == "" and not self._obj:
             return True
         if self._obj is not None and widget.get_edit_text() == self._obj.codigo:
             return True
@@ -1007,7 +1007,7 @@ class DocumentLineItem(WidgetWrap):#{{{
         if not key:
             return
         if command_map[key] == 'cursor up':
-            if self.precio.get_edit_text() != u"":
+            if self.precio.get_edit_text() != "":
                 self._w.set_focus(self.descripcion)
             return
         elif command_map[key] == 'cursor down':
@@ -1200,7 +1200,7 @@ class DocumentBody(WidgetWrap):#{{{
             if i._obj is not None:
                 if isinstance(i._obj, Articulo):
                     precio = i.precio.get_value() if i.precio.get_value() != i._obj.precio else None
-                elif isinstance(i._obj, basestring):
+                elif isinstance(i._obj, str):
                     precio = i.precio.get_value()
                 else:
                     raise RuntimeError("Unknown item type '%s'" % type(i._obj).__name__)
@@ -1218,7 +1218,7 @@ class DocumentBody(WidgetWrap):#{{{
                 if isinstance(a, Articulo):
                     articulo = a.id
                     precio = i.precio.get_value() if i.precio.get_value() != a.precio else None
-                elif isinstance(a, basestring):
+                elif isinstance(a, str):
                     articulo = a # descripción
                     precio = i.precio.get_value()
                 else:
@@ -1238,7 +1238,7 @@ class DocumentBody(WidgetWrap):#{{{
                     new_item.precio.set_value(item.precio)
                 self.items.append(new_item)
                 new_item.calcular_total()
-            elif isinstance(item.articulo_id, basestring):
+            elif isinstance(item.articulo_id, str):
                 new_item = self._new_line_item(item.articulo_id)
                 new_item.cantidad.set_value(item.cantidad)
                 new_item.precio.set_value(item.precio)
@@ -1429,7 +1429,7 @@ class DocumentFooter(WidgetWrap):#{{{
         self.status = Text(footer_text, wrap='clip')
         status_width = len(footer_text[1])+1
         self.date = Text("", wrap='clip')
-        self.extra_info = Text(u"", align='right', wrap='clip')
+        self.extra_info = Text("", align='right', wrap='clip')
 
         self._clock_update_interval = get_current_config().clock_update_interval
         self._clock_fmt = get_current_config().clock_fmt
@@ -1460,14 +1460,14 @@ class ArticleSearchItem(SearchListItem):#{{{
         ])
 #}}}
 class ArticleSearchDialog(SearchDialog):#{{{
-    title = u"BUSCAR ARTICULOS"
+    title = "BUSCAR ARTICULOS"
     subtitle = None
 
     def get_item_constructor(self):
         return ArticleSearchItem
 #}}}
 class ArticleSearchDialogExact(ArticleSearchDialog):#{{{
-    subtitle = u"por descripción exacta"
+    subtitle = "por descripción exacta"
 
     def get_query(self, term):
         if term.strip():
@@ -1476,7 +1476,7 @@ class ArticleSearchDialogExact(ArticleSearchDialog):#{{{
             return query
 #}}}
 class ArticleSearchDialogByWord(ArticleSearchDialog):#{{{
-    subtitle = u"por palabras"
+    subtitle = "por palabras"
 
     def get_query(self, term):
         if term.strip():
@@ -1491,7 +1491,7 @@ class ArticleSearchDialogByWord(ArticleSearchDialog):#{{{
             return query
 #}}}
 class ArticleSearchDialogByCode(ArticleSearchDialog):#{{{
-    subtitle = u"por código (comodines)"
+    subtitle = "por código (comodines)"
 
     def get_query(self, term):
         if term.strip():
@@ -1503,7 +1503,7 @@ class ArticleSearchDialogByCode(ArticleSearchDialog):#{{{
             return query
 #}}}
 class ArticleSearchDialogByGroup(ArticleSearchDialog):#{{{
-    subtitle = u"por agrupación"
+    subtitle = "por agrupación"
 
     def get_query(self, term):
         if term.strip():
@@ -1512,7 +1512,7 @@ class ArticleSearchDialogByGroup(ArticleSearchDialog):#{{{
             return query
 #}}}
 class ArticleSearchDialogBySupplier(ArticleSearchDialog):#{{{
-    subtitle = u"por proveedor"
+    subtitle = "por proveedor"
 
     def get_query(self, term):
         if term.strip():
@@ -1527,10 +1527,10 @@ class TerceroSearchItem(SearchListItem):#{{{
         if all(extra_info):
             info = " - ".join(extra_info)
         else:
-            info = u"".join(extra_info)
+            info = "".join(extra_info)
 
         self.__super.__init__([
-            ('fixed',  7, Text(unicode(item.codigo), wrap='clip')),
+            ('fixed',  7, Text(str(item.codigo), wrap='clip')),
             ('fixed', 36, Text(item.nombre, wrap='clip')),
             Text(info, wrap='clip'),
         ])
@@ -1542,11 +1542,11 @@ class TerceroSearchItemWithCuit(SearchListItem):#{{{
         if all(extra_info):
             info = " - ".join(extra_info)
         else:
-            info = u"".join(extra_info)
+            info = "".join(extra_info)
 
         self.__super.__init__([
-            ('fixed', 7, Text(unicode(item.codigo), wrap='clip')),
-            ('fixed', 15, Text(unicode(item.cuit), wrap='clip')),
+            ('fixed', 7, Text(str(item.codigo), wrap='clip')),
+            ('fixed', 15, Text(str(item.cuit), wrap='clip')),
             ('fixed', 28, Text(item.nombre, wrap='clip')),
             ('fixed', 1, Divider()),
             Text(info, wrap='clip'),
@@ -1555,15 +1555,15 @@ class TerceroSearchItemWithCuit(SearchListItem):#{{{
 class TerceroSearchDialog(SearchDialog):#{{{
 
     def __init__(self, rel=None, **kwargs):
-        self._rel = rel if rel is not None else u'C'
-        self.title = u"BUSCAR %s" % (u'CLIENTE' if self._rel == u'C' else u'PROVEEDOR',)
+        self._rel = rel if rel is not None else 'C'
+        self.title = "BUSCAR %s" % ('CLIENTE' if self._rel == 'C' else 'PROVEEDOR',)
         self.__super.__init__(**kwargs)
 
     def get_item_constructor(self):
         return TerceroSearchItem
 #}}}
 class TerceroSearchDialogExact(TerceroSearchDialog):#{{{
-    subtitle = u"por nombre exacto"
+    subtitle = "por nombre exacto"
 
     def get_query(self, term):
         if term.strip():
@@ -1572,7 +1572,7 @@ class TerceroSearchDialogExact(TerceroSearchDialog):#{{{
             return query
 #}}}
 class TerceroSearchDialogByWord(TerceroSearchDialog):#{{{
-    subtitle = u"por palabra"
+    subtitle = "por palabra"
 
     def get_query(self, term):
         if term.strip():
@@ -1587,7 +1587,7 @@ class TerceroSearchDialogByWord(TerceroSearchDialog):#{{{
             return query
 #}}}
 class TerceroSearchDialogByCuit(TerceroSearchDialog):#{{{
-    subtitle = u"por CUIT (comodines)"
+    subtitle = "por CUIT (comodines)"
 
     def get_query(self, term):
         if term.strip():
@@ -1646,7 +1646,7 @@ class ActionBox(InputBox):#{{{
         'M': 'action-modify-code',
     }
 
-    signals = actions.values()
+    signals = list(actions.values())
 
     def __init__(self):
         self.__super.__init__(max_length=1)
@@ -1660,7 +1660,7 @@ class ActionBox(InputBox):#{{{
         return None
 
     def emit_action(self, widget, action):
-        if action in self.actions.keys():
+        if action in list(self.actions.keys()):
             self.set_edit_text(action)
             self.set_edit_pos(0)
             self._emit(self.actions[action])
@@ -1750,7 +1750,7 @@ class MaestroStock(Dialog):#{{{
         connect_signal(self.precio_box, 'focus-in', self.on_precio_focus_in)
         connect_signal(self.precio_box, 'edit-done', self.on_next_focus)
         connect_signal(self.precio_box, 'edit-cancel', _edit_cancel)
-        self.precio_error = Text(u"")
+        self.precio_error = Text("")
         precio_row = Columns([
             ('fixed', 12, AttrMap(Text("Precio"), 'dialog.maestock.label')),
             ('fixed', 1, Divider()),
@@ -1764,7 +1764,7 @@ class MaestroStock(Dialog):#{{{
         connect_signal(self.vigencia_box, 'edit-cancel', _edit_cancel)
         connect_signal(self.vigencia_box, 'edit-done', self.on_vigencia_edit_done)
         connect_signal(self.vigencia_box, 'bad-date-error', self.on_vigencia_error)
-        self.vigencia_error = Text(u"")
+        self.vigencia_error = Text("")
         vigencia_row = Columns([
             ('fixed', 12, AttrMap(Text("Vigencia"), 'dialog.maestock.label')),
             ('fixed', 1, Divider()),
@@ -1773,7 +1773,7 @@ class MaestroStock(Dialog):#{{{
             AttrMap(self.vigencia_error, 'dialog.maestock.error')
         ])
 
-        self.instrucciones = Text(u"", align='right')
+        self.instrucciones = Text("", align='right')
 
         self.content = Pile([
             codigo_row,
@@ -1802,11 +1802,11 @@ class MaestroStock(Dialog):#{{{
             inst.extend([(key, 'B'), "aja  "])
         inst.extend([(key, 'A'), "nterior  "])
         if self._obj:
-            inst.extend([(key, 'M'), u"odifica código"])
+            inst.extend([(key, 'M'), "odifica código"])
         self.instrucciones.set_text(inst)
 #}}}
     def hide_instrucciones(self, *args):#{{{
-        self.instrucciones.set_text(u"")
+        self.instrucciones.set_text("")
 #}}}
     def fill_with_data(self, obj):#{{{
         if obj is not None:
@@ -1816,11 +1816,11 @@ class MaestroStock(Dialog):#{{{
             self.precio_box.set_value(obj.precio)
             self.vigencia_box.set_value(obj.vigencia)
         else:
-            self.descripcion_box.set_edit_text(u"")
-            self.proveedor_box.set_edit_text(u"")
-            self.agrupacion_box.set_edit_text(u"")
-            self.precio_box.set_edit_text(u"")
-            self.vigencia_box.set_edit_text(u"")
+            self.descripcion_box.set_edit_text("")
+            self.proveedor_box.set_edit_text("")
+            self.agrupacion_box.set_edit_text("")
+            self.precio_box.set_edit_text("")
+            self.vigencia_box.set_edit_text("")
 #}}}
     def save(self, *args):#{{{
         # can be connected as callback
@@ -1828,16 +1828,16 @@ class MaestroStock(Dialog):#{{{
             self._pile.set_focus(0)
             self._pile.widget_list[0].set_focus(0)
             self.content.widget_list[0].set_focus(2)
-            self.codigo_box.set_edit_text(u"")
+            self.codigo_box.set_edit_text("")
             self.fill_with_data(None)
 
-        if self.codigo_box.get_edit_text() == u"":
+        if self.codigo_box.get_edit_text() == "":
             _set_focus_on_code_box()
             return
-        if self.precio_box.get_edit_text() == u"":
+        if self.precio_box.get_edit_text() == "":
             self.precio_error.set_text(" No puede estar vacío")
             return
-        if self.vigencia_box.get_edit_text() == u"":
+        if self.vigencia_box.get_edit_text() == "":
             self.vigencia_error.set_text(" No puede estar vacío")
             return
         if not self.vigencia_box._check_date():
@@ -1873,12 +1873,12 @@ class MaestroStock(Dialog):#{{{
     ### Signal Handlers ###
 
     def on_codigo_focus_in(self, widget):#{{{
-        self.action_label.set_text(u"")
-        self.action_box.set_edit_text(u"")
+        self.action_label.set_text("")
+        self.action_box.set_edit_text("")
         highlight_focus_in(widget)
 #}}}
     def on_codigo_edit_done(self, widget, code):#{{{
-        if code != u"":
+        if code != "":
             # Fijar accion y cargar datos en el formulario
             q = session.query(Articulo).filter(Articulo.codigo==code)
             try:
@@ -1918,11 +1918,11 @@ class MaestroStock(Dialog):#{{{
 #}}}
     def on_action_baja(self, widget):#{{{
         if self._obj:
-            cont = show_warning([u"Esta acción dará de baja al artículo ",
-                ('dialog.warning.important', u"%s" % self._obj.codigo), u"\n\n¿Está seguro?\n"
-                ], [(u"Aceptar", True), (u"Cancelar", False)], focus_button=0)
+            cont = show_warning(["Esta acción dará de baja al artículo ",
+                ('dialog.warning.important', "%s" % self._obj.codigo), "\n\n¿Está seguro?\n"
+                ], [("Aceptar", True), ("Cancelar", False)], focus_button=0)
             if cont is not True:
-                self.action_box.set_edit_text(u"C")
+                self.action_box.set_edit_text("C")
                 return
             self._obj.codigo = "I" + self._obj.codigo
             self._obj.es_activo = False
@@ -1935,23 +1935,23 @@ class MaestroStock(Dialog):#{{{
         if self._obj:
             new_code = ModificaCodigo(self._obj).run()
             if not new_code:
-                self.action_box.set_edit_text(u"C")
+                self.action_box.set_edit_text("C")
                 return
             self.codigo_box.set_edit_text(new_code)
             self.on_codigo_edit_done(self.codigo_box, new_code)
 
     def on_action_return(self, widget):#{{{
-        self.codigo_box.set_edit_text(u"")
+        self.codigo_box.set_edit_text("")
         self.fill_with_data(None)
         self.content.widget_list[0].set_focus(2)
 #}}}
     def on_precio_focus_in(self, widget):#{{{
-        self.precio_error.set_text(u"")
+        self.precio_error.set_text("")
         highlight_focus_in(widget)
 #}}}
     def on_vigencia_focus_in(self, widget):#{{{
         if self._vigencia_error_state is None:
-            self.vigencia_error.set_text(u"")
+            self.vigencia_error.set_text("")
             highlight_focus_in(widget)
 #}}}
     def on_vigencia_edit_done(self, widget, *text):#{{{
@@ -1961,13 +1961,13 @@ class MaestroStock(Dialog):#{{{
             self._vigencia_error_state = None
             highlight_focus_in(widget)
             return
-        self.vigencia_error.set_text(u"")
+        self.vigencia_error.set_text("")
         self._check_futuro()
         self.focus_button(0)
 #}}}
     def on_vigencia_focus_out(self, widget):#{{{
         self._vigencia_error_state = None
-        self.vigencia_error.set_text(u"")
+        self.vigencia_error.set_text("")
         self._check_futuro()
 #}}}
     def on_vigencia_error(self, widget, msg):#{{{
@@ -1975,14 +1975,14 @@ class MaestroStock(Dialog):#{{{
         self.vigencia_error.set_text(msg)
 #}}}
     def _check_futuro(self):#{{{
-        if self.vigencia_error.get_text()[0] == u"": # por las dudas!
+        if self.vigencia_error.get_text()[0] == "": # por las dudas!
             d = self.vigencia_box.value
             if d:
                 f = date.today() + timedelta(days=1)
                 if d >= f:
-                    self.vigencia_error.set_text(u"CUIDADO: Fecha futura")
+                    self.vigencia_error.set_text("CUIDADO: Fecha futura")
                 else:
-                    self.vigencia_error.set_text(u"")
+                    self.vigencia_error.set_text("")
 #}}}
 #}}}
 
@@ -2016,7 +2016,7 @@ class ModificaCodigo(Dialog):#{{{
         self.new_code_error = Text("")
 
         row_new_code = Columns([
-            ('fixed', 12, AttrMap(Text(u"Nuevo Código"), 'dialog.maestock.label')),
+            ('fixed', 12, AttrMap(Text("Nuevo Código"), 'dialog.maestock.label')),
             ('fixed', 14, AttrMap(self.new_code_box, 'dialog.maestock.input', 'dialog.maestock.input.focus')),
             AttrMap(self.new_code_error, 'dialog.maestock.error'),
         ], dividechars=1)
@@ -2030,7 +2030,7 @@ class ModificaCodigo(Dialog):#{{{
         #buttons = [("Grabar", self.save), ("Cancelar", self._quit)]
         buttons = [("Grabar", self.save), ("Cancelar", self.quit)]
         self.__super.__init__(self.content, buttons,
-                              title=u"MODIFICA CÓDIGO",
+                              title="MODIFICA CÓDIGO",
                               height=None,
                               width=55)
         self.attr_style = 'dialog.maestock'
@@ -2050,16 +2050,16 @@ class ModificaCodigo(Dialog):#{{{
         self.quit()
 #}}}
     def _validar_nuevo_codigo(self, codigo):#{{{
-        if codigo == u"":
-            self.new_code_error.set_text(u"No puede estar vacío")
+        if codigo == "":
+            self.new_code_error.set_text("No puede estar vacío")
             return False
 
         try:
             session.query(Articulo).filter(Articulo.codigo==codigo).one()
         except NoResultFound:
-            self.new_code_error.set_text(u"")
+            self.new_code_error.set_text("")
             return True
-        self.new_code_error.set_text(u"El código ya esta en uso")
+        self.new_code_error.set_text("El código ya esta en uso")
         return False
 #}}}
     def on_code_focus_out(self, widget):#{{{
@@ -2101,7 +2101,7 @@ class MaeterCodeBox(InputBox):#{{{
 #}}}
 class MaestroTerceros(Dialog):#{{{
 
-    def __init__(self, titulo_rel=u'CLIENTES', rel=u'C', filled_with=None, once=False):#{{{
+    def __init__(self, titulo_rel='CLIENTES', rel='C', filled_with=None, once=False):#{{{
 
         self._rel = rel
         self._once = once
@@ -2114,10 +2114,10 @@ class MaestroTerceros(Dialog):#{{{
         connect_signal(self.codigo_box, 'edit-cancel', _edit_cancel)
         connect_signal(self.codigo_box, 'request-new', lambda w: self.fill_with_data("new"))
         connect_signal(self.codigo_box, 'search-client', self.on_cliente_search)
-        self.action_label = Text(u"")
+        self.action_label = Text("")
 
         codigo_row = Columns([
-            ('fixed', 13, AttrMap(Text(u"Código"), 'dialog.maeter.label')),
+            ('fixed', 13, AttrMap(Text("Código"), 'dialog.maeter.label')),
             ('fixed', 1, Divider()),
             ('fixed', 12, AttrMap(self.codigo_box, 'dialog.maeter.input', 'dialog.maeter.input.focus')),
             ('fixed', 1, Divider()),
@@ -2128,7 +2128,7 @@ class MaestroTerceros(Dialog):#{{{
         connect_signal(self.nombre_box, 'edit-done', self.on_next_focus)
         connect_signal(self.nombre_box, 'edit-cancel', _edit_cancel)
         nombre_row = Columns([
-            ('fixed', 13, AttrMap(Text(u"Razón Social"), 'dialog.maeter.label')),
+            ('fixed', 13, AttrMap(Text("Razón Social"), 'dialog.maeter.label')),
             ('fixed', 1, Divider()),
             ('fixed', 35, AttrMap(self.nombre_box, 'dialog.maeter.input', 'dialog.maeter.input.focus')),
         ])
@@ -2162,20 +2162,20 @@ class MaestroTerceros(Dialog):#{{{
 
         bgroup = []
         self.resp_buttons = dict([(k, RadioButton(bgroup, v['nombre'], False, self.on_radio_change, k))\
-                                  for k, v in get_current_config().iva_resp_map.iteritems()])
+                                  for k, v in get_current_config().iva_resp_map.items()])
 
         resp_row = GridFlow([AttrMap(i, 'dialog.radio', 'dialog.radio.focus')\
-                                for i in self.resp_buttons.values() if len(i.label) <= 21],
+                                for i in list(self.resp_buttons.values()) if len(i.label) <= 21],
                             26, 1, 0, 'left')
         #resp_row2 = Pile([AttrMap(i, 'dialog.radio', 'dialog.radio.focus')\
         #                  for i in self.resp_buttons.values() if len(i.label) > 21])
-        self.resp_buttons[u'I'].state = True
+        self.resp_buttons['I'].state = True
 
         self.cuit_box = InputBox(max_length=13)
         connect_signal(self.cuit_box, 'edit-done', self.on_cuit_edit_done)
         connect_signal(self.cuit_box, 'edit-cancel', _edit_cancel)
         connect_signal(self.cuit_box, 'focus-out', self.on_cuit_focus_out)
-        self.cuit_error = Text(u"")
+        self.cuit_error = Text("")
         cuit_row = Columns([
             ('fixed', 5, AttrMap(Text("CUIT"), 'dialog.maeter.label')),
             ('fixed', 1, Divider()),
@@ -2217,11 +2217,11 @@ class MaestroTerceros(Dialog):#{{{
             self._pile.widget_list[0].set_focus(index)
             self.content.widget_list[index].set_focus(2)
 
-        if self.codigo_box.edit_text == u"":
+        if self.codigo_box.edit_text == "":
             _set_focus_on(0)
             return
 
-        if self.nombre_box.edit_text == u"":
+        if self.nombre_box.edit_text == "":
             _set_focus_on(1)
             return
 
@@ -2241,7 +2241,7 @@ class MaestroTerceros(Dialog):#{{{
         c.cuit = self.cuit_box.get_edit_text()
         c.relacion = self._rel
 
-        for k, v in self.resp_buttons.iteritems():
+        for k, v in self.resp_buttons.items():
             if v.state is True:
                 c.responsabilidad_iva = k
                 break
@@ -2259,8 +2259,8 @@ class MaestroTerceros(Dialog):#{{{
 
         _set_focus_on(0)
         self.fill_with_data(None)
-        self.action_label.set_text(u"")
-        self.codigo_box.edit_text = u""
+        self.action_label.set_text("")
+        self.codigo_box.edit_text = ""
 #}}}
     def fill_with_data(self, obj):#{{{
         if isinstance(obj, Cliente):
@@ -2269,9 +2269,9 @@ class MaestroTerceros(Dialog):#{{{
             self.localidad_box.set_edit_text(obj.localidad)
             self.cp_box.set_edit_text(obj.codigo_postal)
             self.resp_buttons[obj.responsabilidad_iva].state = True
-            self.cuit_box.set_edit_text(obj.cuit or u"")
+            self.cuit_box.set_edit_text(obj.cuit or "")
             self._obj = obj
-        elif isinstance(obj, basestring):
+        elif isinstance(obj, str):
             if obj.startswith("new"):
                 next_clinumber = get_next_clinumber(self._rel)
                 self.fill_with_data(None)
@@ -2288,19 +2288,19 @@ class MaestroTerceros(Dialog):#{{{
                     self.codigo_box.set_edit_text(cli.codigo)
                     self.on_codigo_edit_done(self.codigo_box, cli.codigo)
         else:
-            self.nombre_box.set_edit_text(u"")
-            self.domicilio_box.set_edit_text(u"")
-            self.localidad_box.set_edit_text(u"")
-            self.cp_box.set_edit_text(u"")
-            self.resp_buttons[u'I'].state = True
-            self.cuit_box.set_edit_text(u"")
+            self.nombre_box.set_edit_text("")
+            self.domicilio_box.set_edit_text("")
+            self.localidad_box.set_edit_text("")
+            self.cp_box.set_edit_text("")
+            self.resp_buttons['I'].state = True
+            self.cuit_box.set_edit_text("")
             self._obj = None
 #}}}
 
     ### Signal Hanlders ###
 
     def on_codigo_edit_done(self, widget, code):#{{{
-        if code != u"":
+        if code != "":
             q = session.query(Cliente).filter(Cliente.codigo==int(code))
             q = q.filter(Cliente.relacion==self._rel)
             try:
@@ -2314,7 +2314,7 @@ class MaestroTerceros(Dialog):#{{{
             self.on_next_focus()
 #}}}
     def on_codigo_focus_in(self, widget):#{{{
-        self.action_label.set_text(u"")
+        self.action_label.set_text("")
         highlight_focus_in(widget)
 #}}}
     def on_cliente_search(self, widget, search_by=None, first_key=None):#{{{
@@ -2334,7 +2334,7 @@ class MaestroTerceros(Dialog):#{{{
 #}}}
     def on_radio_change(self, radio, state, resp):#{{{
         if state is True:
-            for r in self.resp_buttons.itervalues():
+            for r in self.resp_buttons.values():
                 if r is not radio:
                     r.state = False
 #}}}
@@ -2346,14 +2346,14 @@ class MaestroTerceros(Dialog):#{{{
         self._validar_cuit(widget.edit_text)
 #}}}
     def _validar_cuit(self, cuit):#{{{
-        if self.resp_buttons[u'C'].state is False:
-            if cuit.strip() == u"":
+        if self.resp_buttons['C'].state is False:
+            if cuit.strip() == "":
                 self.cuit_error.set_text("No puede estar vacío")
                 return False
             elif validar_cuit(cuit) is False:
                 self.cuit_error.set_text("Iválido")
                 return False
-        self.cuit_error.set_text(u"")
+        self.cuit_error.set_text("")
         return True
 
 #        if self.resp_buttons[u'C'].state is True:
@@ -2391,7 +2391,7 @@ class TaxItem(WidgetWrap):#{{{
         connect_signal(self.tax_code, 'edit-done', self.on_tax_code_edit_done)
         connect_signal(self.tax_code, 'edit-cancel', _edit_cancel)
 
-        self.descripcion = Text(u"", wrap='clip')
+        self.descripcion = Text("", wrap='clip')
         self.porcentaje = NumericText()
         self.monto_box = NumericInputBox(min_value=0, max_value=9999.99)
         connect_signal(self.monto_box, 'focus-in', highlight_focus_in)
@@ -2432,10 +2432,10 @@ class TaxItem(WidgetWrap):#{{{
             self.descripcion.set_text(self._tax['nombre'])
             self.porcentaje.set_value(self._tax['alicuota'])
         else:
-            self.tax_code.set_edit_text(u"")
-            self.descripcion.set_text(u"")
-            self.porcentaje.set_text(u"")
-            self.monto_box.set_edit_text(u"")
+            self.tax_code.set_edit_text("")
+            self.descripcion.set_text("")
+            self.porcentaje.set_text("")
+            self.monto_box.set_edit_text("")
         self._emit('tax-code-set')
 #}}}
     def keypress(self, size, key):#{{{
@@ -2480,9 +2480,9 @@ class EditorDocumentosEspeciales(Dialog):#{{{
         def _edit_cancel(widget):
             self.focus_button(1)
         def _neto_selectable():
-            return bool(self._tercero.responsabilidad_iva == u'I' if self._tercero else False)
+            return bool(self._tercero.responsabilidad_iva == 'I' if self._tercero else False)
         def _total_selectable():
-            return bool(self._tercero.responsabilidad_iva != u'I' if self._tercero else False)
+            return bool(self._tercero.responsabilidad_iva != 'I' if self._tercero else False)
 
         self.doctype = TipoDocumentoBox(max_length=3)
         connect_signal(self.doctype, 'focus-in', highlight_focus_in)
@@ -2495,8 +2495,8 @@ class EditorDocumentosEspeciales(Dialog):#{{{
         connect_signal(self.docnumber, 'edit-done', self.on_docnumber_edit_done)
         connect_signal(self.docnumber, 'edit-cancel', _edit_cancel)
 
-        self.doctype_name = Text(u"", wrap='clip')
-        self.action_label = Text(u"", align='right')
+        self.doctype_name = Text("", wrap='clip')
+        self.action_label = Text("", align='right')
 
         comprobante_row = Columns([
             ('fixed', 14, AttrMap(Text("Comprobante", align='right'), 'dialog.documento.label')),
@@ -2513,7 +2513,7 @@ class EditorDocumentosEspeciales(Dialog):#{{{
         connect_signal(self.fecha, 'edit-cancel', _edit_cancel)
         connect_signal(self.fecha, 'edit-done', self.on_fecha_edit_done)
         connect_signal(self.fecha, 'bad-date-error', self.on_fecha_error)
-        self.fecha_error = Text(u"", wrap='clip')
+        self.fecha_error = Text("", wrap='clip')
 
         fecha_row = Columns([
             ('fixed', 14, AttrMap(Text("Fecha", align='right'), 'dialog.documento.label')),
@@ -2530,15 +2530,15 @@ class EditorDocumentosEspeciales(Dialog):#{{{
         connect_signal(self.tercero_codigo, 'search-client', self.on_tercero_search)
         connect_signal(self.tercero_codigo, 'edit-cliente', self.on_tercero_edit_record)
 
-        self.tercero_nombre = Text(u"", wrap='clip')
+        self.tercero_nombre = Text("", wrap='clip')
         tercero_row = Columns([
             ('fixed', 14, AttrMap(self.tercero_label, 'dialog.documento.label')),
             ('fixed', 8, AttrMap(self.tercero_codigo, 'dialog.documento.input', 'dialog.documento.input.focus')),
             AttrMap(self.tercero_nombre, 'dialog.documento.tercero'),
         ], dividechars=1)
 
-        self.tercero_resp = Text(u"", wrap='clip')
-        self.tercero_cuit = Text(u"", wrap='clip')
+        self.tercero_resp = Text("", wrap='clip')
+        self.tercero_cuit = Text("", wrap='clip')
         tercero_info_row = Columns([
             ('fixed', 14, Divider()),
             AttrMap(self.tercero_resp, 'dialog.documento.tercero'),
@@ -2635,7 +2635,7 @@ class EditorDocumentosEspeciales(Dialog):#{{{
         def _valid_tax(item):
             return item.tax_code.get_edit_text() in doctype['allowed_taxes']
 
-        filtered_taxes = filter(_valid_tax, self.taxes)
+        filtered_taxes = list(filter(_valid_tax, self.taxes))
 
         if len(filtered_taxes) < 1:
             show_error("No hay impuestos validos para este tipo de documento")
@@ -2651,7 +2651,7 @@ class EditorDocumentosEspeciales(Dialog):#{{{
         documento.cliente = tercero
         documento.cliente_nombre = tercero.nombre
         documento.cliente_direccion = tercero.direccion
-        if tercero.responsabilidad_iva == u'I':
+        if tercero.responsabilidad_iva == 'I':
             documento.cliente_cuit = tercero.cuit
 
         if self.participa_iva.state is True:
@@ -2680,15 +2680,15 @@ class EditorDocumentosEspeciales(Dialog):#{{{
     def reset_dialog(self):#{{{
         self._documento = None
         self._doctype = None
-        self.doctype.set_edit_text(u"")
-        self.docnumber.set_edit_text(u"")
-        self.doctype_name.set_text(u"")
-        self.action_label.set_text(u"")
-        self.fecha.set_edit_text(u"")
+        self.doctype.set_edit_text("")
+        self.docnumber.set_edit_text("")
+        self.doctype_name.set_text("")
+        self.action_label.set_text("")
+        self.fecha.set_edit_text("")
         self.rellenar_tercero(None)
         self.clear_taxes()
         self.participa_iva.set_state(True)
-        self.periodo_iva.set_edit_text(u"")
+        self.periodo_iva.set_edit_text("")
 #}}}
     def rellenar_tercero(self, tercero=None):#{{{
         if isinstance(tercero, Cliente):
@@ -2700,10 +2700,10 @@ class EditorDocumentosEspeciales(Dialog):#{{{
             self.tercero_cuit.set_text(tercero.cuit)
         else:
             self._tercero = None
-            self.tercero_codigo.set_edit_text(u"")
-            self.tercero_nombre.set_text(u"")
-            self.tercero_resp.set_text(u"")
-            self.tercero_cuit.set_text(u"")
+            self.tercero_codigo.set_edit_text("")
+            self.tercero_nombre.set_text("")
+            self.tercero_resp.set_text("")
+            self.tercero_cuit.set_text("")
 #}}}
     def _try_load_document(self):#{{{
         doc_tipo = self._doctype['tipo']
@@ -2742,8 +2742,8 @@ class EditorDocumentosEspeciales(Dialog):#{{{
 #}}}
     def clear_taxes(self):#{{{
         self.taxes[:] = []
-        self.neto.set_edit_text(u"")
-        self.total.set_edit_text(u"")
+        self.neto.set_edit_text("")
+        self.total.set_edit_text("")
 #}}}
     def add_tax_item(self, tax_code=None, monto=None):#{{{
         ti = TaxItem()
@@ -2761,12 +2761,12 @@ class EditorDocumentosEspeciales(Dialog):#{{{
 #}}}
     def calc_taxes(self):#{{{
         if self._tercero:
-            if self._tercero.responsabilidad_iva == u'I':
+            if self._tercero.responsabilidad_iva == 'I':
                 neto = self.neto.get_value()
             else:
                 total = self.total.get_value()
                 if total is not None:
-                    neto = total / (1 + sum(filter(None, [ti.factor for ti in self.taxes])))
+                    neto = total / (1 + sum([_f for _f in [ti.factor for ti in self.taxes] if _f]))
                 else:
                     neto = self.neto.get_value()
             for ti in self.taxes:
@@ -2775,36 +2775,36 @@ class EditorDocumentosEspeciales(Dialog):#{{{
 #}}}
     def calc_total(self):#{{{
         if self.neto.get_value():
-            total = self.neto.get_value() + sum(filter(None, [ti.monto for ti in self.taxes]))
+            total = self.neto.get_value() + sum([_f for _f in [ti.monto for ti in self.taxes] if _f])
             self.total.set_value(total)
 #}}}
     def calc_neto(self):#{{{
         if self.total.get_value():
-            neto = self.total.get_value() - sum(filter(None, [ti.monto for ti in self.taxes]))
+            neto = self.total.get_value() - sum([_f for _f in [ti.monto for ti in self.taxes] if _f])
             self.neto.set_value(neto)
 #}}}
     def calc_total_or_neto(self):#{{{
         if self._tercero is not None:
-            if self._tercero.responsabilidad_iva == u'I':
+            if self._tercero.responsabilidad_iva == 'I':
                 self.calc_total()
             else:
                 self.calc_neto()
 #}}}
     def _check_futuro(self):#{{{
-        if self.fecha_error.get_text()[0] == u"":
+        if self.fecha_error.get_text()[0] == "":
             d = self.fecha.value
             if d:
                 f = date.today() + timedelta(days=1)
                 if d >= f:
                     self.fecha_error.set_text("CUIDADO: Fecha futura")
                 else:
-                    self.fecha_error.set_text(u"")
+                    self.fecha_error.set_text("")
 #}}}
     def _docnumber_keypress(self, size, key):#{{{
         wid = self.docnumber
         if key == 'ctrl n':
             doctype = self.doctype.get_edit_text()
-            if doctype != u"" and doctype in get_current_config().documentos:
+            if doctype != "" and doctype in get_current_config().documentos:
                 self.docnumber.set_value(get_next_docnumber(doctype))
                 self.action_label.set_text("Nuevo")
                 self.fecha.set_value(date.today())
@@ -2840,7 +2840,7 @@ class EditorDocumentosEspeciales(Dialog):#{{{
                 self._doctype = doctype
                 self.doctype_name.set_text(doctype['nombre'])
                 self.clear_taxes()
-                self.tercero_label.set_text("Cliente" if doctype['tercero'] == u'C' else "Proveedor")
+                self.tercero_label.set_text("Cliente" if doctype['tercero'] == 'C' else "Proveedor")
                 self.content.widget_list[0].set_focus(2)
             else:
                 show_error("Este documento no se puede editar aquí.")
@@ -2851,18 +2851,18 @@ class EditorDocumentosEspeciales(Dialog):#{{{
             highlight_focus_in(widget)
 #}}}
     def on_docnumber_edit_done(self, widget, number):#{{{
-        if number != u"":
+        if number != "":
             self._try_load_document()
             self.on_next_focus()
 #}}}
     def on_fecha_focus_in(self, widget):#{{{
         if self._fecha_error_state is None:
-            self.fecha_error.set_text(u"")
+            self.fecha_error.set_text("")
             highlight_focus_in(widget)
 #}}}
     def on_fecha_focus_out(self, widget):#{{{
         self._fecha_error_state = None
-        self.fecha_error.set_text(u"")
+        self.fecha_error.set_text("")
         self._check_futuro()
         self._try_load_document()
 #}}}
@@ -2873,7 +2873,7 @@ class EditorDocumentosEspeciales(Dialog):#{{{
             highlight_focus_in(widget)
             return
         else:
-            self.fecha_error.set_text(u"")
+            self.fecha_error.set_text("")
             self._try_load_document()
             self.on_next_focus()
 #}}}
@@ -2904,7 +2904,7 @@ class EditorDocumentosEspeciales(Dialog):#{{{
         except (NoResultFound, ValueError):
             return
         self.rellenar_tercero(c)
-        if self._tercero.responsabilidad_iva == u'I':
+        if self._tercero.responsabilidad_iva == 'I':
             self._focus_neto()
         else:
             self._focus_total()
@@ -2918,7 +2918,7 @@ class EditorDocumentosEspeciales(Dialog):#{{{
 #}}}
     def on_tercero_edit_record(self, widget, cod_tercero):#{{{
         try:
-            cod_tercero = unicode(int(cod_tercero))
+            cod_tercero = str(int(cod_tercero))
         except ValueError:
             cod_tercero = "new"
 
@@ -3003,7 +3003,7 @@ class PriceBatchModifier(Dialog):#{{{
         row_factor = Columns([
             ('fixed', 11, AttrMap(Text("Factor"), 'dialog.pricemodifier.label')),
             ('fixed', 7, AttrMap(self.factor, 'dialog.pricemodifier.input', 'dialog.pricemodifier.input.focus')),
-            AttrMap(Text(u"Artículos", align='right'), 'dialog.pricemodifier.label'),
+            AttrMap(Text("Artículos", align='right'), 'dialog.pricemodifier.label'),
             ('fixed', 7, AttrMap(self.cantidad_articulos, 'dialog.pricemodifier.input')),
         ], dividechars=1)
 
@@ -3016,7 +3016,7 @@ class PriceBatchModifier(Dialog):#{{{
         #buttons = [("Grabar", self.save), ("Salir", self._quit)]
         buttons = [("Grabar", self.save), ("Salir", self.quit)]
         self.__super.__init__(self.content, buttons,
-                              title=u"MODIFICA PRECIOS por agrupación",
+                              title="MODIFICA PRECIOS por agrupación",
                               height=None,
                               width=65,
                               attr_style='dialog.pricemodifier',
@@ -3044,10 +3044,10 @@ class PriceBatchModifier(Dialog):#{{{
             self.content.set_focus(1)
             return
 
-        message_waiter(u" Procesando información ... ")
+        message_waiter(" Procesando información ... ")
         PriceBatchModifierPreview(agrupaciones, factor).run()
-        cont = show_warning(u"¿Confirma esta modificación?\n",
-                [(u"Sí", True), (u"No", False)], title="CONFIRMACIÓN", focus_button=1)
+        cont = show_warning("¿Confirma esta modificación?\n",
+                [("Sí", True), ("No", False)], title="CONFIRMACIÓN", focus_button=1)
         if cont is not True:
             return
 
@@ -3072,7 +3072,7 @@ class PriceBatchModifier(Dialog):#{{{
 
         qty = session.query(Articulo).filter(Articulo.es_activo==True)\
                      .filter(Articulo.agrupacion.in_(agrupaciones)).count()
-        self.cantidad_articulos.set_text(unicode(qty))
+        self.cantidad_articulos.set_text(str(qty))
         self.content.set_focus(1)
 #}}}
 #}}}
@@ -3083,20 +3083,20 @@ class PriceBatchModifierPreview(Dialog):#{{{
 
     def __init__(self, agrupaciones, factor):#{{{
         header = Pile([
-            AttrMap(Text([('listado.title.important', u"Verificar modificación de Precios"),
-                          u" (x %s)" % unicode(factor).replace(".",",")],
+            AttrMap(Text([('listado.title.important', "Verificar modificación de Precios"),
+                          " (x %s)" % str(factor).replace(".",",")],
                 align='center', wrap='clip'), 'listado.title'),
-            AttrMap(Text(u"   %-14s %-40s  %8s  → %8s" % (
-                    u"Código", u"Descripción", u"Original", u"Nuevo"
+            AttrMap(Text("   %-14s %-40s  %8s  → %8s" % (
+                    "Código", "Descripción", "Original", "Nuevo"
                 ), wrap='clip'), 'listado.list_header'),
         ])
 
         key = 'listado.footer.important'
         footer = Text([
-            (key, "+"), "/", (key, "-"), u" expandir/colapsar   ",
+            (key, "+"), "/", (key, "-"), " expandir/colapsar   ",
             (key, "ESC"), ",", (key, "ENTER"), ",",
             (key, "ESPACIO"), " o ", (key, "F10"),
-            u" para continuar"], align='right')
+            " para continuar"], align='right')
 
         lista = TreeListBox(TreeListWalker(self.build_tree(agrupaciones, factor)))
 
@@ -3122,7 +3122,7 @@ class PriceBatchModifierPreview(Dialog):#{{{
         for ag in agrupaciones:
             items = []
             for a in base_query.filter(Articulo.agrupacion==ag):
-                items.append(u"%-14s %-40s  %8s  → %8s" %\
+                items.append("%-14s %-40s  %8s  → %8s" %\
                         (a.codigo[:14], a.descripcion[:40], m(a.precio), m(a.precio*factor)))
 
             dn = DictNode({'display_text': "%s (%s)" % (ag, len(items)), 'childs': items})
@@ -3136,9 +3136,9 @@ class ListPrinter(Dialog):#{{{
     buttons = None
 
     _formatters = {#{{{
-        'unicode': lambda d, f: unicode(d),
-        'date': lambda d, f: d.strftime(f or _date_pattern) if isinstance(d, datetime) else unicode(d),
-        'decimal': lambda d, f: moneyfmt(d, sep='.', dp=',') if isinstance(d, Decimal) else unicode(d),
+        'unicode': lambda d, f: str(d),
+        'date': lambda d, f: d.strftime(f or _date_pattern) if isinstance(d, datetime) else str(d),
+        'decimal': lambda d, f: moneyfmt(d, sep='.', dp=',') if isinstance(d, Decimal) else str(d),
     }#}}}
     _aligners = {#{{{
         'left': lambda s, w: s[:w].ljust(w),
@@ -3149,8 +3149,8 @@ class ListPrinter(Dialog):#{{{
     def __init__(self, doctype, title, show_dialog=True):#{{{
         self.doctype = get_current_config().documentos.get(doctype, None)
         if self.doctype is None:
-            show_error([u"El tipo de documento ", ('dialog.error.important', u"%s" % doctype),
-                u" no existe, probablemente es un error en la configuración."])
+            show_error(["El tipo de documento ", ('dialog.error.important', "%s" % doctype),
+                " no existe, probablemente es un error en la configuración."])
             #self.must_quit = True
             self.quit()
             return
@@ -3183,7 +3183,7 @@ class ListPrinter(Dialog):#{{{
             self.impresora = impresora
 
         total_count = data['doc_total_count'] = len(data['pages'])
-        for i in xrange(total_count):
+        for i in range(total_count):
             data.update({
                 'doc_count': i+1,
                 'groups': data['pages'][i],
@@ -3193,13 +3193,13 @@ class ListPrinter(Dialog):#{{{
             if success:
                 if 'warnings' in printed_data and printed_data['warnings']:
                     show_warning(
-                        [u"La impresión fue exitosa pero el controlador envió el siguiente mensaje:\n\n",
-                         ('dialog.warning.important', u"\n".join(printed_data['warnings'])), u'\n'])
+                        ["La impresión fue exitosa pero el controlador envió el siguiente mensaje:\n\n",
+                         ('dialog.warning.important', "\n".join(printed_data['warnings'])), '\n'])
             elif printed_data is not None:
                 if not 'errors' in printed_data or not printed_data['errors']:
-                    printed_data['errors'] = [u"Error desconocido"]
-                show_error([u"Se produjo un error al imprimir:\n\n",
-                            ('dialog.error.important', u"\n".join(printed_data['errors']))])
+                    printed_data['errors'] = ["Error desconocido"]
+                show_error(["Se produjo un error al imprimir:\n\n",
+                            ('dialog.error.important', "\n".join(printed_data['errors']))])
                 break
 
         #self._quit()
@@ -3216,7 +3216,7 @@ class ListPrinter(Dialog):#{{{
         impresora = impresoras[idx]
 
         if not hasattr(impresora, 'run_list_print') or not callable(impresora.run_list_print):
-            show_error([u"La impresora seleccionada ", ('dialog.error.important', u"%s" % impresora.name),
+            show_error(["La impresora seleccionada ", ('dialog.error.important', "%s" % impresora.name),
                 " no puede imprimir el listado."])
             #self.must_quit = True
             self.quit()
@@ -3224,7 +3224,7 @@ class ListPrinter(Dialog):#{{{
         return impresora
 #}}}
     def _build_base_data(self):#{{{
-        data = dict((opt[6:], val) for opt, val in self.doctype.iteritems() if opt.startswith('print_'))
+        data = dict((opt[6:], val) for opt, val in self.doctype.items() if opt.startswith('print_'))
         data['title'] = self.doctype.get('nombre')
         return data
 #}}}
@@ -3241,9 +3241,9 @@ class ListPrinter(Dialog):#{{{
         for spec in columns:
             label, col, width, align, fmt = spec
             if align is None: align = "left"
-            text = self._aligners[align](label or u"", width)
+            text = self._aligners[align](label or "", width)
             columns_headers.append(text)
-        columns_headers = u" ".join(columns_headers)
+        columns_headers = " ".join(columns_headers)
 
         grupos = []
         for group, objs in groups:
@@ -3263,7 +3263,7 @@ class ListPrinter(Dialog):#{{{
                     val = self._formatters[fmt](attr, args)
                     val = self._aligners[align](val, width)
                     item.append(val)
-                items.append(u" ".join(item))
+                items.append(" ".join(item))
             grupos.append((group, columns_headers, items))
         return grupos
 #}}}
@@ -3314,11 +3314,11 @@ class GroupListPrinter(ListPrinter):#{{{
         self.cantidad_articulos = Text("", wrap='clip', align='left')
 
         row_cantidad = Columns([
-            ('fixed', 10, AttrMap(Text(u"Artículos", align="right"), 'dialog.listprinter.label')),
+            ('fixed', 10, AttrMap(Text("Artículos", align="right"), 'dialog.listprinter.label')),
             ('fixed', 7, AttrMap(self.cantidad_articulos, 'dialog.listprinter.input')),
         ], dividechars=1)
 
-        self.include_inactives = CheckBox(u"Incluir Inactivos", state=True,
+        self.include_inactives = CheckBox("Incluir Inactivos", state=True,
                 on_state_change=self.on_include_inactives_change)
         row_include_inactives = Columns([
             ('fixed', 10, Divider()),
@@ -3342,7 +3342,7 @@ class GroupListPrinter(ListPrinter):#{{{
             show_error("El campo agrupación no puede estar vacío")
             return
 
-        message_waiter(u" Procesando información ... ")
+        message_waiter(" Procesando información ... ")
         agrupaciones = set([ag.strip() for ag in agrupaciones.split(",")])
         qty = self._get_agrupaciones_query().count()
         if qty < 1:
@@ -3376,7 +3376,7 @@ class GroupListPrinter(ListPrinter):#{{{
 
     def _update_articles_qty(self, include_inactives=None):
         qty = self._get_agrupaciones_query(include_inactives).count()
-        self.cantidad_articulos.set_text(unicode(qty))
+        self.cantidad_articulos.set_text(str(qty))
 
     def _get_agrupaciones_query(self, include_inactives=None):
         agrupaciones = set([ag.strip() for ag in self.agrupaciones.get_edit_text().split(",")])
@@ -3392,9 +3392,9 @@ TempListArticleItem = namedtuple("TempListArticleItem", "codigo descripcion agru
                                  "vigencia cantidad precio")
 
 class TemporaryListPrinter(ListPrinter):#{{{
-    _default_prefix = u"ARTÍCULOS "
-    _default_title = u"PARA PREPARAR"
-    _default_postfix = u" (por %s)"
+    _default_prefix = "ARTÍCULOS "
+    _default_title = "PARA PREPARAR"
+    _default_postfix = " (por %s)"
 
     def __init__(self, vendedor, items):#{{{
         self.vendedor = vendedor
@@ -3410,18 +3410,18 @@ class TemporaryListPrinter(ListPrinter):#{{{
         ], dividechars=1)
 
         if len(self.items) < 6:
-            msg = u"Esta seguro que quiere imprimir una lista tan corta?"
+            msg = "Esta seguro que quiere imprimir una lista tan corta?"
             extra = [Divider(),
                      Columns([
                          AttrMap(Text(msg, align='center', wrap='clip'), 'dialog.listprinter.error')
                      ])]
         else:
-            msg = u""
+            msg = ""
             extra = []
 
         row_cantidad = Columns([
-            ('fixed', 10, AttrMap(Text(u"Artículos", align="right"), 'dialog.listprinter.label')),
-            ('fixed', 7, AttrMap(Text(u"%s" % len(items), wrap='clip'), 'dialog.listprinter.input')),
+            ('fixed', 10, AttrMap(Text("Artículos", align="right"), 'dialog.listprinter.label')),
+            ('fixed', 7, AttrMap(Text("%s" % len(items), wrap='clip'), 'dialog.listprinter.input')),
         ], dividechars=1)
 
         self.content = Pile([
@@ -3449,7 +3449,7 @@ class TemporaryListPrinter(ListPrinter):#{{{
                 a = TempListArticleItem(articulo.codigo, articulo.descripcion, articulo.agrupacion,
                         articulo.proveedor, articulo.vigencia, item.cantidad,
                         (articulo.precio if item.precio is None else item.precio))
-            elif isinstance(articulo, basestring):
+            elif isinstance(articulo, str):
                 a = TempListArticleItem("", articulo, "", "", "", item.cantidad, item.precio)
             else:
                 raise RuntimeError("Unknown item type '%s'" % type(articulo).__name__)
@@ -3497,9 +3497,9 @@ class ReportListPrinter(ListPrinter):#{{{
         if self.impresora is None:
             return
 
-        message_waiter(u" Procesando información ... ")
+        message_waiter(" Procesando información ... ")
         data = self._build_base_data()
-        data['title'] = (u"Resumen de %s" % get_current_config().sucursal) + self.stitle
+        data['title'] = ("Resumen de %s" % get_current_config().sucursal) + self.stitle
         data['pages'] = self._build_pages(data)
 
         return self._imprimir(data)
@@ -3510,9 +3510,9 @@ class ReportListPrinter(ListPrinter):#{{{
 
         pages = []
 
-        include = {'venta': [u'FAC', u'FAA', u'NNC', u'NCA', u'REM'],
-                   'compra': [u'VFA', u'VNC', u'VND']}
-        aprox = [u'REM']
+        include = {'venta': ['FAC', 'FAA', 'NNC', 'NCA', 'REM'],
+                   'compra': ['VFA', 'VNC', 'VND']}
+        aprox = ['REM']
         m = functools.partial(moneyfmt, sep='.', dp=',')
         _ig = operator.itemgetter
         _zero = Decimal(0)
@@ -3524,10 +3524,10 @@ class ReportListPrinter(ListPrinter):#{{{
                        .options(contains_eager(Documento.tasas))\
                        .options(contains_eager(Documento.items))
 
-        total = {u'venta': _zero, u'compra': _zero}
-        neto = {u'venta': _zero, u'compra': _zero}
-        tasas = {u'venta': _zero, u'compra': _zero}
-        tablas = {u'venta': {}, u'compra': {}}
+        total = {'venta': _zero, 'compra': _zero}
+        neto = {'venta': _zero, 'compra': _zero}
+        tasas = {'venta': _zero, 'compra': _zero}
+        tablas = {'venta': {}, 'compra': {}}
         collector = defaultdict(list)
         vend_docs = defaultdict(lambda: defaultdict(list))
         vend_agrup = defaultdict(lambda: defaultdict(list))
@@ -3539,7 +3539,7 @@ class ReportListPrinter(ListPrinter):#{{{
             doctype = doc.tipo
             collector[doctype].append((doc.id, doc.total, doc.neto, sum([t.monto for t in doc.tasas])))
             vend_docs[doc.vendedor][doctype].append((doc.id, doc.total))
-            if doc.cliente and doc.cliente.codigo > 50 and doc.cliente.relacion == u'C':
+            if doc.cliente and doc.cliente.codigo > 50 and doc.cliente.relacion == 'C':
                 clie_docs[doc.cliente][doctype].append((doc.id, doc.total))
 
 
@@ -3553,7 +3553,7 @@ class ReportListPrinter(ListPrinter):#{{{
                 tablas[col][doc.tipo] = tablas[col].get(doc.tipo, []) +\
                                         [doc.total, doc.neto, sum([t.monto for t in doc.tasas])]
 
-            if doc.tipo in (u'FAA', u'FAC', u'REM'):
+            if doc.tipo in ('FAA', 'FAC', 'REM'):
                 for item in doc.items:
                     key = item.articulo if item.articulo else FArticulo("", item.descripcion, "")
                     top_items[key].append((item.cantidad, item.precio))
@@ -3573,7 +3573,7 @@ class ReportListPrinter(ListPrinter):#{{{
 
         # Page 1
         pages.append([(k, " ", ["%-48s %s" % (p, q) for p, q in
-            itertools.izip_longest(tots[t], detail[t], fillvalue=" ")] + [""])
+            itertools.zip_longest(tots[t], detail[t], fillvalue=" ")] + [""])
             for k, t in [("Ventas", "venta"), ("Compras", "compra")]])
 
         del collector
@@ -3584,19 +3584,19 @@ class ReportListPrinter(ListPrinter):#{{{
         # Vendedores
         vdata = defaultdict(dict)
         vend = get_current_config().vendedores
-        for vcode, vdocs in vend_docs.iteritems():
+        for vcode, vdocs in vend_docs.items():
             vkey = vend[vcode]['nombre'] if vcode in vend else vcode
-            ndata = dict([(k, (len(v), sum(map(operator.itemgetter(1), v)))) for k, v in vdocs.iteritems()])
+            ndata = dict([(k, (len(v), sum(map(operator.itemgetter(1), v)))) for k, v in vdocs.items()])
             vdata[vkey].update(dict([
-                (k, tuple(map(sum, zip(vdata[vkey].get(k, (0, _zero)), ndata.get(k, (0, _zero))))))\
+                (k, tuple(map(sum, list(zip(vdata[vkey].get(k, (0, _zero)), ndata.get(k, (0, _zero)))))))\
                     for k in ndata]))
 
-        for k, v in vdata.iteritems():
-            v[u'FAC+FAA'] = tuple(map(sum, zip(v.get(u'FAC', (0, _zero)), v.get(u'FAA', (0, _zero)))))
+        for k, v in vdata.items():
+            v['FAC+FAA'] = tuple(map(sum, list(zip(v.get('FAC', (0, _zero)), v.get('FAA', (0, _zero))))))
 
-        vdata = sorted([(k, v) for k, v in vdata.iteritems()], key=lambda e: e[1][u'FAC+FAA'][1], reverse=True)
+        vdata = sorted([(k, v) for k, v in vdata.items()], key=lambda e: e[1]['FAC+FAA'][1], reverse=True)
 
-        cols = (u'FAC+FAA', u'REM', u'PRE')
+        cols = ('FAC+FAA', 'REM', 'PRE')
 
         pages[0].extend([("Vendedores",
             " ".ljust(24) + " ".join([s.center(21) for s in cols]),
@@ -3610,22 +3610,22 @@ class ReportListPrinter(ListPrinter):#{{{
 
         # Clientes
         cdata = defaultdict(dict)
-        for cliente, cdocs in clie_docs.iteritems():
-            ndata = dict([(k, (len(v), sum(map(operator.itemgetter(1), v)))) for k, v in cdocs.iteritems()])
+        for cliente, cdocs in clie_docs.items():
+            ndata = dict([(k, (len(v), sum(map(operator.itemgetter(1), v)))) for k, v in cdocs.items()])
             cdata[cliente].update(dict([
-                (k, tuple(map(sum, zip(cdata[cliente].get(k, (0, _zero)), ndata.get(k, (0, _zero))))))\
+                (k, tuple(map(sum, list(zip(cdata[cliente].get(k, (0, _zero)), ndata.get(k, (0, _zero)))))))\
                     for k in ndata]))
 
-        for k, v in cdata.iteritems():
-            v[u'FAC+FAA'] = tuple(map(sum, zip(v.get(u'FAC', (0, _zero)), v.get(u'FAA', (0, _zero)))))
+        for k, v in cdata.items():
+            v['FAC+FAA'] = tuple(map(sum, list(zip(v.get('FAC', (0, _zero)), v.get('FAA', (0, _zero))))))
 
-        cdata = sorted([(k, v) for k, v in cdata.iteritems()],
-                       key=lambda e: e[1][u'FAC+FAA'][1]+e[1].get(u'REM', (0, _zero))[1]*Decimal('0.9'),
+        cdata = sorted([(k, v) for k, v in cdata.items()],
+                       key=lambda e: e[1]['FAC+FAA'][1]+e[1].get('REM', (0, _zero))[1]*Decimal('0.9'),
                        reverse=True)
 
         pages[0].extend([("Top 20 Clientes",
             " ".ljust(36) + " ".join([s.center(18) for s in cols]),
-            ["%34s %s" % (unicode(c.nombre or '~')[:34],
+            ["%34s %s" % (str(c.nombre or '~')[:34],
                 " ".join([
                     (" %11s %-5s" % ((m(vals[key][1]) if vals[key][1] else " "),
                                     (("(%s)%s" % (vals[key][0], ("*" if key in aprox else " ")))
@@ -3634,25 +3634,25 @@ class ReportListPrinter(ListPrinter):#{{{
             ) for c, vals in cdata[:20]])])
 
         # Articulos
-        for icode, idata in top_items.iteritems():
-            top_items[icode] = map(sum, zip(*[(i[0], i[0]*i[1]) for i in idata]))
+        for icode, idata in top_items.items():
+            top_items[icode] = list(map(sum, list(zip(*[(i[0], i[0]*i[1]) for i in idata]))))
 
-        qdata = sorted([(a, d) for a, d in top_items.iteritems()],
+        qdata = sorted([(a, d) for a, d in top_items.items()],
                 key=lambda e: e[1][0], reverse=True)[:50]
-        mdata = sorted([(a, d) for a, d in top_items.iteritems()],
+        mdata = sorted([(a, d) for a, d in top_items.items()],
                 key=lambda e: e[1][1], reverse=True)[:50]
 
         del cdata, top_items, idata, icode
 
-        header = u"%-14s %-40s  %-16s %9s %10s" % (u"Código", u"Descripción", u"Agrupación",
-                                                   u"Cantidad", u"Total")
+        header = "%-14s %-40s  %-16s %9s %10s" % ("Código", "Descripción", "Agrupación",
+                                                   "Cantidad", "Total")
 
         # Page 2
         pages.append([
-            (u"Top Artículos por Monto", header, [u"%-14s %-40s  %-16s %9s %10s" %\
+            ("Top Artículos por Monto", header, ["%-14s %-40s  %-16s %9s %10s" %\
                 (a.codigo, a.descripcion[:40], a.agrupacion[:16], m(i[0], places=0), m(i[1]))
                 for a, i in mdata[:25]]),
-            (u"Top Artículos por Cantidad", header, [u"%-14s %-40s  %-16s %9s %10s" %\
+            ("Top Artículos por Cantidad", header, ["%-14s %-40s  %-16s %9s %10s" %\
                 (a.codigo, a.descripcion[:40], a.agrupacion[:16], m(i[0], places=0), m(i[1]))
                 for a, i in qdata[:25]]),
         ])
@@ -3662,24 +3662,24 @@ class ReportListPrinter(ListPrinter):#{{{
         mul = operator.mul
 
         gdata = defaultdict(lambda: defaultdict(dict))
-        for vcode, vdocs in vend_agrup.iteritems():
+        for vcode, vdocs in vend_agrup.items():
             vkey = vend[vcode]['nombre'] if vcode in vend else vcode
-            for gname, gitems in vdocs.iteritems():
+            for gname, gitems in vdocs.items():
                 _items = []
                 for dtype, ditems in itertools.groupby(sorted(gitems, key=_ig(2)), _ig(2)):
                     ii = list(ditems)
-                    _items.append((dtype, sum(map(_ig(0), ii)), sum(map(mul, *zip(*map(_ig(0, 1), ii))))))
+                    _items.append((dtype, sum(map(_ig(0), ii)), sum(map(mul, *list(zip(*list(map(_ig(0, 1), ii))))))))
                 vdocs[gname] = _items
                 gdata[vkey][gname].update(dict([
                     (kk, (gdata[vkey][gname].get(kk, (_zero,))[0]+qq,
                           gdata[vkey][gname].get(kk, (None, _zero))[1]+mm)) for kk, qq, mm in _items
                 ]))
 
-        for vendedor, grupos in gdata.iteritems():
-            for gname, items in grupos.iteritems():
-                grupos[gname][u'FAC+FAA'] = tuple(map(sum, zip(items.get(u'FAC', (0, _zero)), items.get(u'FAA', (0, _zero)))))
+        for vendedor, grupos in gdata.items():
+            for gname, items in grupos.items():
+                grupos[gname]['FAC+FAA'] = tuple(map(sum, list(zip(items.get('FAC', (0, _zero)), items.get('FAA', (0, _zero))))))
 
-        cols = [u'FAC+FAA', u'REM']
+        cols = ['FAC+FAA', 'REM']
 
         # Page 3
         out_data = list([("%s" % name, # Titulo Grupo
@@ -3688,7 +3688,7 @@ class ReportListPrinter(ListPrinter):#{{{
                  " ".join([
                      ("%10s%s" % ((m(vals[key][1]) if vals[key][1] else  " "), ("*" if key in aprox else " "))) if key in vals else ("%11s" % "")
                  for key in cols])
-             ) for agrup, vals in sorted(gdata[name].iteritems(), key=_ig(0))])
+             ) for agrup, vals in sorted(iter(gdata[name].items()), key=_ig(0))])
             for name in map(_ig(0), vdata) if name])
 
         pre_out_data = [(n, h, i[:sum(divmod(len(i), 2))]) for n, h, i in out_data]
@@ -3702,7 +3702,7 @@ class ReportListPrinter(ListPrinter):#{{{
                 rows = len(i)
                 a, b, od[n] = od[n][:rows], od[n][rows:rows*2], od[n][rows*2:]
                 grps.append((n, h+(" "*16)+h,
-                    ["%s %13s %s" % (ia, "", ib) for ia, ib in itertools.izip_longest(a, b, fillvalue=" ")]))
+                    ["%s %13s %s" % (ia, "", ib) for ia, ib in itertools.zip_longest(a, b, fillvalue=" ")]))
             post_new_pages.append(grps)
         pages.extend(post_new_pages)
 
@@ -3734,13 +3734,13 @@ def search_stock(first_key=None, multiple=False):#{{{
     search_dialog.multiple_selection = multiple
     return search_dialog.run()
 #}}}
-def maestro_terceros(filled_with=None, once=False, rel=u'C'):#{{{
-    title = 'CLIENTES' if rel == u'C' else 'PROVEEDORES'
+def maestro_terceros(filled_with=None, once=False, rel='C'):#{{{
+    title = 'CLIENTES' if rel == 'C' else 'PROVEEDORES'
     mt = MaestroTerceros(title, rel, filled_with=filled_with, once=once)
     return mt.run()
 #}}}
-def sec_maestro_terceros(filled_with=None, once=False, rel=u'C'):#{{{
-    permiso = check_password("Maestro de %s" % ('Clientes' if rel==u'C' else 'Proveedores'))
+def sec_maestro_terceros(filled_with=None, once=False, rel='C'):#{{{
+    permiso = check_password("Maestro de %s" % ('Clientes' if rel=='C' else 'Proveedores'))
     if permiso is True:
         return maestro_terceros(filled_with, once, rel)
 #}}}
@@ -3819,8 +3819,8 @@ def sec_listados():#{{{
 #}}}
 def imprimir_cierre_fiscal():#{{{
     impr = []
-    for k, v in get_current_config().impresoras.iteritems():
-        if v['type'] == u"fiscal":
+    for k, v in get_current_config().impresoras.items():
+        if v['type'] == "fiscal":
             impr.append(k)
 
     impresoras = printers.get_printers(impr)
@@ -3850,27 +3850,27 @@ def imprimir_cierre_fiscal():#{{{
     success, data = action_choosed()
     if success:
         if 'warnings' in data and data['warnings']:
-            show_warning([u"La impresión fue exitosa pero el controlador envió el siguiente mensaje:\n\n",
-                ('dialog.warning.important', u"\n".join(data['warnings'])), u'\n'])
+            show_warning(["La impresión fue exitosa pero el controlador envió el siguiente mensaje:\n\n",
+                ('dialog.warning.important', "\n".join(data['warnings'])), '\n'])
     elif data is not None:
         if not 'errors' in data or not data['errors']:
-            data['errors'] = [u"Error desconocido"]
-        show_error([u'Se produjo un error al imprimir:\n\n',
-                    ('dialog.error.important', u"\n".join(data['errors'])),
-                    u'\n\n'])
+            data['errors'] = ["Error desconocido"]
+        show_error(['Se produjo un error al imprimir:\n\n',
+                    ('dialog.error.important', "\n".join(data['errors'])),
+                    '\n\n'])
 #}}}
 def show_about():#{{{
     content = Pile([
-        Padding(Text(u"Copyright (C) 2010  Augusto Roccasalva"), left=2, right=2),
+        Padding(Text("Copyright (C) 2010  Augusto Roccasalva"), left=2, right=2),
         Divider(),
-        Padding(Text(u"Este programa es software libre: usted puede redistribuirlo y/o"
-            u" modificarlo bajo los términos de la Licencia Pública General GNU."), left=2, right=2),
+        Padding(Text("Este programa es software libre: usted puede redistribuirlo y/o"
+            " modificarlo bajo los términos de la Licencia Pública General GNU."), left=2, right=2),
         Divider(),
-        Padding(Text(('dialog.about.key', u"http://www.rocctech.com.ar/nobix")), align='center'),
+        Padding(Text(('dialog.about.key', "http://www.rocctech.com.ar/nobix")), align='center'),
         Divider(),
     ])
     d = Dialog(content, title="Nobix %s" % VERSION,
-               subtitle=[('dialog.about.lema', u"'Non nobis solum'")],
+               subtitle=[('dialog.about.lema', "'Non nobis solum'")],
                height=None,
                width=48,
                attr_style='dialog.about',
@@ -3898,7 +3898,7 @@ class PrintWizard(Dialog):#{{{
         self.doc_data = doc_data
         self.doc_header = doc_header
         self.doctype = get_current_config().documentos[doc_data.doctype]
-        self.customer_doctype = u'C'
+        self.customer_doctype = 'C'
 
         self.cliente_nombre = InputBox(edit_text=doc_data.cliente.nombre, max_length=35)
         connect_signal(self.cliente_nombre, 'edit-done', self.on_next_focus)
@@ -3916,11 +3916,11 @@ class PrintWizard(Dialog):#{{{
         connect_signal(self.cliente_cp, 'edit-done', self.on_next_focus)
         connect_signal(self.cliente_cp, 'edit-cancel', _edit_cancel)
 
-        self.cliente_cuit = InputBox(edit_text=(doc_data.cliente.cuit or u""), max_length=13)
+        self.cliente_cuit = InputBox(edit_text=(doc_data.cliente.cuit or ""), max_length=13)
         connect_signal(self.cliente_cuit, 'edit-done', self.on_cuit_edit_done)
         connect_signal(self.cliente_cuit, 'edit-cancel', _edit_cancel)
         connect_signal(self.cliente_cuit, 'focus-out', self.on_cuit_focus_out)
-        self.cuit_error = Text(u"")
+        self.cuit_error = Text("")
 
         resp_text = get_current_config().iva_resp_map[doc_data.cliente.responsabilidad_iva]['nombre']
         self.cliente_resp = Text(resp_text.upper())
@@ -3941,7 +3941,7 @@ class PrintWizard(Dialog):#{{{
             AttrMap(self.cuit_error, 'dialog.printwizard.error'),
         ], dividechars=1)
 
-        self.count_articulos = Text(unicode(len(doc_data.items)), align='right')
+        self.count_articulos = Text(str(len(doc_data.items)), align='right')
         self.count_unidades = NumericText(value=sum([i.cantidad for i in doc_data.items]))
         self.total = NumericText(value=doc_data.total)
 
@@ -3952,7 +3952,7 @@ class PrintWizard(Dialog):#{{{
 
         articulos_row = Columns([
             Divider(),
-            ('fixed', 10, AttrMap(Text(u"Artículos:", align='right'), 'dialog.printwizard.articulos.label')),
+            ('fixed', 10, AttrMap(Text("Artículos:", align='right'), 'dialog.printwizard.articulos.label')),
             ('fixed', 9, AttrMap(self.count_articulos, 'dialog.printwizard.articulos.input')),
         ], dividechars=1)
 
@@ -4016,7 +4016,7 @@ class PrintWizard(Dialog):#{{{
 
         impresora = impresoras[idx]
 
-        extra_opts = dict((opt[6:], val) for opt, val in self.doctype.iteritems() if opt.startswith('print_'))
+        extra_opts = dict((opt[6:], val) for opt, val in self.doctype.items() if opt.startswith('print_'))
         extra_opts.setdefault('docname', self.doctype.get('nombre'))
         extra_opts.setdefault('discrimina_iva', self.doctype.get('discrimina_iva'))
         customer = {
@@ -4062,14 +4062,14 @@ class PrintWizard(Dialog):#{{{
                 self.doc_header.store_printed_document(printed_data, doc_data)
                 if 'warnings' in printed_data and printed_data['warnings']:
                     show_warning(
-                        [u"La impresión fue exitosa pero el controlador envió el siguiente mensaje:\n\n",
-                         ('dialog.warning.important', u"\n".join(printed_data['warnings'])), u'\n'])
+                        ["La impresión fue exitosa pero el controlador envió el siguiente mensaje:\n\n",
+                         ('dialog.warning.important', "\n".join(printed_data['warnings'])), '\n'])
             elif printed_data is not None:
                 if not 'errors' in printed_data or not printed_data['errors']:
-                    printed_data['errors'] = [u"Error desconocido"]
-                show_error([u"Se produjo un error al imprimir:\n\n",
-                            ('dialog.error.important', u"\n".join(printed_data['errors'])),
-                            u"\n\nEl documento será conservado hasta que se solucione el error."])
+                    printed_data['errors'] = ["Error desconocido"]
+                show_error(["Se produjo un error al imprimir:\n\n",
+                            ('dialog.error.important', "\n".join(printed_data['errors'])),
+                            "\n\nEl documento será conservado hasta que se solucione el error."])
                 break
 
         #self.must_quit = True
@@ -4107,13 +4107,13 @@ class PrintWizard(Dialog):#{{{
     def _validar_cuit(self, cuit):#{{{
         needs_cuit = self.doctype['needs_cuit']
         if needs_cuit is True:
-            if cuit.strip() == u"":
+            if cuit.strip() == "":
                 self.cuit_error.set_text("No puede estar vacío")
                 return False
             elif validar_cuit(cuit) is False:
                 self.cuit_error.set_text("Inválido")
                 return False
-        self.cuit_error.set_text(u"")
+        self.cuit_error.set_text("")
         return True
 #}}}
 #}}}
@@ -4136,7 +4136,7 @@ class SpecialPrintWizard(PrintWizard):#{{{
         self.doc_header = doc_header
         self.doctype = get_current_config().documentos[doc_data.doctype]
 
-        if doc_data.cliente.nombre == get_current_config().clientes_especiales[u'1']['nombre']:
+        if doc_data.cliente.nombre == get_current_config().clientes_especiales['1']['nombre']:
             cliente_nombre_txt = ""
         else:
             cliente_nombre_txt = doc_data.cliente.nombre
@@ -4144,7 +4144,7 @@ class SpecialPrintWizard(PrintWizard):#{{{
         connect_signal(self.cliente_nombre, 'edit-done', self.on_nombre_edit_done)
         connect_signal(self.cliente_nombre, 'edit-cancel', _edit_cancel)
         connect_signal(self.cliente_nombre, 'focus-out', self.on_nombre_focus_out)
-        self.nombre_error = Text(u"")
+        self.nombre_error = Text("")
 
         self.cliente_domicilio = InputBox(edit_text=doc_data.cliente.domicilio, max_length=35)
         connect_signal(self.cliente_domicilio, 'edit-done', self.on_next_focus)
@@ -4159,24 +4159,24 @@ class SpecialPrintWizard(PrintWizard):#{{{
         connect_signal(self.cliente_cp, 'edit-done', lambda *x: self.focus_button(0))
         connect_signal(self.cliente_cp, 'edit-cancel', _edit_cancel)
 
-        self.cliente_cuit = InputBox(edit_text=(doc_data.cliente.cuit or u""), max_length=13)
+        self.cliente_cuit = InputBox(edit_text=(doc_data.cliente.cuit or ""), max_length=13)
         connect_signal(self.cliente_cuit, 'edit-done', self.on_cuit_edit_done)
         connect_signal(self.cliente_cuit, 'edit-cancel', _edit_cancel)
         connect_signal(self.cliente_cuit, 'focus-out', self.on_cuit_focus_out)
-        self.cuit_error = Text(u"")
+        self.cuit_error = Text("")
 
         resp_text = get_current_config().iva_resp_map[doc_data.cliente.responsabilidad_iva]['nombre']
         self.cliente_resp = Text(resp_text.upper())
 
         #cliente_nombre_row = _cliente_columns(Text("Nombre:"), self.cliente_nombre, 36)
         cliente_nombre_row = Columns([
-            ('fixed', 16, AttrMap(Text(u"Nombre:", align='right'), 'dialog.printwizard.cliente.label')),
+            ('fixed', 16, AttrMap(Text("Nombre:", align='right'), 'dialog.printwizard.cliente.label')),
             ('fixed', 36, AttrMap(self.cliente_nombre, 'dialog.printwizard.cliente.input',
                                   'dialog.printwizard.cliente.input.focus')),
             #AttrMap(self.nombre_error, 'dialog.printwizard.error'),
         ], dividechars=1)
         cliente_nombre_error_row = Columns([
-            ('fixed', 16, AttrMap(Text(u""), 'dialog.printwizard.cliente.label')),
+            ('fixed', 16, AttrMap(Text(""), 'dialog.printwizard.cliente.label')),
             AttrMap(self.nombre_error, 'dialog.printwizard.error'),
         ])
         cliente_domicilio_row = _cliente_columns(Text("Domicilio:"), self.cliente_domicilio, 36)
@@ -4185,24 +4185,24 @@ class SpecialPrintWizard(PrintWizard):#{{{
         cliente_resp_row = _cliente_columns(Text("Resp:"), self.cliente_resp, 36)
 
         bgroup = []
-        self.cliente_doctype_buttons = dict([(k, RadioButton(bgroup, v['nombre_corto'], False, self.on_radio_change, k)) for k, v in get_current_config().customer_doctype_map.iteritems()])
+        self.cliente_doctype_buttons = dict([(k, RadioButton(bgroup, v['nombre_corto'], False, self.on_radio_change, k)) for k, v in get_current_config().customer_doctype_map.items()])
         cliente_doctype =  GridFlow([AttrMap(i, 'dialog.radio', 'dialog.radio.focus')\
-                                     for i in self.cliente_doctype_buttons.values() if len(i.label) <= 21],
+                                     for i in list(self.cliente_doctype_buttons.values()) if len(i.label) <= 21],
                                      18, 1, 0, 'left')
         cliente_doctype_row = Columns([
-            ('fixed', 16, AttrMap(Text(u"Tipo Documento:", align="right"), 'dialog.printwizard.cliente.label')),
+            ('fixed', 16, AttrMap(Text("Tipo Documento:", align="right"), 'dialog.printwizard.cliente.label')),
             ('fixed', 46, AttrMap(cliente_doctype, 'dialog.maeter.group')),
         ], dividechars=1)
         self.cliente_doctype_buttons[2].state = True
 
         cliente_cuit_row = Columns([
-            ('fixed', 16, AttrMap(Text(u"Número Doc.:", align="right"), 'dialog.printwizard.cliente.label')),
+            ('fixed', 16, AttrMap(Text("Número Doc.:", align="right"), 'dialog.printwizard.cliente.label')),
             ('fixed', 14, AttrMap(self.cliente_cuit, 'dialog.printwizard.cliente.input',
                                   'dialog.printwizard.cliente.input.focus')),
             AttrMap(self.cuit_error, 'dialog.printwizard.error'),
         ], dividechars=1)
 
-        self.count_articulos = Text(unicode(len(doc_data.items)), align='right')
+        self.count_articulos = Text(str(len(doc_data.items)), align='right')
         self.count_unidades = NumericText(value=sum([i.cantidad for i in doc_data.items]))
         self.total = NumericText(value=doc_data.total)
 
@@ -4218,7 +4218,7 @@ class SpecialPrintWizard(PrintWizard):#{{{
             ('fixed', 16, AttrMap(Text("Vendedor:", align='right'), 'dialog.printwizard.cliente.label')),
             ('fixed', 26, AttrMap(Text(("%s - %s" % (doc_data.vendedor['codigo'], doc_data.vendedor['nombre']))[:26]), 'dialog.printwizard.cliente.input')),
             Divider(),
-            ('fixed', 10, AttrMap(Text(u"Artículos:", align='right'), 'dialog.printwizard.articulos.label')),
+            ('fixed', 10, AttrMap(Text("Artículos:", align='right'), 'dialog.printwizard.articulos.label')),
             ('fixed', 9, AttrMap(self.count_articulos, 'dialog.printwizard.articulos.input')),
         ], dividechars=1)
 
@@ -4230,7 +4230,7 @@ class SpecialPrintWizard(PrintWizard):#{{{
             ('fixed', 9, AttrMap(self.count_unidades, 'dialog.printwizard.articulos.input')),
         ], dividechars=1)
 
-        info_row = Text(('dialog.error.important', u"Esta factura debe consignar Nombre y Documento del cliente"), align='center')
+        info_row = Text(('dialog.error.important', "Esta factura debe consignar Nombre y Documento del cliente"), align='center')
 
         self.content = Pile([
             info_row,
@@ -4267,12 +4267,12 @@ class SpecialPrintWizard(PrintWizard):#{{{
 #}}}
     def on_radio_change(self, radio, state, doctype):#{{{
         if state is True:
-            for r in self.cliente_doctype_buttons.itervalues():
+            for r in self.cliente_doctype_buttons.values():
                 if r is not radio:
                     r.state = False
 #}}}
     def imprimir(self, btn):#{{{
-        for k, v in self.cliente_doctype_buttons.iteritems():
+        for k, v in self.cliente_doctype_buttons.items():
             if v.state is True:
                 self.customer_doctype = k
                 break
@@ -4306,31 +4306,31 @@ class SpecialPrintWizard(PrintWizard):#{{{
 #}}}
 
     def _validar_cuit(self, cuit):#{{{
-        if cuit.strip() == u'':
-            self.cuit_error.set_text(u"No puede estar vacío")
+        if cuit.strip() == '':
+            self.cuit_error.set_text("No puede estar vacío")
             return False
 
         try:
             cuit = int(cuit)
         except ValueError:
-            self.cuit_error.set_text(u"Inválido")
+            self.cuit_error.set_text("Inválido")
             return False
 
         if int(cuit) <= 100000:
-            self.cuit_error.set_text(u"Inválido")
+            self.cuit_error.set_text("Inválido")
             return False
 
-        self.cuit_error.set_text(u"")
+        self.cuit_error.set_text("")
         return True
 #}}}
     def _validar_nombre(self, nombre):#{{{
-        if nombre.strip() == u'':
-            self.nombre_error.set_text(u" ↓ No puede estar vacío")
+        if nombre.strip() == '':
+            self.nombre_error.set_text(" ↓ No puede estar vacío")
             return False
         elif len(nombre.split()) < 2:
-            self.nombre_error.set_text(u" ↓ Ingrese Nombre y Apellido")
+            self.nombre_error.set_text(" ↓ Ingrese Nombre y Apellido")
             return False
-        self.nombre_error.set_text(u"")
+        self.nombre_error.set_text("")
         return True
 #}}}
 #}}}
@@ -4395,7 +4395,7 @@ class MainFrame(Frame):#{{{
 
         _menu_config_map = [
             ('maestro_clientes', ('Maestro de Clientes', maestro_terceros)),
-            ('maestro_proveedores', ('Maestro de Proveedores', lambda: sec_maestro_terceros(rel=u'P'))),
+            ('maestro_proveedores', ('Maestro de Proveedores', lambda: sec_maestro_terceros(rel='P'))),
             ('maestro_stock', ('Maestro de Stock', maestro_stock)),
             ('modificar_precios', ('Modificador de Precios', sec_price_batch_modifier)),
             ('documentos_especiales', ('Documentos Especiales', sec_editor_documentos_especiales)),
@@ -4446,7 +4446,7 @@ class MainFrame(Frame):#{{{
         ])
 #}}}
     def _clear_iva_info(self, widget):#{{{
-        self.doc_footer.extra_info.set_text(u"")
+        self.doc_footer.extra_info.set_text("")
 #}}}
 #}}}
 
