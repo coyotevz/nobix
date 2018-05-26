@@ -107,7 +107,7 @@ class Listado(Dialog):#{{{
             self._current_footer = 1 - (1 * self._current_footer)
 #}}}
     def run(self):#{{{
-        message_waiter(u" Procesando información ... ")
+        message_waiter(" Procesando información ... ")
         return self.__super.run()
 #}}}
 #}}}
@@ -164,10 +164,10 @@ class LibroIVA(Listado):#{{{
 
         for g, val in groupby(sorted(result, key=k0), key=k0):
             l = list(val)
-            data['total'][g] = map(k1, l)
-            data['neto'][g] = map(itemgetter(2), l)
-            for n, m in groupby(sorted(chain(*map(itemgetter(3), l)), key=k0), key=k0):
-                data['tasas'][g][n] = map(k1, m)
+            data['total'][g] = list(map(k1, l))
+            data['neto'][g] = list(map(itemgetter(2), l))
+            for n, m in groupby(sorted(chain(*list(map(itemgetter(3), l))), key=k0), key=k0):
+                data['tasas'][g][n] = list(map(k1, m))
 
         return data
 #}}}
@@ -193,8 +193,8 @@ class LibroIVA(Listado):#{{{
         c = len(data['total'].get('+compra', [])) + len(data['total'].get('-compra', []))
         v = len(data['total'].get('+venta', [])) + len(data['total'].get('-venta', []))
 
-        tc = [k for k, v in imp.iteritems() if v['operacion'] == 'compra']
-        tv = [k for k, v in imp.iteritems() if v['operacion'] == 'venta']
+        tc = [k for k, v in imp.items() if v['operacion'] == 'compra']
+        tv = [k for k, v in imp.items() if v['operacion'] == 'venta']
 
         if c > 0:
             citems = [Text(["Importe Gravado: ",
@@ -210,7 +210,7 @@ class LibroIVA(Listado):#{{{
                     ], align='right'))
 
             large_items.append(Columns([
-                ('fixed', 25, AttrMap(Text([('listado.footer.key', u"Compras: "),
+                ('fixed', 25, AttrMap(Text([('listado.footer.key', "Compras: "),
                                             ('listado.footer.important', "$ %11s" % moneyfmt(total_compras))
                                       ]), 'listado.footer')),
                 AttrMap(Pile(citems), 'listado.footer'),
@@ -233,7 +233,7 @@ class LibroIVA(Listado):#{{{
                     ], align='right'))
 
             large_items.append(Columns([
-                ('fixed', 25, AttrMap(Text([('listado.footer.key', u"Ventas: "),
+                ('fixed', 25, AttrMap(Text([('listado.footer.key', "Ventas: "),
                                             ('listado.footer.important', " $ %11s" % moneyfmt(total_ventas))
                                       ]), 'listado.footer')),
                 AttrMap(Pile(vitems), 'listado.footer'),
@@ -352,7 +352,7 @@ class SubDiarioVentas(Listado):#{{{
         for g, val in groupby(sorted(result, key=k0), key=k0):
             n = vend[g]['nombre'] if g in vend else g
             l = list(val)
-            data[n].extend(map(k1, l))
+            data[n].extend(list(map(k1, l)))
 
         _total_doc = Text(["Total documentos: ", ('listado.footer.important', "%s" % len(result))])
 
@@ -361,10 +361,10 @@ class SubDiarioVentas(Listado):#{{{
             ('fixed', 3, Text([('listado.footer.important', "^^^")])),
         ], dividechars=1), 'listado.footer')
 
-        _totals = sorted([(n, Decimal(sum(filter(None, val)))) for n, val in data.iteritems()],
+        _totals = sorted([(n, Decimal(sum([_f for _f in val if _f]))) for n, val in data.items()],
                          key=k1, reverse=True)
         large_items = [AttrMap(Columns([
-            ('fixed', 35, Text(unicode(n or '~')+u':', align='right')),
+            ('fixed', 35, Text(str(n or '~')+':', align='right')),
             AttrMap(Text(" %11s" % moneyfmt(val), align='left'), 'listado.footer.important'),
         ]), 'listado.footer') for n, val in _totals]
         large_items.append(AttrMap(Columns([
@@ -394,7 +394,7 @@ class SubDiarioVentas(Listado):#{{{
 
         return session.query(Documento).filter(Documento.fiscal!=None).\
                        filter(date_condition).\
-                       filter(Documento.tipo.in_([u'FAA', u'FAC'])).\
+                       filter(Documento.tipo.in_(['FAA', 'FAC'])).\
                        order_by(Documento.fecha.asc(), Documento.numero.asc())
 #}}}
     def build_max_rows(self):#{{{
@@ -482,25 +482,29 @@ class SelectDateRange(Dialog):#{{{
 
     ### Signals Handlers ###
 
-    def on_fecha_focus_in(self, widget, (errwidget, errstate)):#{{{
+    def on_fecha_focus_in(self, widget, err):#{{{
+        (errwidget, errstate) = err
         if getattr(self, errstate) is None:
-            getattr(self, errwidget).set_text(u"")
+            getattr(self, errwidget).set_text("")
             widget.highlight = 0, len(widget._edit_text)
 #}}}
-    def on_fecha_focus_out(self, widget, (errwidget, errstate)):#{{{
+    def on_fecha_focus_out(self, widget, err):#{{{
+        (errwidget, errstate) = err
         setattr(self, errstate, None)
-        getattr(self, errwidget).set_text(u"")
+        getattr(self, errwidget).set_text("")
 #}}}
-    def on_fecha_edit_done(self, widget, value, (errwidget, errstate, cb)):#{{{
+    def on_fecha_edit_done(self, widget, value, err):#{{{
+        (errwidget, errstate, cb) = err
         if getattr(self, errstate) is not None:
             getattr(self, errwidget).set_text(getattr(self, errstate))
             setattr(self, errstate, None)
             widget.highlight = 0, len(widget._edit_text)
             return
-        getattr(self, errwidget).set_text(u"")
+        getattr(self, errwidget).set_text("")
         cb()
 #}}}
-    def on_fecha_error(self, widget, msg, (errwidget, errstate)):#{{{
+    def on_fecha_error(self, widget, msg, err):#{{{
+        (errwidget, errstate) = err
         setattr(self, errstate, msg)
         getattr(self, errwidget).set_text(msg)
 #}}}
@@ -612,7 +616,7 @@ class SelectArticlesDateRange(SelectDateRange):#{{{
             AttrMap(self.hasta_error, 'dialog.selectdate.error'),
         ], dividechars=1)
 
-        self.include_inactives = CheckBox(u"Incluir Desactivados", state=True)
+        self.include_inactives = CheckBox("Incluir Desactivados", state=True)
         include_inactives_row = Columns([
             ('fixed', 14, Divider()),
             AttrMap(self.include_inactives, 'dialog.selectdate.label'),
@@ -626,12 +630,12 @@ class SelectArticlesDateRange(SelectDateRange):#{{{
             Divider(),
         ])
 
-        t = u"Artículos y Rango de Fechas"
+        t = "Artículos y Rango de Fechas"
         if title:
-            t += u" - %s" % title
+            t += " - %s" % title
 
         # Set initial dates
-        self.desde.set_value(date(2001, 01, 01)) # FIXME: hardcoded > Principio de actividad
+        self.desde.set_value(date(2001, 0o1, 0o1)) # FIXME: hardcoded > Principio de actividad
         self.hasta.set_value(date.today()+relativedelta(day=31)) # Fin de mes
 
         buttons = [("Continuar", self.run_list), ("Cancelar", self._quit)]
@@ -646,8 +650,8 @@ class SelectArticlesDateRange(SelectDateRange):#{{{
     def run_list(self, *args):
         art_list = self.get_articles()
         if not art_list:
-            show_error([u"Los artículos ingresados no producen ningún resultado válido, ",
-                        u"ingrese ", ('dialog.warning.important', u"artículos"), " o ",
+            show_error(["Los artículos ingresados no producen ningún resultado válido, ",
+                        "ingrese ", ('dialog.warning.important', "artículos"), " o ",
                         ('dialog.warning.important', "grupos"), " correctos."])
             self._pile.set_focus(0)
             self.content.set_focus(0)
@@ -698,7 +702,7 @@ class SelectClient(Dialog):
         connect_signal(self.codigo_box, 'edit-cancel', _edit_cancel)
         connect_signal(self.codigo_box, 'search-client', self.on_client_search)
 
-        self.nombre = Text(u'')
+        self.nombre = Text('')
 
         client_row = Columns([
             ('fixed', 8, AttrMap(Text("Cliente", align='right'), 'dialog.selectdate.label')),
@@ -714,7 +718,7 @@ class SelectClient(Dialog):
         buttons = [("Continuar", self.run_list), ("Cancelar", self.quit)]
 
         self.__super.__init__(self.content, buttons,
-                title=title or u'<Falta titulo>',
+                title=title or '<Falta titulo>',
                 height=None,
                 width=60,
                 attr_style='dialog.selectdate',
@@ -730,9 +734,9 @@ class SelectClient(Dialog):
         self.quit()
 
     def on_codigo_edit_done(self, widget, code):
-        if code != u"":
+        if code != "":
             query = session.query(Cliente).filter(Cliente.codigo==int(code))
-            query = query.filter(Cliente.relacion==u"C")
+            query = query.filter(Cliente.relacion=="C")
             try:
                 self._obj = query.one()
                 self.codigo_box.set_edit_text(self._obj.codigo)
@@ -740,7 +744,7 @@ class SelectClient(Dialog):
                 self.focus_button(0)
             except NoResultFound:
                 self._obj = None
-                self.nombre.set_text(u"")
+                self.nombre.set_text("")
 
     def on_client_search(self, widget, search_by=None, first_key=None):
         response = search_terceros(search_by=search_by, first_key=first_key)
@@ -783,14 +787,14 @@ class SubDiarioVentasTree(Dialog):#{{{
 
         list_header = Columns([
             ('fixed', 2, Divider()),
-            ('fixed', 3, Text(u"Tip", align='center')),
-            ('fixed', 6, Text(u"Número", align='center')),
-            Text(u"Razón Social", align='left'),
-            ('fixed', 5, Text(u"Hora", align='left')),
-            ('fixed', 3, Text(u"Ven", align='right')),
-            ('fixed', 6, Text(u"Impues", align='right')),
-            ('fixed', 6, Text(u"Descue", align='right')),
-            ('fixed', 9, Text(u"Total".upper(), align='right')),
+            ('fixed', 3, Text("Tip", align='center')),
+            ('fixed', 6, Text("Número", align='center')),
+            Text("Razón Social", align='left'),
+            ('fixed', 5, Text("Hora", align='left')),
+            ('fixed', 3, Text("Ven", align='right')),
+            ('fixed', 6, Text("Impues", align='right')),
+            ('fixed', 6, Text("Descue", align='right')),
+            ('fixed', 9, Text("Total".upper(), align='right')),
         ], dividechars=1)
 
         title_row = [('listado.title.important', title), stitle]
@@ -836,7 +840,7 @@ class SubDiarioVentasTree(Dialog):#{{{
             self._current_footer = 1 - (1 * self._current_footer)
 #}}}
     def run(self):#{{{
-        message_waiter(u" Procesando información ... ")
+        message_waiter(" Procesando información ... ")
         self._subprocess.start()
         return self.__super.run()
 #}}}
@@ -865,16 +869,16 @@ class SubDiarioVentasTree(Dialog):#{{{
         k0 = itemgetter(0)
         k1 = itemgetter(1)
         k2 = itemgetter(2)
-        cols = (u'FAC+FAA', u'REM', u'PRE')
+        cols = ('FAC+FAA', 'REM', 'PRE')
 
         for vcode, docs in groupby(sorted(result, key=k0), key=k0):
             vname = vend[vcode]['nombre'] if vcode in vend else vcode
             for dtype, docs in groupby(sorted(docs, key=k2), key=k2):
-                data[vname][dtype].extend(map(k1, docs))
+                data[vname][dtype].extend(list(map(k1, docs)))
 
         _totals_by_type = defaultdict(int)
-        for vname, dtype in data.iteritems():
-            dtype[u'FAC+FAA'] = dtype.get(u'FAC', []) + dtype.get(u'FAA', [])
+        for vname, dtype in data.items():
+            dtype['FAC+FAA'] = dtype.get('FAC', []) + dtype.get('FAA', [])
             for c in cols:
                 _totals_by_type[c] = _totals_by_type[c] + len(dtype.get(c, []))
 
@@ -894,20 +898,20 @@ class SubDiarioVentasTree(Dialog):#{{{
         ], dividechars=1), 'listado.footer')
 
         def _t(e):
-            return sum(e[1][u'FAC+FAA']) + Decimal('0.9')*sum(e[1][u'REM'])
+            return sum(e[1]['FAC+FAA']) + Decimal('0.9')*sum(e[1]['REM'])
 
         def _nozero(docs):
             return sum([sum(docs[c]) for c in cols]) > 0
 
-        _totals = sorted([(vname, docs) for vname, docs in data.iteritems() if _nozero(docs)],
+        _totals = sorted([(vname, docs) for vname, docs in data.items() if _nozero(docs)],
                           key=_t, reverse=True)
 
-        large_items = [AttrMap(Columns([Text(u'', wrap='clip')] + [
-            ('fixed', 11, Text(u'%s' % c, align='right')) for c in cols] + [
+        large_items = [AttrMap(Columns([Text('', wrap='clip')] + [
+            ('fixed', 11, Text('%s' % c, align='right')) for c in cols] + [
             ('fixed', 5, Divider()),
         ], dividechars=1), 'listado.footer')]
 
-        large_items.extend([AttrMap(Columns([Text(unicode(vname or '~')+u':', align='right')] + [
+        large_items.extend([AttrMap(Columns([Text(str(vname or '~')+':', align='right')] + [
             ('fixed', 11, AttrMap(Text("%11s" % moneyfmt(Decimal(sum(dtype[c]))), align='left', wrap='clip'),
                                   'listado.footer.important')) for c in cols] + [
             ('fixed', 5, Divider()),
@@ -943,7 +947,7 @@ class MovimientosArticuloTree(Dialog):
             end_date = period + relativedelta(day=31)
         self.end_date = end_date
 
-        title = u"(EXPERIMENTAL) Movimiento de Artículos"
+        title = "(EXPERIMENTAL) Movimiento de Artículos"
         if period:
             stitle = " (periodo %s)" % period.strftime("%m/%Y")
         else:
@@ -951,10 +955,10 @@ class MovimientosArticuloTree(Dialog):
 
         list_header = Columns([
             ('fixed', 1, Divider()),
-            ('fixed', 14, Text(u"Código", align='left')),
-            ('fixed', 6, Text(u"Existencias"[:6], align='right')),
-            ('fixed', 6, Text(u"byMoviment"[:6], align='right')),
-            Text(u"Descripción"),
+            ('fixed', 14, Text("Código", align='left')),
+            ('fixed', 6, Text("Existencias"[:6], align='right')),
+            ('fixed', 6, Text("byMoviment"[:6], align='right')),
+            Text("Descripción"),
         ], dividechars=1)
 
         title_row = [('listado.title.important', title), stitle]
@@ -967,10 +971,10 @@ class MovimientosArticuloTree(Dialog):
         #footer = Text("Calculando ...")
         key = 'listado.footer.important'
         footer = Text([
-            (key, "+"), "/", (key, "-"), u" expandir/colapsar   ",
+            (key, "+"), "/", (key, "-"), " expandir/colapsar   ",
             (key, "ESC"), ",", (key, "ENTER"), ",",
             (key, "ESPACIO"), " o ", (key, "F10"),
-            u" para continuar"], align='right')
+            " para continuar"], align='right')
         self.short_footer = None
         self.large_footer = None
         self._current_footer = 0
@@ -1001,19 +1005,19 @@ class MovimientosArticuloTree(Dialog):
 class ClientHistory(Dialog):
 
     def __init__(self, cliente):
-        title = u"(EXPERIMENTAL) Historia de %s" % cliente.nombre
+        title = "(EXPERIMENTAL) Historia de %s" % cliente.nombre
 
         list_header = Columns([
             ('fixed', 2, Divider()),
-            ('fixed', 3, Text(u"Tip", align='center')),
-            ('fixed', 6, Text(u"Número", align='center')),
-            ('fixed', 3, Text(u"Ven", align='right')),
-            ('fixed', 6, Text(u"Impues", align='right')),
-            ('fixed', 6, Text(u"Descue", align='right')),
-            ('fixed', 9, Text(u"Total".upper(), align='right')),
+            ('fixed', 3, Text("Tip", align='center')),
+            ('fixed', 6, Text("Número", align='center')),
+            ('fixed', 3, Text("Ven", align='right')),
+            ('fixed', 6, Text("Impues", align='right')),
+            ('fixed', 6, Text("Descue", align='right')),
+            ('fixed', 9, Text("Total".upper(), align='right')),
             Divider(),
-            ('fixed', 6, Text(u"Fecha", align='left')),
-            ('fixed', 5, Text(u"Hora", align='left')),
+            ('fixed', 6, Text("Fecha", align='left')),
+            ('fixed', 5, Text("Hora", align='left')),
         ], dividechars=1)
 
         title_row = [('listado.title.important', title), " beta"]
@@ -1025,10 +1029,10 @@ class ClientHistory(Dialog):
         header = Pile(header_row)
         key = 'listado.footer.important'
         footer = Text([
-            (key, "+"), "/", (key, "-"), u" expandir/colapsar   ",
+            (key, "+"), "/", (key, "-"), " expandir/colapsar   ",
             (key, "ESC"), ",", (key, "ENTER"), ",",
             (key, "ESPACIO"), " o ", (key, "F10"),
-            u" para continuar"], align='right')
+            " para continuar"], align='right')
 
         query = session.query(Documento.fecha).filter(Documento.cliente==cliente).order_by(Documento.fecha)
         months = sorted(session.query(func.date_part("month", Documento.fecha),
@@ -1067,27 +1071,27 @@ def unsec_view(name, func):#{{{
 
 views_map = (
     ('libro_iva_periodo', ('Libro IVA por periodo',
-        sec_view(u"Ver libro IVA", SelectPeriod('Libro IVA', LibroIVA).run))),
+        sec_view("Ver libro IVA", SelectPeriod('Libro IVA', LibroIVA).run))),
     ('libro_iva_fechas', ('Libro IVA por fecha',
-        sec_view(u"Ver libro IVA", SelectDateRange('Libro IVA', LibroIVA).run))),
+        sec_view("Ver libro IVA", SelectDateRange('Libro IVA', LibroIVA).run))),
 #    ('subdiario_periodo', ('Sub-diario de Ventas por periodo',
 #        sec_view(u"Ver sub-diario", SelectPeriod('Sub-diario Ventas', SubDiarioVentas).run))),
-    ('subdiario_periodo_tree', (u'Sub-diario de Ventas por periodo',
-        sec_view(u"Sub-diario de Ventas", SelectPeriod('Sub-diario Ventas', SubDiarioVentasTree).run))),
+    ('subdiario_periodo_tree', ('Sub-diario de Ventas por periodo',
+        sec_view("Sub-diario de Ventas", SelectPeriod('Sub-diario Ventas', SubDiarioVentasTree).run))),
 #    ('subdiario_fechas', ('Sub-diario de Ventas por fecha',
 #        sec_view(u"Ver sub-diario", SelectDateRange('Sub-diario Ventas', SubDiarioVentas).run))),
-    ('subdiario_fechas_tree', (u'Sub-diario de Ventas por fecha',
-        sec_view(u"Sub-diario de Ventas", SelectDateRange('Sub-diario Ventas', SubDiarioVentasTree).run))),
+    ('subdiario_fechas_tree', ('Sub-diario de Ventas por fecha',
+        sec_view("Sub-diario de Ventas", SelectDateRange('Sub-diario Ventas', SubDiarioVentasTree).run))),
     ('movimientos_fecha', ('Movimientos por fecha (EXPERIMENTAL)',
-        sec_view(u"Ver movimientos", SelectArticlesDateRange('Movimientos (EXPERIMENTAL)', MovimientosArticuloTree).run))),
+        sec_view("Ver movimientos", SelectArticlesDateRange('Movimientos (EXPERIMENTAL)', MovimientosArticuloTree).run))),
     ('historial_clientes', ('Historial clientes (EXPERIMENTAL)',
-        sec_view(u"Ver historial clientes", SelectClient('Clientes (EXPERIMENTAL)', ClientHistory).run))),
+        sec_view("Ver historial clientes", SelectClient('Clientes (EXPERIMENTAL)', ClientHistory).run))),
     ('listado_por_agrupacion', ('Imprime Artículos por Agrupación',
-        unsec_view(u"Imprimir Artículos", group_list_printer))),
+        unsec_view("Imprimir Artículos", group_list_printer))),
     ('resumen_periodo', ('Imprime Resumen Mensual',
-        sec_view(u"Imprimir Resumen", SelectPeriod('Resumen', ListadoAdapter(ReportListPrinter)).run))),
+        sec_view("Imprimir Resumen", SelectPeriod('Resumen', ListadoAdapter(ReportListPrinter)).run))),
     ('resumen_fecha', ('Imprime Resumen por fecha',
-        sec_view(u"Imprimir Resumen", SelectDateRange('Resumen', ListadoAdapter(ReportListPrinter)).run))),
+        sec_view("Imprimir Resumen", SelectDateRange('Resumen', ListadoAdapter(ReportListPrinter)).run))),
 )
 
 # vim:foldenable:foldmethod=marker
