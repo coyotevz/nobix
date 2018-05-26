@@ -10,13 +10,15 @@ from sqlalchemy.exc import DataError
 from urwid import Text, Columns, WidgetWrap, AttrMap, Divider, Padding
 from dateutil.relativedelta import relativedelta
 
-from nobix.db import Session
+#from nobix.db import Session
+from nobix.models import db
 from nobix.models import Documento, ItemDocumento, Tasa
 from nobix.treetools import TreeWidget, TreeNode, ParentNode
 from nobix.utils import moneyfmt
 from nobix.config import get_current_config
 
-session = Session()
+#session = Session()
+session = db.session
 moneyfmt = partial(moneyfmt, sep='.', dp=',')
 
 def tryint(q):
@@ -25,10 +27,10 @@ def tryint(q):
     return moneyfmt(q, places=-prec)
 
 _doc = get_current_config().documentos
-entrada = [t for t, d in _doc.iteritems() if d['stock'] == u'entrada']
-salida = [t for t, d in _doc.iteritems() if d['stock'] == u'salida']
+entrada = [t for t, d in _doc.items() if d['stock'] == 'entrada']
+salida = [t for t, d in _doc.items() if d['stock'] == 'salida']
 entsal = entrada + salida
-mov = [t for t, d in _doc.iteritems() if (d['stock'] and t not in entsal)]
+mov = [t for t, d in _doc.items() if (d['stock'] and t not in entsal)]
 
 class BaseTreeWidget(TreeWidget):
     indent_cols = 1
@@ -153,11 +155,11 @@ class HeaderDocumentItemWidget(DocumentItemWidget):
 
     def load_inner_widget(self):
         return AttrMap(Columns([
-            ('fixed', 14, Text(u"Código", align='left')),
-            Text(u"Descripción", align='left', wrap='clip'),
-            ('fixed', 8, Text(u"Cantidad", align='right')),
-            ('fixed', 8, Text(u"Precio", align='right')),
-            ('fixed', 9, Text(u"Total", align='right')),
+            ('fixed', 14, Text("Código", align='left')),
+            Text("Descripción", align='left', wrap='clip'),
+            ('fixed', 8, Text("Cantidad", align='right')),
+            ('fixed', 8, Text("Precio", align='right')),
+            ('fixed', 9, Text("Total", align='right')),
         ], dividechars=1), 'listado.tree.itemheader')
 
     def selectable(self):
@@ -178,7 +180,7 @@ class FooterDateWidget(HeaderDocumentItemWidget):
                                          ('listado.tree.itemheader.key', " %s" % moneyfmt(accum[k])), " | "]
                                          for k in docorder if accum[k] != 0))[:-1]
         return AttrMap(Columns([
-            Text([u"Total día: "] + tots, wrap='clip'),
+            Text(["Total día: "] + tots, wrap='clip'),
         ], dividechars=1), 'listado.tree.itemheader')
 
 # Article tree elements
@@ -228,10 +230,10 @@ class ArticleItemWidget(BaseTreeWidget):
         doc = item.documento
         if doc.tipo in entrada:
             #movicon = u"→"
-            movicon = u">"
+            movicon = ">"
         elif doc.tipo in salida:
             #movicon = u"←"
-            movicon = u"<"
+            movicon = "<"
         return AttrMap(Columns([
             ('fixed', 8, Text("%s" % (tryint(item.cantidad),), align='right')),
             ('fixed', 1, Text(movicon)),
@@ -251,14 +253,14 @@ class HeaderArticleItemWidget(ArticleItemWidget):
 
     def load_inner_widget(self):
         return AttrMap(Columns([
-            ('fixed', 8, Text(u"Cantidad", align='left')),
+            ('fixed', 8, Text("Cantidad", align='left')),
             ('fixed', 1, Divider()),
-            ('fixed', 10, Text(u"Fecha", align='right')),
-            ('fixed', 5, Text(u"Hora", align='right')),
-            ('fixed', 3, Text(u"Tip")),
-            ('fixed', 6, Text(u"Número")),
-            ('fixed', 3, Text(u"Ven")),
-            ('fixed', 8, Text(u"Precio", align='right')),
+            ('fixed', 10, Text("Fecha", align='right')),
+            ('fixed', 5, Text("Hora", align='right')),
+            ('fixed', 3, Text("Tip")),
+            ('fixed', 6, Text("Número")),
+            ('fixed', 3, Text("Ven")),
+            ('fixed', 8, Text("Precio", align='right')),
         ], dividechars=1), 'listado.tree.itemheader')
 
     def selectable(self):
@@ -331,7 +333,7 @@ class FooterClientDocumentWidget(BaseTreeWidget):
         accum = self.get_node().get_parent().get_accum()
         tots = list(chain.from_iterable([('listado.tree.itemheader.important', "%s:" % k),
                                          ('listado.tree.itemheader.key', " %s" % moneyfmt(v)), " | "]
-                                         for k, v in sorted(accum.iteritems())))[:-1]
+                                         for k, v in sorted(accum.items())))[:-1]
         return AttrMap(Columns([
             Text(["Total mes: "] + tots, wrap='clip'),
         ], dividechars=1), 'listado.tree.itemheader')
