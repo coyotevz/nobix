@@ -492,8 +492,8 @@ impresoras = {
 #
 # ver: http://www.sqlalchemy.org/docs/dbengine.html#create-engine-url-arguments
 
-database_uri = "sqlite:////var/nobix/data/nobix.db"
-#database_uri = "postgresql://nobix:nobix@localhost/nobix"
+#database_uri = "sqlite:////var/nobix/data/nobix.db"
+database_uri = "postgresql://nobix-app:nobix-app@perseo:5433/nobix-test"
 #database_uri = "mysql://nobix:nobix@localhost/nobix"
 
 default_doctype = u"FAC"
