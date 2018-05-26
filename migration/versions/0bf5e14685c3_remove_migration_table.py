@@ -31,3 +31,7 @@ def downgrade():
         sa.PrimaryKeyConstraint('repository_id',
                                 name='migrate_version_pkey')
     )
+
+    op.execute("""
+        INSERT INTO migrate_version(repository_id,repository_path,version)
+                    VALUES('Nobix Data Evolution','dbmigrate',3)""")
