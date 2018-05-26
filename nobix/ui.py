@@ -166,7 +166,7 @@ class TerceroBox(InputBox):#{{{
     signals = ['search-client', 'edit-cliente']
 
     def keypress(self, size, key):
-        if key in string.letters:
+        if key in string.ascii_letters:
             self._emit("search-client", "exact description", key)
             return key
         elif key == ".":
@@ -2085,7 +2085,7 @@ class MaeterCodeBox(InputBox):#{{{
     def keypress(self, size, key):
         key = restrict_moviment(self, key)
         if key:
-            if key in string.letters:
+            if key in string.ascii_letters:
                 self._emit("search-client", "exact description", key)
                 return key
             elif key == ".":
@@ -3717,7 +3717,7 @@ def maestro_stock():#{{{
         ms.run()
 #}}}
 def search_stock(first_key=None, multiple=False):#{{{
-    if first_key is None or first_key in string.letters: # exact description
+    if first_key is None or first_key in string.ascii_letters: # exact description
         search_dialog = ArticleSearchDialogExact()
         if first_key: # esto solo tiene sentido aquí
             search_dialog.search_box.insert_text(first_key)
