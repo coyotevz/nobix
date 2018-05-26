@@ -172,7 +172,7 @@ class Cache(db.Model):
     descuento = db.Column(db.Numeric(10, 2), default=0)
     total = db.Column(db.Numeric(10, 2), default=0)
     cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), index=True)
-    cliente = db.relationship('Cliente')
+    cliente = db.relationship('Cliente', lazy='joined')
     modified = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     items = db.Column(db.PickleType, default=None)
 
