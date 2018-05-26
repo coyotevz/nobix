@@ -18,7 +18,8 @@ from sqlalchemy import or_, and_, func
 from sqlalchemy.orm import contains_eager, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 
-from nobix.db import Session
+#from nobix.db import Session
+from nobix.models import db
 from nobix.config import get_current_config
 from nobix.models import Documento, ItemDocumento, Articulo, Cliente
 from nobix.widget import Dialog, DateSelectorBox, InputBox
@@ -26,7 +27,8 @@ from nobix.sqlwalker import QueryWalker
 from nobix.utils import moneyfmt, check_password, message_waiter, show_error
 from nobix.ui import group_list_printer, ReportListPrinter, MaeterCodeBox, search_terceros, highlight_focus_in
 
-session = Session()
+#session = Session()
+session = db.session
 moneyfmt = partial(moneyfmt, sep='.', dp=',')
 
 # temp functions
