@@ -102,7 +102,7 @@ class InputBox(Edit):#{{{
 
     # Always return unicode
     def set_edit_text(self, text):
-        self.__super.set_edit_text(text)
+        self.__super.set_edit_text(str(text))
     def get_edit_text(self):
         return str(self.__super.get_edit_text())
     edit_text = property(get_edit_text, set_edit_text)
