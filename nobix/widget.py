@@ -104,7 +104,7 @@ class InputBox(Edit):#{{{
     def set_edit_text(self, text):
         self.__super.set_edit_text(text)
     def get_edit_text(self):
-        return unicode(self.__super.get_edit_text())
+        return str(self.__super.get_edit_text())
     edit_text = property(get_edit_text, set_edit_text)
 
     def _get_highlight(self):
@@ -166,10 +166,10 @@ class IntegerInputBox(InputBox):#{{{
             v = val
         else:
             try:
-                v = int(unicode(val))
+                v = int(str(val))
             except (ValueError, TypeError):
                 return
-        self.set_edit_text(unicode(v))
+        self.set_edit_text(str(v))
 #}}}
     def get_value(self):#{{{
         if self.edit_text:
@@ -193,10 +193,10 @@ class NumericInputBox(InputBox):#{{{
     def __init__(self, caption="", value=None, default=None, digits=2, sep=".",#{{{
                  min_value=None, max_value=None, max_digits=4, **kwargs):
         self._sep = sep
-        self._min = Decimal(unicode(min_value)) if min_value is not None else None
-        self._max = Decimal(unicode(max_value)) if max_value is not None else None
+        self._min = Decimal(str(min_value)) if min_value is not None else None
+        self._max = Decimal(str(max_value)) if max_value is not None else None
         self._max_digits = max_digits
-        self._default = Decimal(unicode(default)) if default else None
+        self._default = Decimal(str(default)) if default else None
         self._q = Decimal((0, (1,), -digits))
 
         self.__super.__init__(caption, **kwargs)
@@ -266,11 +266,11 @@ class NumericInputBox(InputBox):#{{{
             v = val
         else:
             try:
-                v = Decimal(unicode(val).replace(self._sep, "."))
+                v = Decimal(str(val).replace(self._sep, "."))
             except DecimalException:
                 self.set_edit_text("")
                 return
-        self.set_edit_text(unicode(v.quantize(self._q)).replace(".", self._sep))
+        self.set_edit_text(str(v.quantize(self._q)).replace(".", self._sep))
 #}}}
     value = property(get_value, set_value)
 
@@ -323,7 +323,7 @@ class DateInputBox(InputBox):#{{{
     def _parse_date(self, val):#{{{
         if isinstance(val, (datetime, date)):
             d = val
-        elif isinstance(val, basestring):
+        elif isinstance(val, str):
             d = None
             for fmt in self.in_fmt:
                 try:
@@ -345,7 +345,7 @@ class DateInputBox(InputBox):#{{{
                 return val.strftime(self.out_fmt)
             except ValueError:
                 raise NobixBadDateError("Fecha malformada: %s" % val)
-        return u''
+        return ''
 #}}}
     def _check_date(self, *args):#{{{
         if self.edit_text:
@@ -353,7 +353,7 @@ class DateInputBox(InputBox):#{{{
                 d = self._parse_date(self.edit_text)
                 self.set_value(d)
             except NobixBadDateError as e:
-                self._emit('bad-date-error', unicode(e))
+                self._emit('bad-date-error', str(e))
                 return False
         return True
 #}}}
@@ -427,10 +427,10 @@ class NumericText(Text):#{{{
             self._value = val
         else:
             try:
-                self._value = Decimal(unicode(val).replace(self._sep, "."))
+                self._value = Decimal(str(val).replace(self._sep, "."))
             except DecimalException:
                 return
-        self.set_text(unicode(self._value.quantize(self._q)).replace(".", self._sep))
+        self.set_text(str(self._value.quantize(self._q)).replace(".", self._sep))
 #}}}
     def get_value(self):#{{{
         if self._value is not None:
@@ -503,9 +503,7 @@ from nobix.mainloop import get_main_loop
 
 ### Dialog objects ###
 
-class Dialog(object):#{{{
-    __metaclass__ = MetaSuper
-
+class Dialog(object, metaclass=MetaSuper):#{{{
     def __init__(self, content, buttons_and_results=[], title=None, subtitle=None,#{{{
                  focus_button=None, keypress=None, input_filter=None, **kwargs):
 
@@ -850,9 +848,8 @@ class SearchBox(InputBox):#{{{
     def filter_input(self, text):
         return text.upper()
 #}}}
-class SearchListItem(Columns):#{{{
+class SearchListItem(Columns, metaclass=MetaSuper):#{{{
 
-    __metaclass__ = MetaSuper
     _search_box = None
     selected = False
 
@@ -957,7 +954,7 @@ class SearchDialog(Dialog):#{{{
         if query is not None:
             self._items = tuple(query[:150])
             if len(self._items) > 0:
-                l_items = map(self._constr, self._items)
+                l_items = list(map(self._constr, self._items))
                 for i in l_items:
                     i.set_search_box(self.search_box)
                 self.search_items.extend([AttrMap(i, 'dialog.search.item',\
