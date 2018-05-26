@@ -4,10 +4,6 @@
 from datetime import datetime
 from decimal import Decimal
 
-from nobix.lib.saw import SQLAlchemy
-
-db = SQLAlchemy()
-
 # from sqlalchemy.orm import mapper, relation, synonym, object_mapper, backref, object_session
 # from sqlalchemy.sql import select, func
 # from sqlalchemy import UniqueConstraint, Table, Column
@@ -32,149 +28,12 @@ from nobix.exc import NobixModelError, NobixPrintError
 #  Mantener sincronizada con la version del repositorio dbmigrate
 SCHEMA_VERSION = '3'
 
-def time_now():
-    return datetime.now().time()
-
 # class Model(EntityBase, metaclass=EntityMeta):
 #     def __repr__(self):
 #         return "<%s %s>" % (type(self).__name__, ', '.join('%s=%s' %\
 #                 (k.name, repr(getattr(self, k.name))) for k in self.table.columns))
 
-class Documento(db.Model):
-    __tablename__ = 'documentos'
-    __table_args__ = (db.UniqueConstraint('tipo', 'fecha', 'numero'),)
 
-    id = db.Column(db.Integer, primary_key=True)
-    _tipo = db.Column('tipo', db.Unicode(3), nullable=False)
-    fecha = db.Column(db.Date, nullable=False)
-    hora = db.Column(db.Time, default=time_now)
-    numero = db.Column(db.Integer)
-    vendedor = db.Column(db.UnicodeText(3))
-    # Descuento neto (sin impuestos)
-    descuento = db.Column(db.Numeric(10, 2), default=Decimal)
-    # Subtotal - Descuento = Neto
-    # Neto + Impuestos = Total
-    neto = db.Column(db.Numeric(10, 2), nullable=False)
-    fiscal = db.Column(db.UnicodeText(10), default=None)
-    periodo_iva = db.Column(db.Date, nullable=True, default=None)
-
-    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), index=True, nullable=False)
-    cliente = db.relationship('Cliente', backref='documentos')
-
-    # Info extra documento
-    cliente_nombre = db.Column(db.UnicodeText(35))
-    cliente_direccion = db.Column(db.UnicodeText(60)) # domicilio + localidad + cp
-    cliente_cuit = db.Column(db.UnicodeText(13), nullable=True) # cuit si corresponde
-
-    #: 'tasas' field add by Tasa model
-    #: 'items' field add by ItemDocumento model
-
-    def _get_tipo(self):
-        return self._tipo
-
-    def _set_tipo(self, val):
-        if val not in list(get_current_config().documentos.keys()):
-            raise NobixModelError("'%s' no es un tipo de documento valido" % val)
-        self._tipo = val
-
-    tipo = property(_get_tipo, _set_tipo)
-
-    @property
-    def total(self):
-        return Decimal(self.neto if self.neto is not None else 0) + Decimal(sum(t.monto for t in self.tasas))
-
-class Tasa(db.Model):
-    __tablename__ = 'tasas'
-
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.UnicodeText(3), nullable=False)
-    monto = db.Column(db.Numeric(10, 2), nullable=False)
-
-    documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'), index=True, nullable=False)
-    documento = db.relationship('Documento', backref=db.backref('tasas', cascade="delete,delete-orphan"))
-
-class ItemDocumento(db.Model):
-    __tablename__ = 'items_documento'
-
-    id = db.Column(db.Integer, primary_key=True)
-    codigo = db.Column(db.UnicodeText(14))
-    descripcion = db.Column(db.UnicodeText(40), nullable=False)
-    cantidad = db.Column(db.Numeric(10, 2), nullable=False)
-    precio = db.Column(db.Numeric(10, 2), nullable=False)
-
-    articulo_id = db.Column(db.Integer, db.ForeignKey('articulos.id'), index=True)
-    articulo = db.relationship('Articulo', backref='doc_items')
-
-    documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'), index=True, nullable=False)
-    documento = db.relationship('Documento', backref='items')
-
-class Cliente(db.Model):
-    __tablename__ = 'clientes'
-    __table_args__ = (db.UniqueConstraint('codigo', 'relacion'),)
-
-    id = db.Column(db.Integer, primary_key=True)
-    codigo = db.Column(db.Integer)
-    nombre = db.Column(db.UnicodeText(35), nullable=False)
-    domicilio = db.Column(db.UnicodeText(35))
-    localidad = db.Column(db.UnicodeText(20))
-    codigo_postal = db.Column(db.UnicodeText(8))
-    responsabilidad_iva = db.Column(db.Enum('C', 'I', 'R', 'M', 'E', name="respiva_enum"), default="C")
-    cuit = db.Column(db.UnicodeText(13))
-    relacion = db.Column(db.Enum('C', 'P', name="rel_enum"), default="C")
-
-    #: 'documentos' field added by Documento model
-
-    @property
-    def direccion(self):
-        dir_data = self.domicilio, self.localidad
-        if all(dir_data):
-            d = " - ".join(dir_data)
-        else:
-            d = "".join(dir_data)
-        if self.codigo_postal:
-            d += " (%s)" % self.codigo_postal
-        return d
-
-class Articulo(db.Model):
-    __tablename__ = 'articulos'
-
-    id = db.Column(db.Integer, primary_key=True)
-    codigo = db.Column(db.Unicode(14), nullable=False, unique=True)
-    descripcion = db.Column(db.UnicodeText(40), nullable=False)
-    proveedor = db.Column(db.UnicodeText(20))
-    agrupacion = db.Column(db.UnicodeText(20))
-    vigencia = db.Column(db.DateTime)
-    precio = db.Column(db.Numeric(10, 2), nullable=False)
-    existencia = db.Column(db.Numeric(10, 2), default=Decimal)
-    es_activo = db.Column(db.Boolean, default=True)
-
-    #: 'doc_items' field added by ItemDocumento model
-
-    @property
-    def existencia_new(self):
-        sal = [k for k, v in get_current_config().documentos.items() if v['stock'] == 'salida']
-        ent = [k for k, v in get_current_config().documentos.items() if v['stock'] in ('entrada', 'ajuste')]
-        sess = object_session(self)
-        q = sess.query(func.sum(ItemDocumento.cantidad)).filter(ItemDocumento.articulo==self)
-        s = q.filter(ItemDocumento.documento.has(Documento.tipo.in_(sal))).scalar() or Decimal()
-        e = q.filter(ItemDocumento.documento.has(Documento.tipo.in_(ent))).scalar() or Decimal()
-        return e - s
-
-class Cache(db.Model):
-    __tablename__ = 'cache'
-    __table_args__ = (db.UniqueConstraint('vendedor', 'username', 'hostname'),)
-
-    id = db.Column(db.Integer, primary_key=True)
-    vendedor = db.Column(db.Unicode(3), nullable=False)
-    username = db.Column(db.Unicode(64), nullable=False)
-    hostname = db.Column(db.Unicode(64), nullable=False)
-    doctype = db.Column(db.UnicodeText(3))
-    descuento = db.Column(db.Numeric(10, 2), default=0)
-    total = db.Column(db.Numeric(10, 2), default=0)
-    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), index=True)
-    cliente = db.relationship('Cliente', lazy='joined')
-    modified = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
-    items = db.Column(db.PickleType, default=None)
 
 
 # 
