@@ -14,6 +14,7 @@ class NobixSelectEventLoop(urwid.SelectEventLoop):
 
     def run(self):
         try:
+            self._did_something = True
             while self._keep_running:
                 try:
                     self._loop()
