@@ -11,10 +11,10 @@ from nobix.mainloop import get_main_loop
 
 def get_username():
     import getpass
-    return unicode(getpass.getuser())
+    return str(getpass.getuser())
 
 def get_hostname():
-    return unicode(getfqdn())
+    return str(getfqdn())
 
 def get_elapsed_time(start, microseconds=False):
     """
@@ -44,7 +44,7 @@ def clear_screen():
 import collections
 
 class OrderedSet(collections.MutableSet):
-    _KEY, _PREV, _NEXT = range(3)
+    _KEY, _PREV, _NEXT = list(range(3))
 
     def __init__(self, iterable=None):
         self.end = end = []
@@ -136,12 +136,12 @@ def smart_unicode(s, encoding='utf-8', errors='strict'):
     """
     Adapted from django.utils.force_unicode utility.
     """
-    if not isinstance(s, basestring):
+    if not isinstance(s, str):
         if hasattr(s, '__unicode__'):
-            s = unicode(s)
+            s = str(s)
         else:
-            s = unicode(str(s), encoding, errors)
-    elif not isinstance(s, unicode):
+            s = str(str(s), encoding, errors)
+    elif not isinstance(s, str):
         s = s.decode(encoding, errors)
     return s
 
@@ -157,7 +157,7 @@ def validar_cuit(cuit):
 
     # calculo el dígito verificador:
     aux = 0
-    for i in xrange(10):
+    for i in range(10):
         aux += int(cuit[i])*base[i]
 
     aux = 11 - (aux - (int(aux/11) * 11))
@@ -197,7 +197,7 @@ def moneyfmt(value, places=2, curr='', sep=',', dp='.', pos='', neg='-', trailne
     q = Decimal(10) ** -places # 2 places --> '0.01'
     sign, digits, exp = value.quantize(q).as_tuple()
     result = []
-    digits = map(str, digits)
+    digits = list(map(str, digits))
     build, next = result.append, digits.pop
     if sign:
         build(trailneg)
@@ -216,12 +216,12 @@ def moneyfmt(value, places=2, curr='', sep=',', dp='.', pos='', neg='-', trailne
             build(sep)
     build(curr)
     build(neg if sign else pos)
-    return u''.join(reversed(result))
+    return ''.join(reversed(result))
 
 def convert2msdp(str_val):
     parts = str_val.split(".")
     parts[-1] = parts[-1].replace(",", ".")
-    return u"".join(parts)
+    return "".join(parts)
 
 def convert2dp(str_val):
     return str_val.replace(".", "").replace(",",".")
@@ -248,8 +248,8 @@ def get_next_docnumber(doctype):
                order_by=documentos.c.numero.desc(), limit=1)
     result = s.execute().fetchone()
     if result is None:
-        return u'1'
-    return unicode(result.numero + 1)
+        return '1'
+    return str(result.numero + 1)
 
 def get_next_clinumber(clitype):
     clientes = Cliente.table
@@ -257,5 +257,5 @@ def get_next_clinumber(clitype):
                 order_by=clientes.c.codigo.desc(), limit=1)
     result = s.execute().fetchone()
     if result is None:
-        return u'1'
-    return unicode(result.codigo + 1)
+        return '1'
+    return str(result.codigo + 1)
