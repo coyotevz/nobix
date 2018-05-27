@@ -8,32 +8,34 @@ from . import db, time_now
 
 class Documento(db.Model):
     __tablename__ = 'documentos'
-    __table_args__ = (db.UniqueConstraint('tipo', 'fecha', 'numero'),)
+    __table_args__ = (
+        db.UniqueConstraint('doc_type', 'issue_date', 'number'),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
-    _tipo = db.Column('tipo', db.Unicode(3), nullable=False)
-    fecha = db.Column(db.Date, nullable=False)
-    hora = db.Column(db.Time, default=time_now)
-    numero = db.Column(db.Integer)
-    vendedor = db.Column(db.UnicodeText(3))
+    _tipo = db.Column('doc_type', db.Unicode(3), nullable=False)
+    fecha = db.Column('issue_date', db.Date, nullable=False)
+    hora = db.Column('issue_time', db.Time, default=time_now)
+    numero = db.Column('number', db.Integer)
+    vendedor = db.Column('salesman', db.UnicodeText(3))
     # Descuento neto (sin impuestos)
-    descuento = db.Column(db.Numeric(10, 2), default=Decimal)
+    descuento = db.Column('discount', db.Numeric(10, 2), default=Decimal)
     # Subtotal - Descuento = Neto
     # Neto + Impuestos = Total
-    neto = db.Column(db.Numeric(10, 2), nullable=False)
-    fiscal = db.Column(db.UnicodeText(10), default=None)
-    periodo_iva = db.Column(db.Date, nullable=True, default=None)
+    neto = db.Column('net', db.Numeric(10, 2), nullable=False)
+    fiscal = db.Column('fiscal', db.UnicodeText(10), default=None)
+    periodo_iva = db.Column('fiscal_period', db.Date, nullable=True, default=None)
 
-    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'),
+    cliente_id = db.Column('customer_id', db.Integer, db.ForeignKey('clientes.id'),
                            index=True, nullable=False)
     cliente = db.relationship('Cliente', backref='documentos')
 
     # Info extra documento
-    cliente_nombre = db.Column(db.UnicodeText(35))
+    cliente_nombre = db.Column('customer_name', db.UnicodeText(35))
     # domicilio + localidad + cp
-    cliente_direccion = db.Column(db.UnicodeText(60))
+    cliente_direccion = db.Column('customer_address', db.UnicodeText(60))
     # cuit si corresponde
-    cliente_cuit = db.Column(db.UnicodeText(13), nullable=True)
+    cliente_cuit = db.Column('customer_cuit', db.UnicodeText(13), nullable=True)
 
     #: 'tasas' field add by Tasa model
     #: 'items' field add by ItemDocumento model
