@@ -21,7 +21,7 @@ def upgrade():
 
 
 def downgrade():
-    op.create_table('migrate_version',
+    migrate_table = op.create_table('migrate_version',
         sa.Column('repository_id', sa.Unicode(length=250),
                   autoincrement=False, nullable=False),
         sa.Column('repository_path', sa.UnicodeText,
@@ -32,6 +32,11 @@ def downgrade():
                                 name='migrate_version_pkey')
     )
 
-    op.execute("""
-        INSERT INTO migrate_version(repository_id,repository_path,version)
-                    VALUES('Nobix Data Evolution','dbmigrate',3)""")
+    op.bulk_insert(
+        migrate_table,
+        [{
+                'repository_id': "Nobix Data Evolution",
+                'repository_path': "dbmigrate",
+                'version': 3,
+        }]
+    )
