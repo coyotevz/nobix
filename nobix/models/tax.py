@@ -10,7 +10,7 @@ class Tasa(db.Model):
     nombre = db.Column(db.UnicodeText(3), nullable=False)
     monto = db.Column(db.Numeric(10, 2), nullable=False)
 
-    documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'),
+    documento_id = db.Column(db.Integer, db.ForeignKey('document.id'),
                              index=True, nullable=False)
     documento = db.relationship('Documento', backref=db.backref('tasas',
                                 cascade="delete,delete-orphan"))

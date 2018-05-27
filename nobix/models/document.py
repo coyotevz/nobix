@@ -7,7 +7,7 @@ from . import db, time_now
 
 
 class Documento(db.Model):
-    __tablename__ = 'documentos'
+    __tablename__ = 'document'
     __table_args__ = (
         db.UniqueConstraint('doc_type', 'issue_date', 'number'),
     )

@@ -16,6 +16,6 @@ class ItemDocumento(db.Model):
                             index=True)
     articulo = db.relationship('Articulo', backref='doc_items')
 
-    documento_id = db.Column(db.Integer, db.ForeignKey('documentos.id'),
+    documento_id = db.Column(db.Integer, db.ForeignKey('document.id'),
                              index=True, nullable=False)
     documento = db.relationship('Documento', backref='items')
