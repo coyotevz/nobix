@@ -37,7 +37,7 @@ def upgrade():
         doc.create_index(op.f('ix_documentos_customer_id'), ['customer_id'])
         doc.drop_index('ix_documentos_cliente_id')
 
-        doc.create_unique_constraint('documentos_type_issue_number_key',
+        doc.create_unique_constraint('documentos_type_key',
                                      ['doc_type', 'issue_date', 'number'])
         doc.drop_constraint('documentos_tipo_key', type_='unique')
 
@@ -70,7 +70,7 @@ def downgrade():
                          unique=False)
         doc.drop_index(op.f('ix_documentos_customer_id'))
 
-        doc.drop_constraint('documentos_type_issue_number_key',
+        doc.drop_constraint('documentos_type_key',
                             type_='unique')
         doc.create_unique_constraint('documentos_tipo_key',
                                      ['tipo', 'fecha', 'numero'])
