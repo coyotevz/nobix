@@ -1,4 +1,4 @@
-"""Rename document fields
+"""Rename document table and fields
 
 Revision ID: 4418465d2df7
 Revises: 0bf5e14685c3
@@ -20,7 +20,10 @@ def rename_column(batch_op, old_name, new_name):
 
 
 def upgrade():
-    with op.batch_alter_table('documentos') as doc:
+    
+    op.rename_table('documentos', 'document')
+
+    with op.batch_alter_table('document') as doc:
         rename_column(doc, 'cliente_direccion', 'customer_address')
         rename_column(doc, 'cliente_cuit', 'customer_cuit')
         rename_column(doc, 'cliente_id', 'customer_id')
@@ -34,19 +37,16 @@ def upgrade():
         rename_column(doc, 'numero', 'number')
         rename_column(doc, 'vendedor', 'salesman')
 
-        doc.create_index(op.f('ix_documentos_customer_id'), ['customer_id'])
-        doc.drop_index('ix_documentos_cliente_id')
-
-        doc.create_unique_constraint('documentos_type_key',
-                                     ['doc_type', 'issue_date', 'number'])
-        doc.drop_constraint('documentos_tipo_key', type_='unique')
-
-        doc.drop_constraint('documentos_cliente_id_fkey', type_='foreignkey')
-        doc.create_foreign_key('documentos_customer_id_fkey', 'clientes',
-                               ['customer_id'], ['id'])
+    op.execute('ALTER SEQUENCE documentos_id_seq RENAME TO document_id_seq')
+    op.execute('ALTER INDEX ix_documentos_cliente_id RENAME TO ix_document_customer_id')
+    op.execute('ALTER TABLE document RENAME CONSTRAINT documentos_tipo_key TO document_type_key')
+    op.execute('ALTER TABLE document RENAME CONSTRAINT documentos_cliente_id_fkey TO document_customer_id_fkey')
+    op.execute('ALTER TABLE document RENAME CONSTRAINT documentos_pkey TO document_pkey')
 
 
 def downgrade():
+
+    op.rename_table('document', 'documentos')
 
     with op.batch_alter_table('documentos') as doc:
         rename_column(doc, 'customer_address', 'cliente_direccion')
@@ -62,15 +62,8 @@ def downgrade():
         rename_column(doc, 'number', 'numero')
         rename_column(doc, 'salesman', 'vendedor')
 
-        doc.drop_constraint('documentos_customer_id_fkey', type_='foreignkey')
-        doc.create_foreign_key('documentos_cliente_id_fkey', 'clientes',
-                               ['cliente_id'], ['id'])
-
-        doc.create_index('ix_documentos_cliente_id', ['cliente_id'],
-                         unique=False)
-        doc.drop_index(op.f('ix_documentos_customer_id'))
-
-        doc.drop_constraint('documentos_type_key',
-                            type_='unique')
-        doc.create_unique_constraint('documentos_tipo_key',
-                                     ['tipo', 'fecha', 'numero'])
+    op.execute('ALTER SEQUENCE document_id_seq RENAME TO documentos_id_seq')
+    op.execute('ALTER INDEX ix_document_customer_id RENAME TO ix_documentos_cliente_id')
+    op.execute('ALTER TABLE documentos RENAME CONSTRAINT document_type_key TO documentos_tipo_key')
+    op.execute('ALTER TABLE documentos RENAME CONSTRAINT document_customer_id_fkey TO documentos_cliente_id_fkey')
+    op.execute('ALTER TABLE documentos RENAME CONSTRAINT document_pkey TO documentos_pkey')

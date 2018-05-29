@@ -1,7 +1,7 @@
 """Rename customer table fields
 
 Revision ID: e7211c188fee
-Revises: d0f2d7126340
+Revises: 4418465d2df7
 Create Date: 2018-05-29 01:12:07.730238
 
 """
@@ -11,7 +11,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = 'e7211c188fee'
-down_revision = 'd0f2d7126340'
+down_revision = '4418465d2df7'
 branch_labels = None
 depends_on = None
 
