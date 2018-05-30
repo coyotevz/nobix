@@ -20,7 +20,7 @@ def rename_column(batch_op, old_name, new_name):
 
 
 def upgrade():
-    
+
     op.rename_table('documentos', 'document')
 
     with op.batch_alter_table('document') as doc:
