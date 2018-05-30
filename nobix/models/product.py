@@ -9,17 +9,17 @@ from .item import ItemDocumento
 
 
 class Articulo(db.Model):
-    __tablename__ = 'articulos'
+    __tablename__ = 'product'
 
     id = db.Column(db.Integer, primary_key=True)
-    codigo = db.Column(db.Unicode(14), nullable=False, unique=True)
-    descripcion = db.Column(db.UnicodeText(40), nullable=False)
-    proveedor = db.Column(db.UnicodeText(20))
-    agrupacion = db.Column(db.UnicodeText(20))
-    vigencia = db.Column(db.DateTime)
-    precio = db.Column(db.Numeric(10, 2), nullable=False)
-    existencia = db.Column(db.Numeric(10, 2), default=Decimal)
-    es_activo = db.Column(db.Boolean, default=True)
+    codigo = db.Column('sku', db.Unicode(14), nullable=False, unique=True)
+    descripcion = db.Column('description', db.UnicodeText(40), nullable=False)
+    proveedor = db.Column('supplier', db.UnicodeText(20))
+    agrupacion = db.Column('group', db.UnicodeText(20))
+    vigencia = db.Column('validity', db.DateTime)
+    precio = db.Column('price', db.Numeric(10, 2), nullable=False)
+    existencia = db.Column('stock', db.Numeric(10, 2), default=Decimal)
+    es_activo = db.Column('active', db.Boolean, default=True)
 
     #: 'doc_items' field added by ItemDocumento model
 

@@ -12,7 +12,7 @@ class ItemDocumento(db.Model):
     cantidad = db.Column(db.Numeric(10, 2), nullable=False)
     precio = db.Column(db.Numeric(10, 2), nullable=False)
 
-    articulo_id = db.Column(db.Integer, db.ForeignKey('articulos.id'),
+    articulo_id = db.Column(db.Integer, db.ForeignKey('product.id'),
                             index=True)
     articulo = db.relationship('Articulo', backref='doc_items')
 
