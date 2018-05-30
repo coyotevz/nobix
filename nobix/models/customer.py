@@ -4,7 +4,7 @@ from . import db
 
 
 class Cliente(db.Model):
-    __tablename__ = 'clientes'
+    __tablename__ = 'customer'
     __table_args__ = (db.UniqueConstraint('code', 'relation'),)
 
     id = db.Column(db.Integer, primary_key=True)

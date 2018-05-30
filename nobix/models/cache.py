@@ -15,7 +15,7 @@ class Cache(db.Model):
     doctype = db.Column(db.UnicodeText(3))
     descuento = db.Column(db.Numeric(10, 2), default=0)
     total = db.Column(db.Numeric(10, 2), default=0)
-    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'),
+    cliente_id = db.Column(db.Integer, db.ForeignKey('customer.id'),
                            index=True)
     cliente = db.relationship('Cliente', lazy='joined')
     modified = db.Column(db.DateTime, nullable=False, default=datetime.now,

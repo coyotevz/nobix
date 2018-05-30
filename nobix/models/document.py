@@ -26,7 +26,7 @@ class Documento(db.Model):
     fiscal = db.Column('fiscal', db.UnicodeText(10), default=None)
     periodo_iva = db.Column('fiscal_period', db.Date, nullable=True, default=None)
 
-    cliente_id = db.Column('customer_id', db.Integer, db.ForeignKey('clientes.id'),
+    cliente_id = db.Column('customer_id', db.Integer, db.ForeignKey('customer.id'),
                            index=True, nullable=False)
     cliente = db.relationship('Cliente', backref='documentos')
 

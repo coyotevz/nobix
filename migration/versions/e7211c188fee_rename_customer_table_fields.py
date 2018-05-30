@@ -1,4 +1,4 @@
-"""Rename customer table fields
+"""Rename customer table and fields
 
 Revision ID: e7211c188fee
 Revises: 4418465d2df7
@@ -21,7 +21,9 @@ def rename_column(batch_op, old_name, new_name):
 
 
 def upgrade():
-    with op.batch_alter_table('clientes') as cli:
+    op.rename_table('clientes', 'customer')
+
+    with op.batch_alter_table('customer') as cli:
         rename_column(cli, 'domicilio', 'address')
         rename_column(cli, 'codigo', 'code')
         rename_column(cli, 'responsabilidad_iva', 'fiscal_type')
@@ -30,12 +32,13 @@ def upgrade():
         rename_column(cli, 'localidad', 'state')
         rename_column(cli, 'codigo_postal', 'zip_code')
 
-    op.execute('''
-        ALTER TABLE clientes RENAME CONSTRAINT 
-            clientes_codigo_key TO customer_code_key
-    ''')
+    op.execute('ALTER SEQUENCE clientes_id_seq RENAME TO customer_id_seq')
+    op.execute('ALTER TABLE customer RENAME CONSTRAINT clientes_pkey TO customer_pkey')
+    op.execute('ALTER TABLE customer RENAME CONSTRAINT clientes_codigo_key TO customer_code_key')
 
 def downgrade():
+    op.rename_table('customer', 'clientes')
+
     with op.batch_alter_table('clientes') as cli:
         rename_column(cli, 'address', 'domicilio')
         rename_column(cli, 'code', 'codigo')
@@ -45,7 +48,6 @@ def downgrade():
         rename_column(cli, 'state', 'localidad')
         rename_column(cli, 'zip_code', 'codigo_postal')
 
-    op.execute('''
-        ALTER TABLE clientes RENAME CONSTRAINT
-            customer_code_key TO clientes_codigo_key
-    ''')
+    op.execute('ALTER SEQUENCE customer_id_seq RENAME TO clientes_id_seq')
+    op.execute('ALTER TABLE clientes RENAME CONSTRAINT customer_pkey TO clientes_pkey')
+    op.execute('ALTER TABLE clientes RENAME CONSTRAINT customer_code_key TO clientes_codigo_key')
