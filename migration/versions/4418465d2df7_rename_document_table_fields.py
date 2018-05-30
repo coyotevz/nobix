@@ -38,10 +38,10 @@ def upgrade():
         rename_column(doc, 'vendedor', 'salesman')
 
     op.execute('ALTER SEQUENCE documentos_id_seq RENAME TO document_id_seq')
+    op.execute('ALTER INDEX documentos_pkey RENAME TO document_pkey')
     op.execute('ALTER INDEX ix_documentos_cliente_id RENAME TO ix_document_customer_id')
     op.execute('ALTER TABLE document RENAME CONSTRAINT documentos_tipo_key TO document_type_key')
     op.execute('ALTER TABLE document RENAME CONSTRAINT documentos_cliente_id_fkey TO document_customer_id_fkey')
-    op.execute('ALTER TABLE document RENAME CONSTRAINT documentos_pkey TO document_pkey')
 
 
 def downgrade():
@@ -63,7 +63,7 @@ def downgrade():
         rename_column(doc, 'salesman', 'vendedor')
 
     op.execute('ALTER SEQUENCE document_id_seq RENAME TO documentos_id_seq')
+    op.execute('ALTER INDEX document_pkey RENAME TO documentos_pkey')
     op.execute('ALTER INDEX ix_document_customer_id RENAME TO ix_documentos_cliente_id')
     op.execute('ALTER TABLE documentos RENAME CONSTRAINT document_type_key TO documentos_tipo_key')
     op.execute('ALTER TABLE documentos RENAME CONSTRAINT document_customer_id_fkey TO documentos_cliente_id_fkey')
-    op.execute('ALTER TABLE documentos RENAME CONSTRAINT document_pkey TO documentos_pkey')

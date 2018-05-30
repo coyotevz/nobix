@@ -33,7 +33,7 @@ def upgrade():
         rename_column(cli, 'codigo_postal', 'zip_code')
 
     op.execute('ALTER SEQUENCE clientes_id_seq RENAME TO customer_id_seq')
-    op.execute('ALTER TABLE customer RENAME CONSTRAINT clientes_pkey TO customer_pkey')
+    op.execute('ALTER INDEX clientes_pkey RENAME TO customer_pkey')
     op.execute('ALTER TABLE customer RENAME CONSTRAINT clientes_codigo_key TO customer_code_key')
 
 def downgrade():
@@ -49,5 +49,5 @@ def downgrade():
         rename_column(cli, 'zip_code', 'codigo_postal')
 
     op.execute('ALTER SEQUENCE customer_id_seq RENAME TO clientes_id_seq')
-    op.execute('ALTER TABLE clientes RENAME CONSTRAINT customer_pkey TO clientes_pkey')
+    op.execute('ALTER INDEX customer_pkey RENAME TO clientes_pkey')
     op.execute('ALTER TABLE clientes RENAME CONSTRAINT customer_code_key TO clientes_codigo_key')
