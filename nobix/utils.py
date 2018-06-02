@@ -238,7 +238,6 @@ ItemData = namedtuple('ItemData', "articulo cantidad precio")
 DocumentData = namedtuple('DocumentData', "vendedor doctype cliente descuento total items")
 
 
-#from nobix.schema import documentos, clientes
 from nobix.models import Documento, Cliente
 from sqlalchemy.sql import select
 
