@@ -15,11 +15,11 @@ list_template = join(sys.prefix, "share/nobix/templates/lista_agrupacion.svg.mak
 fiscal_template = join(sys.prefix, "share/nobix/templates/hasar615.dat.mako")
 remito_template = join(sys.prefix, "share/nobix/templates/remito_preimpreso.svg.mako")
 
-punto_venta = u'1'
+punto_venta = '1'
 
 sucursales = {
-    u'1': u"Ciudad",
-    u'3': u"Godoy Cruz",
+    '1': "Ciudad",
+    '3': "Godoy Cruz",
 }
 
 usar_nuevo_algoritmo = False
@@ -29,57 +29,57 @@ manager_hostname = 'cocodrilo'
 manager_port = 18280
 
 documentos = {
-    u'FAA': {
-        'nombre': u"Factura A",
+    'FAA': {
+        'nombre': "Factura A",
         'discrimina_iva': True,
         'needs_cuit': True,
         'has_body': True,
-        'stock': u'salida',
+        'stock': 'salida',
         'max_amount': 25000,
         'allowed_custom_items': True,
-        'docnumber_generation': u'<external>',
-        'printer': u'Hasar615',
-        'print_docletter': u'A',
-        'libro_iva': u'+venta',
-        'default_tax': u'V21',
-        'allowed_taxes': (u'V21',),
+        'docnumber_generation': '<external>',
+        'printer': 'Hasar615',
+        'print_docletter': 'A',
+        'libro_iva': '+venta',
+        'default_tax': 'V21',
+        'allowed_taxes': ('V21','V10'),
         'print_max_rows': hasar_max_rows,
     },
 
-    u'NFA': {
-        'nombre': u"Nuestra Factura A",
+    'NFA': {
+        'nombre': "Nuestra Factura A",
         'needs_cuit': True,
         'has_body': False,
-        'libro_iva': u'+venta',
-        'default_tax': u'V21',
-        'allowed_taxes': (u'V21',),
+        'libro_iva': '+venta',
+        'default_tax': 'V21',
+        'allowed_taxes': ('V21','V10'),
     },
 
-    u'FAC': {
-        'nombre': u"Factura B",
+    'FAC': {
+        'nombre': "Factura B",
         'has_body': True,
-        'stock': u'salida',
+        'stock': 'salida',
         'max_amount': 25000,
         'allowed_custom_items': True,
-        'docnumber_generation': u'<external>',
-        'printer': u'Hasar615',
-        'print_docletter': u'B',
-        'libro_iva': u'+venta',
-        'default_tax': u'V21',
-        'allowed_taxes': (u'V21',),
+        'docnumber_generation': '<external>',
+        'printer': 'Hasar615',
+        'print_docletter': 'B',
+        'libro_iva': '+venta',
+        'default_tax': 'V21',
+        'allowed_taxes': ('V21',),
         'print_max_rows': hasar_max_rows,
     },
 
-    u'NFB': {
-        'nombre': u"Nuestra Factura B",
+    'NFB': {
+        'nombre': "Nuestra Factura B",
         'has_body': False,
-        'libro_iva': u'+venta',
-        'default_tax': u'V21',
-        'allowed_taxes': (u'V21',),
+        'libro_iva': '+venta',
+        'default_tax': 'V21',
+        'allowed_taxes': ('V21',),
     },
 
-    u'PRE': {
-        'nombre': u"Presupuesto",
+    'PRE': {
+        'nombre': "Presupuesto",
         'allowed_custom_items': True,
         'printer': ('HP LaserJet 1020', 'PDF Printer'),
         'print_template': basic_template,
@@ -87,148 +87,148 @@ documentos = {
         'print_show_footer_legend': True,
         #'print_copies': 2, # Solo cuando se imprime
         'print_copies': 1,
-        'print_docname': u"Presupuesto",
-        'print_vendedor_fmt': u'%(codigo)s - %(nombre)s',
+        'print_docname': "Presupuesto",
+        'print_vendedor_fmt': '%(codigo)s - %(nombre)s',
         'print_max_rows': pdf_max_rows,
     },
 
-    u'PRF': {
-        'nombre': u"Pre Firmado",
+    'PRF': {
+        'nombre': "Pre Firmado",
         'allowed_custom_items': True,
         'printer': 'HP LaserJet 1020',
         'print_template': basic_template,
         'print_show_logo': True,
         'print_show_footer_legend': True,
         'print_copies': 2, # Solo cuando se imprime
-        'print_docname': u"Presupuesto FF",
-        'print_vendedor_fmt': u'%(codigo)s - %(nombre)s',
+        'print_docname': "Presupuesto FF",
+        'print_vendedor_fmt': '%(codigo)s - %(nombre)s',
         'print_max_rows': pdf_max_rows,
     },
 
-    u'ENV': {
-        'nombre': u"Envio a GC",
+    'ENV': {
+        'nombre': "Envio a GC",
         'allowed_custom_items': True,
         'printer': 'HP LaserJet 1020',
         'print_template': basic_template,
         'print_show_logo': True,
         'print_show_footer_legend': True,
         'print_copies': 2, # Solo cuando se imprime
-        'print_docname': u"Envio",
-        'print_vendedor_fmt': u'%(codigo)s - %(nombre)s',
+        'print_docname': "Envio",
+        'print_vendedor_fmt': '%(codigo)s - %(nombre)s',
         'print_max_rows': pdf_max_rows,
     },
 
-    u'REM': {
-        'nombre': u"Presupuesto II",
+    'REM': {
+        'nombre': "Presupuesto II",
         'printer': 'HP LaserJet 1020',
         'stock': 'salida',
         'min_amount': 333,
         'print_template': basic_template,
         'print_copies': 2,
-        'print_docname': u"Presupuesto.",
+        'print_docname': "Presupuesto.",
         'print_max_rows': pdf_max_rows,
     },
 
-    u'ENT': {
-        'nombre': u"Entrada",
+    'ENT': {
+        'nombre': "Entrada",
         'need_pass': True,
-        'stock': u'entrada',
+        'stock': 'entrada',
         'printer': (None, 'HP LaserJet 1020'),
         'print_template': basic_template,
-        'print_vendedor_fmt': u'%(nombre)s',
+        'print_vendedor_fmt': '%(nombre)s',
         'print_max_rows': pdf_max_rows,
     },
 
-    u'SAL': {
-        'nombre': u"Salida",
+    'SAL': {
+        'nombre': "Salida",
         'need_pass': True,
-        'stock': u'salida',
+        'stock': 'salida',
         'printer': (None, 'HP LaserJet 1020'),
         'print_template': basic_template,
-        'print_vendedor_fmt': u'%(nombre)s',
+        'print_vendedor_fmt': '%(nombre)s',
         'print_max_rows': pdf_max_rows,
     },
 
-    u'AJU': {
-        'nombre': u"Ajuste",
+    'AJU': {
+        'nombre': "Ajuste",
         'need_pass': True,
-        'stock': u'ajuste',
+        'stock': 'ajuste',
         'printer': (None, 'HP LaserJet 1020'),
         'print_template': basic_template,
-        'print_vendedor_fmt': u'%(nombre)s',
+        'print_vendedor_fmt': '%(nombre)s',
         'print_max_rows': pdf_max_rows,
     },
 
-    u'INV': {
-        'nombre': u"Inventario",
+    'INV': {
+        'nombre': "Inventario",
         'need_pass': True,
-        'stock': u'inventario',
+        'stock': 'inventario',
         'printer': (None, 'HP LaserJet 1020'),
         'print_template': basic_template,
-        'print_vendedor_fmt': u'%(nombre)s',
+        'print_vendedor_fmt': '%(nombre)s',
         'print_max_rows': pdf_max_rows,
     },
 
-    u'NNC': {
-        'nombre': u"Nuestra Nota de Crédito",
+    'NNC': {
+        'nombre': "Nuestra Nota de Crédito",
         'has_body': False,
         'need_pass': True,
-        'libro_iva': u'-venta',
-        'default_tax': u'V21',
-        'allowed_taxes': ('V21',),
+        'libro_iva': '-venta',
+        'default_tax': 'V21',
+        'allowed_taxes': ('V21','V10'),
     },
 
-    u'NCA': {
-        'nombre': u"Nuestra Nota de Crédito A",
+    'NCA': {
+        'nombre': "Nuestra Nota de Crédito A",
         'has_body': False,
         'need_pass': True,
         'needs_cuit': True,
-        'libro_iva': u'-venta',
-        'default_tax': u'V21',
-        'allowed_taxes': ('V21',),
+        'libro_iva': '-venta',
+        'default_tax': 'V21',
+        'allowed_taxes': ('V21','V10'),
     },
 
-    u'VFA': {
-        'nombre': u"Vuestra Factura A",
+    'VFA': {
+        'nombre': "Vuestra Factura A",
         'has_body': False,
         'need_pass': True,
-        'tercero': u'P',
-        'libro_iva': u'+compra',
-        'default_tax': u'C21',
-        'allowed_taxes': (u'C21', u'C10', u'C27', u'C96', u'PIB', u'PI2', u'PI6'),
+        'tercero': 'P',
+        'libro_iva': '+compra',
+        'default_tax': 'C21',
+        'allowed_taxes': ('C21', 'C10', 'C27', 'C96', 'PIB', 'PI2', 'PI6'),
     },
 
-    u'VNC': {
-        'nombre': u"Vuestra Nota de Crédito",
+    'VNC': {
+        'nombre': "Vuestra Nota de Crédito",
         'has_body': False,
         'need_pass': True,
-        'tercero': u'P',
-        'libro_iva': u'-compra',
-        'default_tax': u'C21',
-        'allowed_taxes': (u'C21', u'C10', u'C27', u'C96', u'PIB', u'PI2', u'PI6'),
+        'tercero': 'P',
+        'libro_iva': '-compra',
+        'default_tax': 'C21',
+        'allowed_taxes': ('C21', 'C10', 'C27', 'C96', 'PIB', 'PI2', 'PI6'),
     },
 
-    u'VND': {
-        'nombre': u"Vuestra Nota de Débito",
+    'VND': {
+        'nombre': "Vuestra Nota de Débito",
         'has_body': False,
         'need_pass': True,
-        'tercero': u'P',
-        'libro_iva': u'+compra',
-        'default_tax': u'C21',
-        'allowed_taxes': (u'C21', u'C10', u'C27', u'C96', u'PIB', u'PI2', u'PI6'),
+        'tercero': 'P',
+        'libro_iva': '+compra',
+        'default_tax': 'C21',
+        'allowed_taxes': ('C21', 'C10', 'C27', 'C96', 'PIB', 'PI2', 'PI6'),
     },
 
     # Prueba de etiquetadora
-    u'E1': {
-        'nombre': u"Etiqueta 38x20x2",
+    'E1': {
+        'nombre': "Etiqueta 38x20x2",
         'allowed_custom_items': True,
         'printer': ('Tag Printer', 'Remote Tag Printer'),
         'print_size': {'width': 38, 'height': 20, 'gap': 2, 'paper': 'E1'},
-        'allowed_users': [u'18', u'19'],
+        'allowed_users': ['18', '19'],
     },
 
-    u'REP': {
-        'nombre': u"Remito Preimpreso",
+    'REP': {
+        'nombre': "Remito Preimpreso",
         'allowed_custom_items': True,
         'printer': ('HP LaserJet 1020', 'PDF Printer Remitos'),
         'print_template': remito_template,
@@ -239,167 +239,173 @@ documentos = {
     },
 
     # Documentos Especiales, no son editables solo se utilizan para configurar algunos parametros
-    u'AGRUP_LISTPRINT': {
-        'nombre': u"Lista de Artículos por Agrupación",
-        'grouped': u"agrupacion",
+    'AGRUP_LISTPRINT': {
+        'nombre': "Lista de Artículos por Agrupación",
+        'grouped': "agrupacion",
         'columns': [
-            (u"Código", "codigo", 14, "left", "unicode"),
-            (u"Descripción", "descripcion", 40, "left", "unicode"),
-            (u"Vigencia", "vigencia", 10, "center", "date"),
-            (u"Precio", "precio", 10, "right", "decimal"),
+            ("Código", "codigo", 14, "left", "unicode"),
+            ("Descripción", "descripcion", 40, "left", "unicode"),
+            ("Vigencia", "vigencia", 10, "center", "date"),
+            ("Precio", "precio", 10, "right", "decimal"),
             (None, None, 4, None, None),
-            (u"Existencia", "existencia", 10, "right", "decimal"),
+            ("Existencia", "existencia", 10, "right", "decimal"),
         ],
         'docnumber_generation': None,
-        'printer': u'HP LaserJet 1020',
+        'printer': 'HP LaserJet 1020',
         'print_template': list_template,
-        'print_docname': u"listado_por_agrupacion",
+        'print_docname': "listado_por_agrupacion",
         'print_show_footer_legend': True,
-        'print_vendedor_fmt': u'%(codigo)s - %(nombre)s',
+        'print_vendedor_fmt': '%(codigo)s - %(nombre)s',
         'print_max_rows': list_pdf_max_rows,
     },
 
-    u'TEMP_LISTPRINT': {
-        'nombre': u"Lista de Artículos",
+    'TEMP_LISTPRINT': {
+        'nombre': "Lista de Artículos",
         'grouped': None,
         'columns': [
             # Separador
             # (None, None, 4, None, None),
-            (u"Código", "codigo", 14, "left", "unicode"),
-            (u"Descripción", "descripcion", 40, "left", "unicode"),
-            (u"Cantidad", "cantidad", 8, "right", "decimal"),
-            (u"Precio", "precio", 8, "right", "decimal"),
-            (u"Vigencia", "vigencia", 8, "center", "date,%d/%m/%y"),
-            (u"Agrupación", "agrupacion", 20, "left", "unicode"),
+            ("Código", "codigo", 14, "left", "unicode"),
+            ("Descripción", "descripcion", 40, "left", "unicode"),
+            ("Cantidad", "cantidad", 8, "right", "decimal"),
+            ("Precio", "precio", 8, "right", "decimal"),
+            ("Vigencia", "vigencia", 8, "center", "date,%d/%m/%y"),
+            ("Agrupación", "agrupacion", 20, "left", "unicode"),
         ],
         'docnumber_generation': None,
-        'printer': u'HP LaserJet 1020',
+        'printer': 'HP LaserJet 1020',
         'print_template': list_template,
-        'print_docname': u"listado_de_articulos",
+        'print_docname': "listado_de_articulos",
         'print_show_footer_legend': True,
-        'print_vendedor_fmt': u'%(codigo)s - %(nombre)s',
+        'print_vendedor_fmt': '%(codigo)s - %(nombre)s',
         'print_max_rows': list_pdf_max_rows,
     },
 
-    u'REPORT_LISTPRINT': {
-        'nombre': u"Informe Mensual",
+    'REPORT_LISTPRINT': {
+        'nombre': "Informe Mensual",
         'grouped': None,
         'columns': [
-            (u"Código", "codigo", 14, "left", "unicode"),
-            (u"Descripción", "descripcion", 40, "left", "unicode"),
-            (u"Vigencia", "vigencia", 10, "center", "date"),
-            (u"Precio", "precio", 10, "right", "decimal"),
+            ("Código", "codigo", 14, "left", "unicode"),
+            ("Descripción", "descripcion", 40, "left", "unicode"),
+            ("Vigencia", "vigencia", 10, "center", "date"),
+            ("Precio", "precio", 10, "right", "decimal"),
         ],
         'docnumber_generation': None,
-        'printer': u'HP LaserJet 1020',
+        'printer': 'HP LaserJet 1020',
         'print_template': list_template,
-        'print_docname': u"informe_mensual",
+        'print_docname': "informe_mensual",
         'print_show_footer_legend': True,
-        'print_vendedor_fmt': u'%(codigo)s - %(nombre)s',
+        'print_vendedor_fmt': '%(codigo)s - %(nombre)s',
         'print_max_rows': list_pdf_max_rows,
     },
 }
 
 
 vendedores = {
-    u'001': {'nombre': u'Mostrador'},
+    '001': {'nombre': 'Mostrador'},
 }
 
 impuestos = {
 
-    u'V21': {
-        'nombre': u'IVA Venta 21%',
-        'alicuota': u'21.00',
-        'operacion': u'venta',
+    'V10': {
+        'nombre': 'IVA Venta 10,5%',
+        'alicuota': '10.50',
+        'operacion': 'venta',
     },
 
-    u'C10': {
-        'nombre': u'IVA Compra 10,5%',
-        'alicuota': u'10.50',
-        'operacion': u'compra',
+    'V21': {
+        'nombre': 'IVA Venta 21%',
+        'alicuota': '21.00',
+        'operacion': 'venta',
     },
 
-    u'C21': {
-        'nombre': u'IVA Compra 21%',
-        'alicuota': u'21.00',
-        'operacion': u'compra',
+    'C10': {
+        'nombre': 'IVA Compra 10,5%',
+        'alicuota': '10.50',
+        'operacion': 'compra',
     },
 
-    u'C27': {
-        'nombre': u'IVA Compra 27%',
-        'alicuota': u'27.00',
-        'operacion': u'compra',
+    'C21': {
+        'nombre': 'IVA Compra 21%',
+        'alicuota': '21.00',
+        'operacion': 'compra',
     },
 
-    u'C96': {
-        'nombre': u'Percepción IVA 3%',
-        'alicuota': u'3.00',
-        'operacion': u'compra',
+    'C27': {
+        'nombre': 'IVA Compra 27%',
+        'alicuota': '27.00',
+        'operacion': 'compra',
     },
 
-    u'PIB': {
-        'nombre': u'Percepción IB 2,5%',
-        'alicuota': u'2.50',
-        'operacion': u'compra',
+    'C96': {
+        'nombre': 'Percepción IVA 3%',
+        'alicuota': '3.00',
+        'operacion': 'compra',
     },
 
-    u'PI2': {
-        'nombre': u'Percepción IB 2%',
-        'alicuota': u'2.00',
-        'operacion': u'compra',
+    'PIB': {
+        'nombre': 'Percepción IB 2,5%',
+        'alicuota': '2.50',
+        'operacion': 'compra',
     },
 
-    u'PI6': {
-        'nombre': u'Percepción IB BA 6%',
-        'alicuota': u'6.00',
-        'operacion': u'compra',
+    'PI2': {
+        'nombre': 'Percepción IB 2%',
+        'alicuota': '2.00',
+        'operacion': 'compra',
+    },
+
+    'PI6': {
+        'nombre': 'Percepción IB BA 6%',
+        'alicuota': '6.00',
+        'operacion': 'compra',
     }
 }
 
 customer_doctype_map = {
     0: {
-        'nombre': u'Libreta de Enrolamiento',
-        'nombre_corto': u'L.Enrolamiento',
-        'label': u'L.E.',
+        'nombre': 'Libreta de Enrolamiento',
+        'nombre_corto': 'L.Enrolamiento',
+        'label': 'L.E.',
     },
     1: {
-        'nombre': u'Libreta Cívica',
-        'nombre_corto': u'L.Civica',
-        'label': u'L.C.',
+        'nombre': 'Libreta Cívica',
+        'nombre_corto': 'L.Civica',
+        'label': 'L.C.',
     },
     2: {
-        'nombre': u'Documento Nacional de Identidad',
-        'nombre_corto': u'D.N.I.',
-        'label': u'D.N.I.',
+        'nombre': 'Documento Nacional de Identidad',
+        'nombre_corto': 'D.N.I.',
+        'label': 'D.N.I.',
     },
     3: {
-        'nombre': u'Pasaporte',
-        'nombre_corto': u'Pasaporte',
-        'label': u'PAS.',
+        'nombre': 'Pasaporte',
+        'nombre_corto': 'Pasaporte',
+        'label': 'PAS.',
     },
     4: {
-        'nombre': u'Cédula de Identidad',
-        'nombre_corto': u'C.Identidad',
-        'label': u'C.I.',
+        'nombre': 'Cédula de Identidad',
+        'nombre_corto': 'C.Identidad',
+        'label': 'C.I.',
     }
 }
 
 
 iva_resp_map = {
-    u'C': {
-        'nombre': u'Consumidor Final',
-        'nombre_corto': u'Cons. Final',
-        'label': u'CONSUMIDOR FINAL',
+    'C': {
+        'nombre': 'Consumidor Final',
+        'nombre_corto': 'Cons. Final',
+        'label': 'CONSUMIDOR FINAL',
         'needs_cuit': False,
-        'doctypes': [u'FAC', u'NFB', u'PRE', u'PRF', u'ENV', u'REM', u'ENT', u'SAL', u'AJU', u'INV', u'NNC', u'REP', u'E1'],
+        'doctypes': ['FAC', 'NFB', 'PRE', 'PRF', 'ENV', 'REM', 'ENT', 'SAL', 'AJU', 'INV', 'NNC', 'REP', 'E1'],
     },
 
-    u'I': {
-        'nombre': u'Responsable Inscripto',
-        'nombre_corto': u'Resp. Inscripto',
-        'label': u'RESPONSABLE INSCRIPTO',
+    'I': {
+        'nombre': 'Responsable Inscripto',
+        'nombre_corto': 'Resp. Inscripto',
+        'label': 'RESPONSABLE INSCRIPTO',
         'needs_cuit': True,
-        'doctypes': [u'FAA', u'NFA', u'PRE', u'PRF', u'REM', u'VFA', u'VNC', u'NCA', u'REP'],
+        'doctypes': ['FAA', 'NFA', 'PRE', 'PRF', 'REM', 'VFA', 'VNC', 'NCA', 'REP'],
     },
 
 #    u'R': {
@@ -409,71 +415,71 @@ iva_resp_map = {
 #        'doctypes': [u'FAA', u'NFA', u'PRE', u'REM'],
 #    },
 
-    u'E': {
-        'nombre': u'Exento',
-        'nombre_corto': u'Exento',
-        'label': u'EXENTO',
+    'E': {
+        'nombre': 'Exento',
+        'nombre_corto': 'Exento',
+        'label': 'EXENTO',
         'needs_cuit': True,
-        'doctypes': [u'FAC', u'NFB', u'NNC', u'PRE', u'REM', u'REP'],
+        'doctypes': ['FAC', 'NFB', 'NNC', 'PRE', 'REM', 'REP'],
     },
 
-    u'M': {
-        'nombre': u'Monotributo',
-        'nombre_corto': u'Monotributo',
-        'label': u'MONOTRIBUTO',
+    'M': {
+        'nombre': 'Monotributo',
+        'nombre_corto': 'Monotributo',
+        'label': 'MONOTRIBUTO',
         'needs_cuit': True,
-        'doctypes': [u'FAC', u'NFB', u'PRE', u'REM'],
+        'doctypes': ['FAC', 'NFB', 'PRE', 'REM'],
     },
 }
 
 
 impresoras = {
-    u'HP LaserJet 1020': {
-        'type': u"cups",
+    'HP LaserJet 1020': {
+        'type': "cups",
         #'cups_server': 't00.godoycruz.rioplomo-net.com.ar', # Sample
         'cups_server': None,
         'cups_port': None,
         'cups_user': None,
         'cups_password': None, # Not Tested
-        'cups_printer': u'HP_LaserJet_1020',
-        'cups_store': u'/tmp/nobix/cups_files',
+        'cups_printer': 'HP_LaserJet_1020',
+        'cups_store': '/tmp/nobix/cups_files',
         'cups_docpv': punto_venta,
     },
 
-    u'Hasar615': {
-        'type': u"fiscal",
-        'fiscal_mode': u"spooler", # "daemon", "direct"
-        'fiscal_input': u"/tmp/hasard",
-        'fiscal_output': u"/tmp/hasard",
+    'Hasar615': {
+        'type': "fiscal",
+        'fiscal_mode': "spooler", # "daemon", "direct"
+        'fiscal_input': "/tmp/hasard",
+        'fiscal_output': "/tmp/hasard",
         'fiscal_timeout': 15,
         'fiscal_template': fiscal_template,
-        'fiscal_vendedor_fmt': u'%(nombre)s',
+        'fiscal_vendedor_fmt': '%(nombre)s',
         'fiscal_docpv': punto_venta,
-        'fiscal_logfile': u"/var/log/nobix/hasar_responses.log",
+        'fiscal_logfile': "/var/log/nobix/hasar_responses.log",
     },
 
-    u'PDF Printer': {
-        'type': u"file",
-        'file_store': u"/var/nobix/pdfs/",
-        'file_filename': u"%(docname)s-%(date)s-%(time)s_%(codigo)s_%(docnumber)s.pdf",
+    'PDF Printer': {
+        'type': "file",
+        'file_store': "/var/nobix/pdfs/",
+        'file_filename': "%(docname)s-%(date)s-%(time)s_%(codigo)s_%(docnumber)s.pdf",
         'file_docpv': punto_venta,
     },
 
-    u'PDF Printer Remitos': {
-        'type': u"file",
-        'file_store': u"/var/nobix/remitos/",
-        'file_filename': u"%(docname)s-%(date)s-%(time)s_%(codigo)s_%(docnumber)s.pdf",
+    'PDF Printer Remitos': {
+        'type': "file",
+        'file_store': "/var/nobix/remitos/",
+        'file_filename': "%(docname)s-%(date)s-%(time)s_%(codigo)s_%(docnumber)s.pdf",
         'file_docpv': punto_venta,
     },
 
-    u'Tag Printer': {
-        'type': u"tag",
+    'Tag Printer': {
+        'type': "tag",
         'tag_idVendor': 0x1664,
         'tag_idProduct': 0x013b,
     },
 
-    u'Remote Tag Printer': {
-        'type': u"remote-tag",
+    'Remote Tag Printer': {
+        'type': "remote-tag",
         'remote-tag_idVendor': 0x1664,
         'remote-tag_idProduct': 0x013b,
         'remote-tag_addr': 'd01',
@@ -496,9 +502,9 @@ impresoras = {
 database_uri = "postgresql://nobix-app:nobix-app@perseo:5433/nobix-test"
 #database_uri = "mysql://nobix:nobix@localhost/nobix"
 
-default_doctype = u"FAC"
-default_vendedor = u"001"
-default_cliente = u"1"
+default_doctype = "FAC"
+default_vendedor = "001"
+default_cliente = "1"
 
 finish_key = "end"
 
@@ -531,18 +537,18 @@ listados = [
 ]
 
 clientes_especiales = {
-    u'1': {'codigo': 1, 'nombre': u'VENTA IMPERSONAL', 'domicilio': u'', 'localidad': u'',
-          'codigo_postal': u'', 'cuit': u''},
-    u'2': {'codigo': 2, 'nombre': u'VENTA IMPERSONAL A', 'domicilio': u'', 'localidad': u'',
-           'codigo_postal': u'', 'cuit': u'', 'responsabilidad_iva': u'I'},
-    u'13': {'codigo': 13, 'nombre': u'PEDIDO A RIO PLOMO', 'domicilio': u'', 'localidad': u'',
-          'codigo_postal': u'', 'cuit': u''},
-    u'14': {'codigo': 14, 'nombre': u'ENVIO A RIO PLOMO', 'domicilio': u'', 'localidad': u'',
-          'codigo_postal': u'', 'cuit': u''},
-    u'18': {'codigo': 18, 'nombre': u'RECIBIDO DE RIO PLOMO', 'domicilio': u'', 'localidad': u'',
-          'codigo_postal': u'', 'cuit': u''},
-    u'30': {'codigo': 30, 'nombre': u'MERCADERIA FALLADA', 'domicilio': u'', 'localidad': u'',
-          'codigo_postal': u'', 'cuit': u''},
+    '1': {'codigo': 1, 'nombre': 'VENTA IMPERSONAL', 'domicilio': '', 'localidad': '',
+          'codigo_postal': '', 'cuit': ''},
+    '2': {'codigo': 2, 'nombre': 'VENTA IMPERSONAL A', 'domicilio': '', 'localidad': '',
+           'codigo_postal': '', 'cuit': '', 'responsabilidad_iva': 'I'},
+    '13': {'codigo': 13, 'nombre': 'PEDIDO A RIO PLOMO', 'domicilio': '', 'localidad': '',
+          'codigo_postal': '', 'cuit': ''},
+    '14': {'codigo': 14, 'nombre': 'ENVIO A RIO PLOMO', 'domicilio': '', 'localidad': '',
+          'codigo_postal': '', 'cuit': ''},
+    '18': {'codigo': 18, 'nombre': 'RECIBIDO DE RIO PLOMO', 'domicilio': '', 'localidad': '',
+          'codigo_postal': '', 'cuit': ''},
+    '30': {'codigo': 30, 'nombre': 'MERCADERIA FALLADA', 'domicilio': '', 'localidad': '',
+          'codigo_postal': '', 'cuit': ''},
 }
 
 
