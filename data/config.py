@@ -303,6 +303,7 @@ documentos = {
 
 vendedores = {
     '001': {'nombre': 'Mostrador'},
+    '18': {'nombre': 'Vendedor 18', 'pass': "a6a3956bdf73824f41d1d8e69cde4c2f"},
 }
 
 impuestos = {

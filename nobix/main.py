@@ -83,7 +83,7 @@ def create_password(code=None, password=None):
         sys.exit("ERROR: La contraseña debe contener almenos un digito")
     password2 = getpass('Repetir contraseña: ')
     if password == password2:
-        print("md5:", md5(code+'|'+password).hexdigest())
+        print("md5:", md5((code+'|'+password).encode('utf-8')).hexdigest())
         sys.exit(0)
     sys.exit("ERROR: Las contraseñas no coinciden")
 

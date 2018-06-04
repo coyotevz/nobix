@@ -710,7 +710,7 @@ class PasswordInputBox(InputBox):#{{{
         return self._caption, self._attrib
 
     # Hide password in object representation
-    # like in exceptions 
+    # like in exceptions
     def _repr_words(self):
         return self.__super._repr_words()[:-1] + [
             repr('*'*len(self._edit_text))] + [
@@ -758,7 +758,7 @@ class PasswordDialog(Dialog):#{{{
         vendedor = get_current_config().vendedores.get(codigo_vendedor)
         if vendedor and 'pass' in vendedor:
             passwd = self.pass_input.get_edit_text()
-            return vendedor.get('pass') == md5(codigo_vendedor+'|'+passwd).hexdigest()
+            return vendedor.get('pass') == md5((codigo_vendedor+'|'+passwd).encode('utf-8')).hexdigest()
         return False#}}}
 #}}}
 
