@@ -20,6 +20,7 @@ class Articulo(db.Model):
     precio = db.Column('price', db.Numeric(10, 2), nullable=False)
     existencia = db.Column('stock', db.Numeric(10, 2), default=Decimal)
     es_activo = db.Column('active', db.Boolean, default=True)
+    tax_code = db.Column(db.Unicode, nullable=False)
 
     #: 'doc_items' field added by ItemDocumento model
 
