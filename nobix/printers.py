@@ -31,7 +31,7 @@ from nobix.utils import get_next_docnumber as u_get_next_docnumber
 from nobix.utils import wait_fiscal_answer, message_waiter
 from nobix.labeler import Labeler, Label1, LabelerError, RemoteLabeler
 
-PrinterItemData = namedtuple('PrinterItemData', 'codigo descripcion cantidad precio total')
+PrinterItemData = namedtuple('PrinterItemData', 'codigo descripcion tax_factor cantidad precio total') # TODO: add iva field
 FiscalItemData = namedtuple('FiscalItemData', 'descripcion cantidad precio iva signo impint base')
 DescuentoData = namedtuple('DescuentoData', 'descripcion monto signo base')
 
@@ -145,10 +145,12 @@ def prepare_items(items):#{{{
     for item in items:
         if isinstance(item.articulo, Articulo):
             precio = item.precio if item.precio is not None else item.articulo.precio
-            retval.append(PrinterItemData(item.articulo.codigo, item.articulo.descripcion, item.cantidad,
+            tax_factor_data = get_current_config().impuestos.get(item.articulo.tax_code, { 'alicuota': '21.00' })
+            tax_factor = str(tax_factor_data['alicuota'])
+            retval.append(PrinterItemData(item.articulo.codigo, item.articulo.descripcion, tax_factor, item.cantidad,
                           precio, item.cantidad * precio))
         elif isinstance(item.articulo, str):
-            retval.append(PrinterItemData("", item.articulo, item.cantidad, item.precio,
+            retval.append(PrinterItemData("", item.articulo, '21.00', item.cantidad, item.precio,
                                           item.precio * item.cantidad))
         else:
             raise RuntimeError("Unknown item type '%s'" % type(item.articulo).__name)
@@ -451,7 +453,7 @@ class FiscalPrinter(Printer):#{{{
                 lines = lines[:3]
             # Necesita almenos un caracter de descripcion
             if not desc: desc = " "
-            fitems.append((lines, FiscalItemData(desc, item.cantidad, item.precio, '21.00', 'M', '0.00', 'T')))
+            fitems.append((lines, FiscalItemData(desc, item.cantidad, item.precio, item.tax_factor, 'M', '0.00', 'T')))
 
 #        if data['descuento']:
 #            if data['descuento'] > Decimal(0):

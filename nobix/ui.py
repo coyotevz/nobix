@@ -540,6 +540,8 @@ class DocumentHeader(WidgetWrap):#{{{
                            " sin código.\n\nElimine los artículos sin código.")
                 return
 
+        # TODO: Filtrar aquí los articulos que esten permitidos según el tipo de documento
+
         if doc_conf['stock'] not in ('ajuste', 'inventario'):
             positive_items = list(filter(_positive_valid_item, raw_items))
             if len(raw_items) > len(positive_items):
@@ -640,7 +642,7 @@ class DocumentHeader(WidgetWrap):#{{{
             else:
                 raise RuntimeError("Unknown item type '%s'" % type(i.articulo).__name__)
             i = ItemDocumento(codigo=codigo, descripcion=descripcion, cantidad=item.cantidad,
-                              precio=precio, articulo=articulo)
+                              precio=precio, articulo=articulo, tax_factor=item.tax_factor)
 
             doc_items.append(i)
 
@@ -1752,10 +1754,31 @@ class MaestroStock(Dialog):#{{{
         connect_signal(self.precio_box, 'edit-cancel', _edit_cancel)
         self.precio_error = Text("")
         precio_row = Columns([
-            ('fixed', 12, AttrMap(Text("Precio"), 'dialog.maestock.label')),
+            ('fixed', 12, AttrMap(Text("Precio c/IVA"), 'dialog.maestock.label')),
             ('fixed', 1, Divider()),
             ('fixed', 9, AttrMap(self.precio_box, 'dialog.maestock.input', 'dialog.maestock.input.focus')),
             AttrMap(self.precio_error, 'dialog.maestock.error')
+        ])
+
+        self.tax_code_box = InputBox(max_length=3, align='right')
+        self.tax_code_box.filter_input = lambda t: t.upper()
+        connect_signal(self.tax_code_box, 'focus-in', self.on_tax_code_focus_in)
+        connect_signal(self.tax_code_box, 'edit-done', self.on_tax_code_edit_done)
+        connect_signal(self.tax_code_box, 'edit-cancel', _edit_cancel)
+        self.tax_code_error = Text("")
+        self.tax_code_name = Text("")
+        self.tax_code_name_attr = AttrMap(self.tax_code_name, 'dialog.maestock')
+        self.tax_code_amount = Text("", align='right')
+        tax_code_row = Columns([
+            ('fixed', 12, AttrMap(Text("Código IVA"), 'dialog.maestock.label')),
+            ('fixed', 1, Divider()),
+            ('fixed', 9, AttrMap(self.tax_code_box, 'dialog.maestock.input', 'dialog.maestock.input.focus')),
+            ('fixed', 1, Divider()),
+            #AttrMap(self.tax_code_error, 'dialog.maestock.error'),
+            #AttrMap(self.tax_code_name, 'dialog.maestock'),
+            self.tax_code_name_attr,
+            ('fixed', 1, Divider()),
+            AttrMap(self.tax_code_amount, 'dialog.maestock'),
         ])
 
         self.vigencia_box = DateSelectorBox()
@@ -1781,6 +1804,7 @@ class MaestroStock(Dialog):#{{{
             proveedor_row,
             agrupacion_row,
             precio_row,
+            tax_code_row,
             vigencia_row,
             AttrMap(self.instrucciones, 'dialog.maestock.instrucciones'),
             Divider(),
@@ -1813,12 +1837,14 @@ class MaestroStock(Dialog):#{{{
             self.descripcion_box.set_edit_text(obj.descripcion)
             self.proveedor_box.set_edit_text(obj.proveedor)
             self.agrupacion_box.set_edit_text(obj.agrupacion)
+            self.tax_code_box.set_edit_text(obj.tax_code)
             self.precio_box.set_value(obj.precio)
             self.vigencia_box.set_value(obj.vigencia)
         else:
             self.descripcion_box.set_edit_text("")
             self.proveedor_box.set_edit_text("")
             self.agrupacion_box.set_edit_text("")
+            self.tax_code_box.set_edit_text("")
             self.precio_box.set_edit_text("")
             self.vigencia_box.set_edit_text("")
 #}}}
@@ -1833,6 +1859,9 @@ class MaestroStock(Dialog):#{{{
 
         if self.codigo_box.get_edit_text() == "":
             _set_focus_on_code_box()
+            return
+        if self.tax_code_box.get_edit_text() == "":
+            self.tax_code_error.set_text(" No puede estar vacío")
             return
         if self.precio_box.get_edit_text() == "":
             self.precio_error.set_text(" No puede estar vacío")
@@ -1852,6 +1881,7 @@ class MaestroStock(Dialog):#{{{
         a.descripcion = self.descripcion_box.get_edit_text()
         a.proveedor = self.proveedor_box.get_edit_text()
         a.agrupacion = self.agrupacion_box.get_edit_text()
+        a.tax_code = self.tax_code_box.get_edit_text()
         a.precio = self.precio_box.get_value()
         a.vigencia = self.vigencia_box.get_value()
 
@@ -1931,7 +1961,7 @@ class MaestroStock(Dialog):#{{{
             self.set_prev_obj(None)
             self.on_action_return(widget)
 #}}}
-    def on_action_modify_code(self, widget):
+    def on_action_modify_code(self, widget):#{{{
         if self._obj:
             new_code = ModificaCodigo(self._obj).run()
             if not new_code:
@@ -1939,7 +1969,7 @@ class MaestroStock(Dialog):#{{{
                 return
             self.codigo_box.set_edit_text(new_code)
             self.on_codigo_edit_done(self.codigo_box, new_code)
-
+#}}}
     def on_action_return(self, widget):#{{{
         self.codigo_box.set_edit_text("")
         self.fill_with_data(None)
@@ -1948,6 +1978,26 @@ class MaestroStock(Dialog):#{{{
     def on_precio_focus_in(self, widget):#{{{
         self.precio_error.set_text("")
         highlight_focus_in(widget)
+#}}}
+    def on_tax_code_focus_in(self, widget):#{{{
+        self.tax_code_error.set_text("")
+        highlight_focus_in(widget)
+#}}}
+    def on_tax_code_edit_done(self, widget, *text):#{{{
+        #TODO check valid tax
+        # tax_code.get_edit_text() in doctype['taxes']
+        # render tax name
+        # calc tax amount
+        self.tax_code_name.set_text("TODO")
+        self.tax_code_name_attr.set_attr_map({None: 'dialog.maestock.error'})
+        self.tax_code_amount.set_text("TODO")
+        self.on_next_focus()
+
+    def _set_tax_code(self, tax_code):
+        pass
+
+    def _set_price(self, price):
+        pass
 #}}}
     def on_vigencia_focus_in(self, widget):#{{{
         if self._vigencia_error_state is None:
