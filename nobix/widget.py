@@ -429,6 +429,7 @@ class NumericText(Text):#{{{
             try:
                 self._value = Decimal(str(val).replace(self._sep, "."))
             except DecimalException:
+                self.set_text("")
                 return
         self.set_text(str(self._value.quantize(self._q)).replace(".", self._sep))
 #}}}
