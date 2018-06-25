@@ -5,6 +5,7 @@ Revises: c71e7fd6a9b7
 Create Date: 2018-06-02 03:54:10.424477
 
 """
+from decimal import Decimal
 from alembic import op
 import sqlalchemy as sa
 
@@ -32,7 +33,7 @@ itemhelper = sa.Table(
 
 def upgrade():
     op.add_column('product', sa.Column('tax_code', sa.Unicode(), nullable=True))
-    op.add_column('item', sa.Column('tax_factor', sa.Unicode(), nullable=True))
+    op.add_column('item', sa.Column('tax_factor', sa.Numeric(10,2), nullable=True))
 
     # migrate data
     op.execute(
@@ -43,7 +44,7 @@ def upgrade():
 
     op.execute(
         itemhelper.update().values(
-            tax_factor='21.00',
+            tax_factor=Decimal('21.00'),
         )
     )
 
@@ -54,4 +55,4 @@ def upgrade():
 
 def downgrade():
     op.drop_column('product', 'tax_code')
-    op.drop_column('item', 'tax_amount')
+    op.drop_column('item', 'tax_factor')

@@ -1765,20 +1765,14 @@ class MaestroStock(Dialog):#{{{
         connect_signal(self.tax_code_box, 'focus-in', self.on_tax_code_focus_in)
         connect_signal(self.tax_code_box, 'edit-done', self.on_tax_code_edit_done)
         connect_signal(self.tax_code_box, 'edit-cancel', _edit_cancel)
-        self.tax_code_error = Text("")
-        self.tax_code_name = Text("")
-        self.tax_code_name_attr = AttrMap(self.tax_code_name, 'dialog.maestock')
-        self.tax_code_amount = Text("", align='right')
+        self.tax_code_msg = Text("")
+        self.tax_code_msg_attr = AttrMap(self.tax_code_msg, 'dialog.maestock')
         tax_code_row = Columns([
             ('fixed', 12, AttrMap(Text("Código IVA"), 'dialog.maestock.label')),
             ('fixed', 1, Divider()),
             ('fixed', 9, AttrMap(self.tax_code_box, 'dialog.maestock.input', 'dialog.maestock.input.focus')),
             ('fixed', 1, Divider()),
-            #AttrMap(self.tax_code_error, 'dialog.maestock.error'),
-            #AttrMap(self.tax_code_name, 'dialog.maestock'),
-            self.tax_code_name_attr,
-            ('fixed', 1, Divider()),
-            AttrMap(self.tax_code_amount, 'dialog.maestock'),
+            self.tax_code_msg_attr,
         ])
 
         self.vigencia_box = DateSelectorBox()
@@ -1900,6 +1894,14 @@ class MaestroStock(Dialog):#{{{
         self._prev_obj = obj
 #}}}
 
+    def set_tax_code_error(self, msg):
+        self.tax_code_msg.set_text(msg)
+        self.tax_code_msg_attr.set_attr_map({None: 'dialog.maestock.error'})
+
+    def set_tax_code_message(self, msg):
+        self.tax_code_msg.set_text(msg)
+        self.tax_code_msg_attr.set_attr_map({None: 'dialog.maestock'})
+
     ### Signal Handlers ###
 
     def on_codigo_focus_in(self, widget):#{{{
@@ -1980,17 +1982,27 @@ class MaestroStock(Dialog):#{{{
         highlight_focus_in(widget)
 #}}}
     def on_tax_code_focus_in(self, widget):#{{{
-        self.tax_code_error.set_text("")
-        highlight_focus_in(widget)
+        if self._tax_code_error_state is not None:
+            self.tax_code_error.set_text("")
+            highlight_focus_in(widget)
 #}}}
     def on_tax_code_edit_done(self, widget, *text):#{{{
+        imp = get_current_config().impuestos
+        tax_code = self.tax_code_box.get_edit_text()
+
+        if tax_code not in imp:
+            # FIXME: continue here
+            #self.set_
+        #if self.tax_code_box.get_edit_text() in doctype['taxes']
+        #if self._tax_code_error_state is not None:
+        #    highlight_focus_in(widget)
+        #    return
+
         #TODO check valid tax
         # tax_code.get_edit_text() in doctype['taxes']
         # render tax name
         # calc tax amount
-        self.tax_code_name.set_text("TODO")
-        self.tax_code_name_attr.set_attr_map({None: 'dialog.maestock.error'})
-        self.tax_code_amount.set_text("TODO")
+        self.set_tax_code_message("TODO")
         self.on_next_focus()
 
     def _set_tax_code(self, tax_code):
