@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from decimal import Decimal
+from sqlalchemy.ext.hybrid import hybrid_property
 from nobix.config import get_current_config
 from nobix.exc import NobixModelError
 from . import db, time_now
@@ -13,7 +14,7 @@ class Documento(db.Model):
     )
 
     id = db.Column(db.Integer, primary_key=True)
-    _tipo = db.Column('doc_type', db.Unicode(3), nullable=False)
+    tipo = db.Column('doc_type', db.Unicode(3), nullable=False)
     fecha = db.Column('issue_date', db.Date, nullable=False)
     hora = db.Column('issue_time', db.Time, default=time_now)
     numero = db.Column('number', db.Integer)
@@ -40,16 +41,12 @@ class Documento(db.Model):
     #: 'tasas' field add by Tasa model
     #: 'items' field add by ItemDocumento model
 
-    def _get_tipo(self):
-        return self._tipo
-
-    def _set_tipo(self, val):
-        if val not in list(get_current_config().documentos.keys()):
+    @db.validates('tipo')
+    def validate_tipo(self, key, doc_type):
+        if doc_type not in list(get_current_config().documentos.keys()):
             raise NobixModelError("'%s' no es un tipo de documento valido"
-                                  % val)
-        self._tipo = val
-
-    tipo = property(_get_tipo, _set_tipo)
+                                  % doc_type)
+        return doc_type
 
     @property
     def total(self):
