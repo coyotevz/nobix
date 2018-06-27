@@ -26,7 +26,8 @@ class SQLWorker(Process):
         self.stop = Event()
 
     def run(self):
-        query = iter(self.query.yield_per(100))
+        #query = iter(self.query.yield_per(100))
+        query = iter(self.query.enable_eagerloads(False).yield_per(100))
         while not self.stop.is_set():
             try:
                 item = next(query)

@@ -2543,7 +2543,7 @@ class TaxItem(WidgetWrap):#{{{
                                  'dialog.documento.tax.input.focus')),
             AttrMap(self.descripcion, 'dialog.documento.tax.label'),
             ('fixed', 6, AttrMap(self.porcentaje, 'dialog.documento.tax.label')),
-            ('fixed', 9, AttrMap(self.monto_box, 'dialog.documento.tax.input',
+            ('fixed', 12, AttrMap(self.monto_box, 'dialog.documento.tax.input',
                                  'dialog.documento.tax.input.focus')),
         ], dividechars=1)
 
@@ -2684,7 +2684,7 @@ class EditorDocumentosEspeciales(Dialog):#{{{
             ('fixed', 13, AttrMap(self.tercero_cuit, 'dialog.documento.tercero')),
         ], dividechars=1)
 
-        self.neto = NumericInputBox(min_value=0, max_value=99999.99, default=0)
+        self.neto = NumericInputBox(min_value=0, max_value=99999999.99, default=0)
         connect_signal(self.neto, 'focus-in', highlight_focus_in)
         connect_signal(self.neto, 'focus-out', self.on_neto_total_focus_out)
         connect_signal(self.neto, 'edit-done', self.on_neto_edit_done)
@@ -2692,14 +2692,14 @@ class EditorDocumentosEspeciales(Dialog):#{{{
 
         neto_row = Columns([
             AttrMap(Text("Importe Neto", align='right'), 'dialog.documento.label'),
-            ('fixed', 9, AttrMap(self.neto, 'dialog.documento.input', 'dialog.documento.input.focus')),
+            ('fixed', 12, AttrMap(self.neto, 'dialog.documento.input', 'dialog.documento.input.focus')),
         ], dividechars=1)
         neto_row.selectable = _neto_selectable
 
         self.taxes = SimpleListWalker([])
         taxes_list = ListBox(self.taxes)
 
-        self.total = NumericInputBox(min_value=0, max_value=99999.99, default=0)
+        self.total = NumericInputBox(min_value=0, max_value=99999999.99, default=0)
         connect_signal(self.total, 'focus-in', highlight_focus_in)
         connect_signal(self.total, 'focus-out', self.on_neto_total_focus_out)
         connect_signal(self.total, 'edit-done', self.on_total_edit_done)
@@ -2707,7 +2707,7 @@ class EditorDocumentosEspeciales(Dialog):#{{{
 
         total_row = Columns([
             AttrMap(Text("Importe TOTAL", align='right'), 'dialog.documento.label'),
-            ('fixed', 9, AttrMap(self.total, 'dialog.documento.input', 'dialog.documento.input.focus')),
+            ('fixed', 12, AttrMap(self.total, 'dialog.documento.input', 'dialog.documento.input.focus')),
         ], dividechars=1)
         total_row.selectable = _total_selectable
 
