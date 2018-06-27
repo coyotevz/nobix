@@ -3,7 +3,7 @@
 
 import string
 from datetime import datetime, date, timedelta
-from decimal import Decimal, getcontext, ROUND_HALF_UP
+from decimal import Decimal, getcontext, ROUND_HALF_UP, InvalidOperation
 from collections import namedtuple, defaultdict
 from dateutil.relativedelta import relativedelta
 import operator
@@ -817,6 +817,7 @@ class DocumentItem(WidgetWrap):#{{{
 
     def __init__(self, obj=None):#{{{
         self._obj = None
+        self.tax_factor = Decimal('21')
 
         def _focus_out(w): self.calcular_total()
         def _item_done(w, c): self._emit("item-done")
@@ -870,6 +871,9 @@ class DocumentItem(WidgetWrap):#{{{
         self.code_box.set_edit_text(obj.codigo)
         if isinstance(obj, ItemDocumento):
             self.cantidad.set_value(obj.cantidad)
+            self.tax_factor = obj.tax_factor
+        else:
+            self.tax_factor = get_current_config().impuestos.get(obj.tax_code, {'alicuota': Decimal('21')})['alicuota']
         self.calcular_total()
 #}}}
     def calcular_total(self):#{{{
@@ -1272,8 +1276,14 @@ class DocumentBody(WidgetWrap):#{{{
             discrimina = get_current_config().documentos.get(self._tipo_documento, {'discrimina_iva': False})['discrimina_iva']
 
         acumulador_montos = []
+        acumulador_gravado = []
+        acumulador_iva = []
         for item in self.items:
-            acumulador_montos.append( item.total.get_value() )
+            item_total = item.total.get_value()
+            factor = item.tax_factor/100
+            acumulador_montos.append(item_total)
+            acumulador_gravado.append(item_total/(1+factor))
+            acumulador_iva.append(item_total*(1-1/(1+factor)))
 
         subtotal = sum(acumulador_montos)
         self.subtotal.set_value(subtotal)
@@ -1288,11 +1298,13 @@ class DocumentBody(WidgetWrap):#{{{
         self.descuento.set_value(abs(self._descuento))
 
         total = subtotal - self._descuento
+        desc_factor = total / subtotal
         self.total.set_value(total)
 
         if discrimina:
-            gravado = (total / Decimal('1.21')).quantize(q2)
-            iva = gravado * Decimal('0.21')
+            gravado = (sum(acumulador_gravado)*desc_factor).quantize(q2)
+            iva = (sum(acumulador_iva)*desc_factor).quantize(q2)
+            #iva = gravado * Decimal('0.21')
             self._emit('show-iva-info', gravado, iva)
         else:
             self._emit('clear-iva-info')
@@ -1310,8 +1322,9 @@ class DocumentBody(WidgetWrap):#{{{
         if discrimina:
             for item in self.items:
                 value = item.total.get_value()
-                precio_base = (value / Decimal('1.21')).quantize(q) # redondeado a 2
-                acumulador_iva.append( (precio_base * Decimal('0.21')).quantize(q2) )
+                factor = item.tax_factor / 100
+                precio_base = (value / (1+factor) ).quantize(q) # redondeado a 2
+                acumulador_iva.append( (precio_base * factor).quantize(q2) )
                 acumulador_montos.append( precio_base )
         else:
             for item in self.items:
@@ -1330,22 +1343,19 @@ class DocumentBody(WidgetWrap):#{{{
         self.descuento_label.set_text(desc_label)
         self.descuento.set_value(abs(self._descuento))
 
-        if discrimina:
-            desc_base = (self._descuento / Decimal('1.21')).quantize(q)
-            acumulador_iva.append( -(desc_base * Decimal('0.21')).quantize(q2) )
-            acumulador_montos.append( -desc_base )
-        else:
-            acumulador_montos.append( -self._descuento )
-
-        total = sum(acumulador_montos) + sum(acumulador_iva)
+        total = subtotal - self._descuento
         self.total.set_value(total)
+        try:
+            desc_factor = total / subtotal
+        except InvalidOperation:
+            desc_factor = 1
 
         if discrimina:
-            gravado = sum(acumulador_montos)
-            iva = sum(acumulador_iva)
+            gravado = sum(acumulador_montos) * desc_factor
+            iva = sum(acumulador_iva) * desc_factor
             self._emit('show-iva-info', gravado, iva)
         else:
-            self._emit('clear-iva-info')
+            self._emit('celar-iva-info')
 
         return total
 #}}}
