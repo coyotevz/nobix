@@ -1355,7 +1355,7 @@ class DocumentBody(WidgetWrap):#{{{
             iva = sum(acumulador_iva) * desc_factor
             self._emit('show-iva-info', gravado, iva)
         else:
-            self._emit('celar-iva-info')
+            self._emit('clear-iva-info')
 
         return total
 #}}}
