@@ -1,4 +1,4 @@
-"""Add 'issuer_id' column to document, update constraint, migrate data
+"""Add 'issuing_id' column to document, update constraint, migrate data
 
 Revision ID: 034a36f19de9
 Revises: 98cc89ef215f
