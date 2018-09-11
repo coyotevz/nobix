@@ -28,8 +28,8 @@ def upgrade():
         rename_column(cli, 'codigo', 'code')
         rename_column(cli, 'responsabilidad_iva', 'fiscal_type')
         rename_column(cli, 'nombre', 'name')
-        rename_column(cli, 'relacion', 'relation')
-        rename_column(cli, 'localidad', 'state')
+        rename_column(cli, 'relacion', 'role')
+        rename_column(cli, 'localidad', 'city')
         rename_column(cli, 'codigo_postal', 'zip_code')
 
     op.execute('ALTER SEQUENCE clientes_id_seq RENAME TO customer_id_seq')
@@ -44,8 +44,8 @@ def downgrade():
         rename_column(cli, 'code', 'codigo')
         rename_column(cli, 'fiscal_type', 'responsabilidad_iva')
         rename_column(cli, 'name', 'nombre')
-        rename_column(cli, 'relation', 'relacion')
-        rename_column(cli, 'state', 'localidad')
+        rename_column(cli, 'role', 'relacion')
+        rename_column(cli, 'city', 'localidad')
         rename_column(cli, 'zip_code', 'codigo_postal')
 
     op.execute('ALTER SEQUENCE customer_id_seq RENAME TO clientes_id_seq')
