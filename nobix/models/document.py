@@ -10,13 +10,15 @@ from . import db, time_now
 class Documento(db.Model):
     __tablename__ = 'document'
     __table_args__ = (
-        db.UniqueConstraint('doc_type', 'issue_date', 'number'),
+        db.UniqueConstraint('issuing_id', 'doc_type', 'issue_date', 'pos_number', 'number'),
     )
 
     id = db.Column(db.Integer, primary_key=True)
+    id_emisor = db.Column('issuing_id', db.Integer, nullable=False)
     tipo = db.Column('doc_type', db.Unicode(3), nullable=False)
     fecha = db.Column('issue_date', db.Date, nullable=False)
     hora = db.Column('issue_time', db.Time, default=time_now)
+    pos = db.Column('pos_number', db.Integer, nullable=False)
     numero = db.Column('number', db.Integer)
     vendedor = db.Column('salesman', db.UnicodeText(3))
     # Descuento neto (sin impuestos)

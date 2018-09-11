@@ -434,6 +434,27 @@ iva_resp_map = {
 }
 
 
+empresas = {
+    1: {
+        "rz": "Carlos Roccasalva",
+        "fantasy": "Río Plomo",
+        "cuit": "20152179198",
+    },
+
+    2: {
+        "rz": "Carlos, Augusto y Germán Roccasalva S.H.",
+        "fantasy": "Río Plomo",
+        "cuit": "30711281424",
+    },
+
+    3: {
+        "rz": "Tochima S.A.S.",
+        "fantasy": "Totalaqua",
+        "cuit": "30716085046",
+    }
+}
+
+
 impresoras = {
     'HP LaserJet 1020': {
         'type': "cups",
