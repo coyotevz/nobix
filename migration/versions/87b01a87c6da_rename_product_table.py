@@ -32,7 +32,7 @@ def upgrade():
         rename_column(p, 'vigencia', 'validity')
         rename_column(p, 'precio', 'price')
         rename_column(p, 'existencia', 'stock')
-        rename_column(p, 'es_activo', 'active')
+        rename_column(p, 'es_activo', 'is_active')
 
     op.execute('ALTER SEQUENCE articulos_id_seq RENAME TO product_id_seq')
     op.execute('ALTER INDEX articulos_pkey RENAME TO product_pkey')
@@ -50,7 +50,7 @@ def downgrade():
         rename_column(p, 'validity', 'vigencia')
         rename_column(p, 'price', 'precio')
         rename_column(p, 'stock', 'existencia')
-        rename_column(p, 'active', 'es_activo')
+        rename_column(p, 'is_active', 'es_activo')
 
     op.execute('ALTER SEQUENCE product_id_seq RENAME TO articulos_id_seq')
     op.execute('ALTER INDEX product_pkey RENAME TO articulos_pkey')
