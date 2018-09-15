@@ -13,6 +13,7 @@ class Articulo(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     codigo = db.Column('sku', db.Unicode(14), nullable=False, unique=True)
+    barcode = db.Column(db.Unicode, unique=True)
     descripcion = db.Column('description', db.UnicodeText(40), nullable=False)
     proveedor = db.Column('supplier', db.UnicodeText(20))
     agrupacion = db.Column('group', db.UnicodeText(20))
