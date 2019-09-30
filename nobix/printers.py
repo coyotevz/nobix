@@ -421,6 +421,7 @@ class FiscalPrinter(Printer):#{{{
 
         if domicilio:
             data['headers'].append(('09', domicilio))
+            data['customer_address'] = domicilio
         else:
             # Borramos el contenido anterior
             data['headers'].append(('09', '\x7f'))
