@@ -1,0 +1,5 @@
+En archlinux necesita tener intalados los siguientes paquetes de sistema:
+
+ - extra/python2-pycups
+ - extra/librsvg
+ - shared-aur/python2-rsvg (custom compilation, not available in standard lib)

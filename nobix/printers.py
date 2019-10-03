@@ -92,6 +92,11 @@ _hasar_ps = [
 _hasar_as = [
 ]
 
+# Epson
+_epson_fs = []
+_epson_ps = []
+_epson_as = []
+
 # Some twiks
 rsvg.set_default_dpi(72.0)
 
@@ -184,7 +189,7 @@ def build_out_filename(doc_data, data, options):#{{{
     return os.path.join(out_dir, out_filename)
 #}}}
 
-def _parse_status(status, status_map):#{{{
+def _parse_hasar_status(status, status_map):#{{{
     ret = []
     x = int(status, 2)
     for value, message, cont in status_map:
@@ -196,14 +201,27 @@ def _parse_status(status, status_map):#{{{
                 ret.append((message, cont))
     return ret
 #}}}
-def _parse_fiscal_status(fiscal_status, fiscal_status_map=_hasar_fs):#{{{
+def _parse_hasar_fiscal_status(fiscal_status, fiscal_status_map=_hasar_fs):#{{{
     return _parse_status(fiscal_status, fiscal_status_map)
 #}}}
-def _parse_printer_status(printer_status, printer_status_map=_hasar_ps):#{{{
-    return _parse_status(printer_status, printer_status_map)
+def _parse_hasar_printer_status(printer_status, printer_status_map=_hasar_ps):#{{{
+    return _parse_hasar_status(printer_status, printer_status_map)
 #}}}
-def _parse_aux_status(aux_status, aux_status_map=_hasar_as):#{{{
-    return _parse_status(aux_status, aux_status_map)
+def _parse_hasar_aux_status(aux_status, aux_status_map=_hasar_as):#{{{
+    return _parse_epson_status(aux_status, aux_status_map)
+#}}}
+
+def _parse_epson_status(status, status_map):#{{{
+    return []
+#}}}
+def _parse_epson_fiscal_status(fiscal_status, fiscal_status_map=_epson_fs):#{{{
+    return _parse_epson_status(fiscal_status, fiscal_status_map)
+#}}}
+def _parse_epson_printer_status(printer_status, printer_status_map=_epson_ps):#{{{
+    return _parse_epson_status(printer_status, printer_status_map)
+#}}}
+def _parse_epson_aux_status(aux_status, aux_status_map=_epson_as):#{{{
+    return _parse_epson_status(aux_status, aux_status_map)
 #}}}
 
 class options_map(dict):#{{{
@@ -287,11 +305,12 @@ class FiscalPrinter(Printer):#{{{
         data = self._complete_data(data)
 
         tmpl = get_template(data['template'])
-        result = tmpl.render_unicode(**data)
+        result = tmpl.render_unicode(strict_undefined=True, **data)
         result = unidecode(result)
 
         with open(data['out_filename'], "w") as out:
-            result = result.replace("|", "\x1c")
+            if data['printer_model'] == u'hasar':
+                result = result.replace("|", "\x1c")
             out.write(result)
 
         response_filename = os.path.splitext(data['out_filename'])[0]+'.ans'
@@ -317,10 +336,16 @@ class FiscalPrinter(Printer):#{{{
         response_filename = os.path.splitext(outfilename)[0]+'.ans'
         title = u"Imprimiento Cierre %s en %s" % (type_, self.name)
 
+        data = {'operacion': u'cierre'}
+
         with open(outfilename, "w") as out:
-            for lineno in ('08', '09', '10', '11', '12', '13', '14'):
-                out.write("]\x1c%s\x1c\x7f\n" % lineno)
-            out.write("\x39\x1c%s" % type_.upper())
+            if self.opts['printer_model'] == u'hasar':
+                for lineno in ('08', '09', '10', '11', '12', '13', '14'):
+                    out.write("]\x1c%s\x1c\x7f\n" % lineno)
+                out.write("\x39\x1c%s" % type_.upper())
+            elif self.opts['printer_model'] == u'epson':
+                if _type == u'Z': out.write("0 0801|0000")
+                else: out.write("0 0802|0001")
 
         if not wait_fiscal_answer(response_filename, title=title, timeout=self.opts['timeout']):
             if os.path.exists(outfilename):
@@ -330,10 +355,91 @@ class FiscalPrinter(Printer):#{{{
                 errors = [u"No se encontró el archivo de respuesta"]
             return False, {'errors': errors}
 
-        return self._read_response(response_filename, {})
+        return self._read_response(response_filename, data)
 #}}}
 
-    def _read_response(self, filename, data):#{{{
+    def _read_response(self, filename, data):
+        printer_model = data.get('printer_model', self.opts['printer_model'])
+        if printer_model == u'epson':
+            return self._read_epson_response(filename, data)
+        elif printer_model == u'hasar':
+            return self._read_hasar_response(filename, data)
+        else:
+            return self._read_generic_response(filename, data)
+
+    def _read_epson_response(self, filename, data):
+        ferrors = []
+        perrors = []
+        data['errors'] = []
+        data['warnings'] = []
+        import time
+        time.sleep(2)
+
+        resp = open(filename, "r")
+        if self.opts['logfile']:
+            try:
+                log = open(self.opts['logfile'], "a")
+                log.write("hello log\n")
+            except IOError:
+                log = None
+                data['warnings'] = [u"No se puede escirbir log en '%s'" % self.opts['logfile']]
+
+        docnumber = None
+        line = None
+
+        if log:
+            log.write("repr(resp): "+repr(resp)+"\n")
+            log.write("list(resp): "+repr(list(resp))+"\n")
+            resp.seek(0)
+
+        for line in list(resp):
+            if log:
+                log.write("line: "+str(line)+"\n")
+
+            elements = line.strip().split("|")
+            ps, fs, ret = elements[:3]
+
+            if log:
+                log.write("elements: "+repr(elements)+" len: "+str(len(elements))+"\n")
+
+            if len(elements) > 4:
+                docnumber = unicode(elements[3])
+
+            # por el momento no se interpreta codigos de error o estado
+            perr = _parse_epson_printer_status(ps)
+            ferr = _parse_epson_fiscal_status(fs)
+
+        if data.get('operacion', None) == 'cierre':
+            success = True
+        elif docnumber is None:
+            if line:
+                data['errors'].append(u"Respuesta mal formada:\n(%r)" % line.strip())
+            else:
+                data['errors'].append(u"Respuesta problematica")
+            success = False
+        else:
+            data['docnumber'] = docnumber
+            success = True
+
+        # parse last line
+        #try:
+        #    ps, fs, ret, docn, doct, monto, iva, _ = line.strip().split("|")
+        #    data['docnumber'] = unicode(docn)
+        #    success = True
+        #except:
+        #    data['errors'].append(u"Respuesta mal formada:\n(%r)" % line.strip())
+        #    success = False
+
+        resp.close()
+        if log: log.close()
+
+        if success:
+            os.unlink(filename)
+
+        return success, data
+
+
+    def _read_hasar_response(self, filename, data):#{{{
         ferrors = []
         perrors = []
         data['errors'] = []
@@ -351,8 +457,8 @@ class FiscalPrinter(Printer):#{{{
             elements = line.strip().split("|")
             cmd, ps, fs = elements[:3]
 
-            perr = _parse_printer_status(ps)
-            ferr = _parse_fiscal_status(fs)
+            perr = _parse_hasar_printer_status(ps)
+            ferr = _parse_hasar_fiscal_status(fs)
 
             if all(c for m, c in perr+ferr):
                 if cmd == u"\x45": # CloseFiscalReceipt
@@ -388,16 +494,27 @@ class FiscalPrinter(Printer):#{{{
     def _complete_data(self, data):#{{{
         resp_map = get_current_config().iva_resp_map
         data['moneyfmt'] = partial(moneyfmt, sep=u'')
+        data['moneyfmt4_epson'] = partial(moneyfmt, places=4, sep=u'', dp=u'')
+        data['Decimal'] = Decimal
 
         needs_cuit = resp_map[data['customer_resp']]['needs_cuit']
+
+        if data['printer_model'] == u'epson':
+            data['customer_resp'] = resp_map[data['customer_resp']]['epson_letter']
 
         if needs_cuit:
             if not validar_cuit(data['customer_cuit']):
                 raise NobixBadCuitError(u"El CUIT no es válido, no se debería llegar a este "
                                         u"punto con un CUIT inválido")
             data['customer_cuit'] = data['customer_cuit'].replace("-", "")
+            if data['printer_model'] == u'epson':
+                data['customer_doctype'] = 'T'
         else:
-            data['customer_cuit'] = data['customer_cuit'] or u"00000000000"
+            if data['printer_model'] == u'epson':
+                data['customer_cuit'] = data['customer_cuit'] or u''
+                data['customer_doctype'] = 'D'
+            else:
+                data['customer_cuit'] = data['customer_cuit'] or u"00000000000"
 
         data['fitems'] = self._format_items(data)
         l = [data['customer_domicilio'], data['customer_localidad']]
@@ -408,7 +525,7 @@ class FiscalPrinter(Printer):#{{{
                 monto = data['descuento']
                 signo = 'm'
             else:
-                label = u'Recargo'
+                label = u'Ajuste'
                 monto = abs(data['descuento'])
                 signo = 'M'
             data['desc'] = DescuentoData(label[:20], monto, signo, 'T')
@@ -425,8 +542,10 @@ class FiscalPrinter(Printer):#{{{
         else:
             # Borramos el contenido anterior
             data['headers'].append(('09', '\x7f'))
+            data['customer_address'] = ''
 
         data['headers'].append(('10', (u'Vendedor: %s' % data['vendedor'])[:40]))
+        data['vendedor'] = u'Vendedor: %s' % data['vendedor']
 
         data['footers'] = [
             ('13', u'Defensa al Consumidor Mza. 0800-222-6678'),
@@ -435,9 +554,10 @@ class FiscalPrinter(Printer):#{{{
 
         return data
 #}}}
-    def _format_items(self, data):#{{{
+
+    def _format_hasar_items(self, data):
+        # Hasar: 3x28 + 1x20
         fitems = []
-        # 3x28 + 1x20
         for item in data['items']:
             code = item.codigo[:7].ljust(8)
             s = code + item.descripcion
@@ -455,6 +575,37 @@ class FiscalPrinter(Printer):#{{{
             # Necesita almenos un caracter de descripcion
             if not desc: desc = " "
             fitems.append((lines, FiscalItemData(desc, item.cantidad, item.precio, '21.00', 'M', '0.00', 'T')))
+        return fitems
+
+    def _format_epson_items(self, data):
+        # Epson: 1x34 + 3x48 + 1x29
+        fitems = []
+        for item in data['items']:
+            s = '['+item.codigo+'] ' + item.descripcion
+            lines = []
+            if len(s) <= 29:
+                desc = s
+            else:
+                while len(s):
+                    s, l = s[29:], s[:29]
+                    lines.append(l)
+                    if len(s) <= 29:
+                        desc = s
+                        break
+                lines = lines[:3]
+            # Necesita almenos un caracter de descripcion
+            if not desc: desc = ""
+            fitems.append((lines, FiscalItemData(desc, item.cantidad, item.precio, '2100', 'M', '0.00', 'T')))
+        return fitems
+
+    def _format_items(self, data):#{{{
+        fitems = []
+        if data['printer_model'] == u'hasar':
+            return self._format_hasar_items(data)
+        elif data['printer_model'] == u'epson':
+            return self._format_epson_items(data)
+        else:
+            raise Exception(u"Invalid 'printer_model' settings.")
 
 #        if data['descuento']:
 #            if data['descuento'] > Decimal(0):
@@ -467,7 +618,7 @@ class FiscalPrinter(Printer):#{{{
 #                signo = 'M'
 #            fitems.append(([], FiscalItemData(label, Decimal(0), monto, '**.**', signo, '0.00', 'T')))
 
-        return fitems
+#        return fitems
 #}}}
 #}}}
 class FilePrinter(Printer):#{{{
