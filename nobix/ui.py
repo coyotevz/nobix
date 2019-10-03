@@ -3824,9 +3824,10 @@ def imprimir_cierre_fiscal():#{{{
     impresoras = printers.get_printers(impr)
 
     impr = []
-    for ip in impresoras:
-        impr.append(("Cierre X %s" % ip.name, lambda: ip.fiscal_close("X")))
-        impr.append(("Cierre Z %s" % ip.name, lambda: ip.fiscal_close("Z")))
+    for ip in list(impresoras):
+        #impr.append(("Cierre X %s" % ip.name, lambda: ip.fiscal_close("X")))
+        impr.append(("Cierre X %s (%x)" % (ip.name, id(ip)), (ip, "X")))
+        impr.append(("Cierre Z %s (%x)" % (ip.name, id(ip)), (ip, "Z")))
 
     def _press(btn, user_data=None):
         d.dialog_result = user_data
@@ -3834,7 +3835,7 @@ def imprimir_cierre_fiscal():#{{{
 
     buttons = [AttrMap(Button(p[0], on_press=_press, user_data=p[1]),
                        'dialog.chooselist.button', 'dialog.chooselist.button.focus')
-               for p in list(impr + [("Cancelar", lambda: (None, None))])]
+               for p in list(impr + [("Cancelar", (None, None))])]# lambda: (None, None))])]
 
     pile = Padding(Pile(buttons), width=45, left=1, right=1)
 
@@ -3843,9 +3844,12 @@ def imprimir_cierre_fiscal():#{{{
                title_attr_style="dialog.chooselist.title",
         )
 
-    action_choosed = d.run()
+    printer, args = d.run()
+    success, data = None, None
 
-    success, data = action_choosed()
+    if printer and args:
+        success, data = printer.fiscal_close(args)
+
     if success:
         if 'warnings' in data and data['warnings']:
             show_warning([u"La impresión fue exitosa pero el controlador envió el siguiente mensaje:\n\n",

@@ -334,7 +334,7 @@ class FiscalPrinter(Printer):#{{{
                 'cierre%s_%s.dat' % (type_, datetime.now().strftime("%y%m%d-%H%M")))
 
         response_filename = os.path.splitext(outfilename)[0]+'.ans'
-        title = u"Imprimiento Cierre %s en %s" % (type_, self.name)
+        title = u"Imprimiento Cierre %s en %s (%x)" % (type_, self.name, id(self))
 
         data = {'operacion': u'cierre'}
 
@@ -344,7 +344,7 @@ class FiscalPrinter(Printer):#{{{
                     out.write("]\x1c%s\x1c\x7f\n" % lineno)
                 out.write("\x39\x1c%s" % type_.upper())
             elif self.opts['printer_model'] == u'epson':
-                if _type == u'Z': out.write("0 0801|0000")
+                if type_ == u'Z': out.write("0 0801|0000")
                 else: out.write("0 0802|0001")
 
         if not wait_fiscal_answer(response_filename, title=title, timeout=self.opts['timeout']):
@@ -379,7 +379,6 @@ class FiscalPrinter(Printer):#{{{
         if self.opts['logfile']:
             try:
                 log = open(self.opts['logfile'], "a")
-                log.write("hello log\n")
             except IOError:
                 log = None
                 data['warnings'] = [u"No se puede escirbir log en '%s'" % self.opts['logfile']]
@@ -387,20 +386,12 @@ class FiscalPrinter(Printer):#{{{
         docnumber = None
         line = None
 
-        if log:
-            log.write("repr(resp): "+repr(resp)+"\n")
-            log.write("list(resp): "+repr(list(resp))+"\n")
-            resp.seek(0)
-
         for line in list(resp):
             if log:
-                log.write("line: "+str(line)+"\n")
+                log.write("line: "+str(line))
 
             elements = line.strip().split("|")
-            ps, fs, ret = elements[:3]
-
-            if log:
-                log.write("elements: "+repr(elements)+" len: "+str(len(elements))+"\n")
+            ps, fs = elements[:2]
 
             if len(elements) > 4:
                 docnumber = unicode(elements[3])
@@ -581,7 +572,8 @@ class FiscalPrinter(Printer):#{{{
         # Epson: 1x34 + 3x48 + 1x29
         fitems = []
         for item in data['items']:
-            s = '['+item.codigo+'] ' + item.descripcion
+            #s = '['+item.codigo+'] ' + item.descripcion
+            s = '\x1b\x21'+item.codigo+'\x1b\x20 ' + item.descripcion
             lines = []
             if len(s) <= 29:
                 desc = s
