@@ -598,7 +598,7 @@ class DocumentHeader(WidgetWrap):#{{{
         total = body.calcular_total()
         doc_data = DocumentData(vendedor, doctype, cliente, descuento, total, items_data)
 
-        if doctype == u'FAC' and cliente.responsabilidad_iva == u'C' and total > Decimal('999.99'):
+        if doctype == u'FAC' and cliente.responsabilidad_iva == u'C' and total > Decimal('9999.99'):
             pw = SpecialPrintWizard(doc_data, self)
         else:
             pw = PrintWizard(doc_data, self)
