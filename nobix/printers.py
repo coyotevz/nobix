@@ -202,13 +202,13 @@ def _parse_hasar_status(status, status_map):#{{{
     return ret
 #}}}
 def _parse_hasar_fiscal_status(fiscal_status, fiscal_status_map=_hasar_fs):#{{{
-    return _parse_status(fiscal_status, fiscal_status_map)
+    return _parse_hasar_status(fiscal_status, fiscal_status_map)
 #}}}
 def _parse_hasar_printer_status(printer_status, printer_status_map=_hasar_ps):#{{{
     return _parse_hasar_status(printer_status, printer_status_map)
 #}}}
 def _parse_hasar_aux_status(aux_status, aux_status_map=_hasar_as):#{{{
-    return _parse_epson_status(aux_status, aux_status_map)
+    return _parse_hasar_status(aux_status, aux_status_map)
 #}}}
 
 def _parse_epson_status(status, status_map):#{{{
