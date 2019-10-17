@@ -58,8 +58,8 @@ def check_password(for_action=None):
     p = PasswordDialog(for_action=for_action)
     return p.run()
 
-def wait_fiscal_answer(filename, title=None, timeout=10, interval=0.1):
-    wa = WaitFiscalAnswer(filename=filename, title=title, timeout=timeout, interval=interval)
+def wait_fiscal_answer(filename, title=None, timeout=10, interval=0.1, data={}):
+    wa = WaitFiscalAnswer(filename=filename, title=title, timeout=timeout, interval=interval, data=data)
     return wa.run()
 
 def smart_unicode(s, encoding='utf-8', errors='strict'):

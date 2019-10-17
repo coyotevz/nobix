@@ -1009,10 +1009,11 @@ class SearchDialog(Dialog):#{{{
 
 class WaitFiscalAnswer(Dialog):#{{{
 
-    def __init__(self, filename, title=None, timeout=10, interval=0.1):#{{{
+    def __init__(self, filename, title=None, timeout=10, interval=0.1, data={}):#{{{
         self.filename = filename
         self.interval = interval
         self.timeout = timeout
+        self.data = data
 
         if title is None:
             title = "IMPRIMIENDO"
@@ -1051,7 +1052,7 @@ class WaitFiscalAnswer(Dialog):#{{{
         return self.__super.run(alarm=(self.interval, self._alarm))
 #}}}
     def _alarm(self, main_loop, user_data=None):#{{{
-        if not os.path.exists(self.filename):
+        if not self.check_file_ready(self.filename):
             self.update_status()
             main_loop.set_alarm_in(self.interval, self._alarm)
             return
@@ -1059,6 +1060,26 @@ class WaitFiscalAnswer(Dialog):#{{{
             self.dialog_result = True
             self.quit()
 #}}}
+    def check_file_ready(self, filename):
+        if os.path.exists(self.filename):
+            printer_model = self.data.get('printer_model', None)
+            if printer_model == u'hasar':
+                return True
+            elif printer_model == u'epson':
+                resp = open(filename, "r")
+                line = ([''] + list(resp))[-1].strip()
+                if line.startswith("-1"):
+                    resp.close()
+                    return True
+                e = line.split("|")
+                if len(e) > 4:
+                    resp.close()
+                    return True
+            else:
+                return True
+
+        return False
+
     def update_status(self):#{{{
         self.eta.set_text("Tiempo: %s" % get_elapsed_time(self._start_time))
         if type(self.content.widget_list[-1]) is Text:

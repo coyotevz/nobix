@@ -319,7 +319,7 @@ class FiscalPrinter(Printer):#{{{
         if data['doc_total_count'] > 1:
             title += u"\n%d de %d documentos" % (data['doc_count'], data['doc_total_count'])
 
-        if not wait_fiscal_answer(response_filename, title=title, timeout=data['timeout']):
+        if not wait_fiscal_answer(response_filename, title=title, timeout=data['timeout'], data=data):
             if os.path.exists(data['out_filename']):
                 data['errors'] = [u"El programa encargado de imprimir puede estar apagado o muy sobrecargado"]
                 os.unlink(data['out_filename'])
@@ -347,7 +347,7 @@ class FiscalPrinter(Printer):#{{{
                 if type_ == u'Z': out.write("0 0801|0000")
                 else: out.write("0 0802|0001")
 
-        if not wait_fiscal_answer(response_filename, title=title, timeout=self.opts['timeout']):
+        if not wait_fiscal_answer(response_filename, title=title, timeout=self.opts['timeout'], data=data):
             if os.path.exists(outfilename):
                 errors = [u"El programa encargado de imprimir puede estar apagado o muy sobrecargado"]
                 os.unlink(outfilename)
@@ -372,8 +372,6 @@ class FiscalPrinter(Printer):#{{{
         perrors = []
         data['errors'] = []
         data['warnings'] = []
-        import time
-        time.sleep(2)
 
         resp = open(filename, "r")
         if self.opts['logfile']:
